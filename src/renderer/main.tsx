@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './app/App';
 import { SessionProvider } from './store/sessionStore';
+import './styles/global.css';
 
 /**
  * Renderer entry point bootstrapping the React application.

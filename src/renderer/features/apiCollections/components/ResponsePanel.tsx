@@ -19,7 +19,16 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
 
   if (isRunning) {
     return (
-      <section style={{ padding: '16px', color: '#2563eb', minHeight: '200px' }}>
+      <section
+        style={{
+          padding: '16px',
+          color: '#2190FF',
+          minHeight: '200px',
+          backgroundColor: '#2a2d33',
+          borderRadius: '12px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35)',
+        }}
+      >
         Sending request…
       </section>
     );
@@ -27,7 +36,16 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
 
   if (!response) {
     return (
-      <section style={{ padding: '16px', color: '#6b7280', minHeight: '200px' }}>
+      <section
+        style={{
+          padding: '16px',
+          color: '#9ca3af',
+          minHeight: '200px',
+          backgroundColor: '#2a2d33',
+          borderRadius: '12px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35)',
+        }}
+      >
         Send a request to preview the response payload.
       </section>
     );
@@ -35,25 +53,36 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
 
   return (
     <section
-      style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px', minHeight: '220px' }}
+      style={{
+        padding: '12px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+        minHeight: '220px',
+        backgroundColor: '#2a2d33',
+        borderRadius: '10px',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
+        color: '#f3f4f6',
+        height: '100%',
+      }}
     >
       <header style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
         <span
           style={{
             fontWeight: 600,
-            color: response.status >= 400 ? '#dc2626' : '#16a34a',
+            color: response.status >= 400 ? '#f87171' : '#4ade80',
           }}
         >
           {response.status} {response.statusText}
         </span>
-        <span style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+        <span style={{ color: '#9ca3af', fontSize: '0.9rem' }}>
           {response.durationMs} ms · {(response.sizeInBytes / 1024).toFixed(1)} kb
         </span>
         <span style={{ color: '#9ca3af', fontSize: '0.85rem', marginLeft: 'auto' }}>
           {new Date(response.finishedAt).toLocaleTimeString()}
         </span>
       </header>
-      <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid #e5e7eb' }}>
+      <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
         {(['body', 'headers', 'console'] as ResponseTabKey[]).map((tabKey) => (
           <button
             key={tabKey}
@@ -61,11 +90,12 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
             onClick={() => setActiveTab(tabKey)}
             style={{
               border: 'none',
-              borderBottom: activeTab === tabKey ? '2px solid #2563eb' : '2px solid transparent',
+              borderBottom: activeTab === tabKey ? '2px solid #2190FF' : '2px solid transparent',
               background: 'none',
               padding: '6px 0',
               cursor: 'pointer',
               fontWeight: activeTab === tabKey ? 600 : 500,
+              color: activeTab === tabKey ? '#ffffff' : '#cdd0d5',
             }}
           >
             {tabKey.toUpperCase()}
@@ -76,7 +106,7 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
         {activeTab === 'body' && (
           <pre
             style={{
-              background: '#0f172a',
+              background: '#0f1115',
               color: '#e2e8f0',
               borderRadius: '8px',
               padding: '12px',
@@ -95,15 +125,15 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
                 <tr key={header.id}>
                   <td
                     style={{
-                      borderBottom: '1px solid #f3f4f6',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
                       padding: '6px 8px',
-                      color: '#6b7280',
+                      color: '#9ca3af',
                       width: '30%',
                     }}
                   >
                     {header.key}
                   </td>
-                  <td style={{ borderBottom: '1px solid #f3f4f6', padding: '6px 8px' }}>
+                  <td style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)', padding: '6px 8px' }}>
                     {header.value}
                   </td>
                 </tr>
@@ -112,7 +142,7 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
           </table>
         )}
         {activeTab === 'console' && (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: '#475569' }}>
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0, color: '#cdd0d5' }}>
             {response.consoleLog.map((line, index) => (
               <li key={`${response.id}-${index}`} style={{ padding: '4px 0' }}>
                 {line}

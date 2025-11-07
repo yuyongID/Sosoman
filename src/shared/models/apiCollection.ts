@@ -29,6 +29,8 @@ export interface ApiRequestDefinition {
   headers: KeyValuePair[];
   body: string;
   tests: ApiTestSnippet[];
+  preScript?: string;
+  postScript?: string;
 }
 
 export interface ApiCollection {

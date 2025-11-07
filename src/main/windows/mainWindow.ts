@@ -24,6 +24,7 @@ export async function createMainWindow(): Promise<BrowserWindow> {
     height: 800,
     webPreferences: {
       contextIsolation: true,
+      sandbox: false,
       preload: preloadPath,
     },
   });

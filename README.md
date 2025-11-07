@@ -83,19 +83,19 @@
 在向 AI 工具描述或生成界面结构时，固定使用下面的区域命名和层次：
 
 1. **appHeader**
-   - 放应用标题、当前 workspace、环境选择器、全局搜索、运行/保存按钮
+   - 放应用标题、当前 workspace
    - 参考 Material 的 top app bar 或 Fluent 的 command bar 做层级和图标布局
 2. **sideNav**
    - 左侧垂直导航，用来显示 API collections、environments、test suites
    - 结构类似 Navigation Drawer / NavigationView
 3. **workbench**
    - 中间主工作区
-   - 顶部有 tabs，每个 tab 对应一个 request 或一个测试用例
+   - 顶部有 tabs，每个 tab 对应一个 request 或一个测试用例、环境选择器
    - tab 内部再分成上下两个 panel
 4. **requestEditor (upper panel)**
-   - 包含 method dropdown、URL textField
-   - 下方是分栏 tabs：Params / Auth / Headers / Body / Tests
-5. **responsePanel**
+   - 包含 method dropdown、URL textField、运行/保存按钮
+   - 下方是分栏 tabs：Params / Auth / Headers / Body / 前置 / 后置
+5. **responsePanel(lower panel)**
    - 显示本次调用的响应：Body / Preview / Headers / Console log
 6. **statusBar**
    - 底部细栏，显示远端测试服务连接状态、当前用户、最近一次执行时间
@@ -105,3 +105,10 @@
 - 输出 UI 结构时使用树状结构或 JSON，并以这些区域名作为 key
 - 涉及按钮或表单元件时使用通用控件名（button、dropdown、textField、tabs、table）
 - 优先遵循 Material layout 和 Fluent UI 的区域划分规则
+
+## 暗色主题规范
+- **基底层级**：主背景 `#1f1f24`，appHeader/statusBar 使用更深的 `#1b1b1f`，侧边栏使用略浅的 `#24262b` 以区分区域。
+- **内容卡片**：requestEditor/responsePanel 等核心面板采用 `#2a2d33`，输入区使用 `#0f1115`，配合 `rgba(255,255,255,0.04~0.08)` 的细描边。
+- **文本与图标**：主文字 `#f3f4f6`，辅助文字 `#9ca3af`，图标和表格线条保持高对比，避免低对比灰阶。
+- **品牌色**：按钮、选中态、激活标签统一使用 `#2190FF`（必要时降低不透明度），成功态 `#4ade80`，错误态 `#f87171`。
+- **导航与分隔**：sideNav 选中项使用 `rgba(33,144,255,0.15)` 背景 + 细描边，所有分隔线统一使用透明浅色确保暗色模式克制。

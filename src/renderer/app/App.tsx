@@ -1,10 +1,6 @@
 import React from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
-import {
-  ApiCollectionsWorkbench,
-  type ApiCollectionsWorkbenchHandle,
-  type ConnectionState,
-} from '../features/apiCollections/ApiCollectionsWorkbench';
+import { ApiCollectionsWorkbench, type ConnectionState } from '../features/apiCollections/ApiCollectionsWorkbench';
 import { useSession } from '../store/sessionStore';
 
 type NavKey = 'apiCollections' | 'environments' | 'testSuites';
@@ -42,26 +38,8 @@ export const App: React.FC = () => {
   const { token } = useSession();
   const [activeNav, setActiveNav] = React.useState<NavKey>('apiCollections');
   const [environment, setEnvironment] = React.useState(environmentOptions[0]);
-  const [globalSearch, setGlobalSearch] = React.useState('');
   const [connectionState, setConnectionState] = React.useState<ConnectionState>('offline');
   const [lastRunAt, setLastRunAt] = React.useState<string | null>(null);
-  const workbenchRef = React.useRef<ApiCollectionsWorkbenchHandle>(null);
-
-  const handleRunClick = React.useCallback(() => {
-    if (activeNav === 'apiCollections') {
-      workbenchRef.current?.runActiveRequest();
-      return;
-    }
-    console.info('[app] Run action ignored for inactive feature', activeNav);
-  }, [activeNav]);
-
-  const handleSaveClick = React.useCallback(() => {
-    if (activeNav === 'apiCollections') {
-      workbenchRef.current?.saveActiveRequest();
-      return;
-    }
-    console.info('[app] Save action ignored for inactive feature', activeNav);
-  }, [activeNav]);
 
   const statusBar = React.useMemo(
     () => ({
@@ -78,21 +56,15 @@ export const App: React.FC = () => {
       activeNavId={activeNav}
       onNavChange={(value) => setActiveNav(value as NavKey)}
       workspaceName="Default workspace"
-      environment={environment}
-      environmentOptions={environmentOptions}
-      onEnvironmentChange={setEnvironment}
-      globalSearchTerm={globalSearch}
-      onGlobalSearchChange={setGlobalSearch}
-      onRunClick={handleRunClick}
-      onSaveClick={handleSaveClick}
       status={statusBar}
     >
       {activeNav === 'apiCollections' && (
         <ApiCollectionsWorkbench
-          ref={workbenchRef}
-          searchQuery={globalSearch}
           onConnectionStateChange={setConnectionState}
           onRequestExecuted={setLastRunAt}
+          environment={environment}
+          environmentOptions={environmentOptions}
+          onEnvironmentChange={setEnvironment}
         />
       )}
       {activeNav === 'environments' && <PlaceholderView label="Environments" />}

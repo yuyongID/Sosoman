@@ -18,9 +18,11 @@ export interface ApiCollectionsWorkbenchHandle {
 }
 
 interface ApiCollectionsWorkbenchProps {
-  searchQuery: string;
   onConnectionStateChange: (state: ConnectionState) => void;
   onRequestExecuted?: (isoTimestamp: string) => void;
+  environment: string;
+  environmentOptions: string[];
+  onEnvironmentChange: (env: string) => void;
 }
 
 interface RequestTabState {
@@ -69,16 +71,45 @@ const createTabState = (collection: ApiCollection, request: ApiRequestDefinition
   };
 };
 
+const usePersistentNumber = (key: string, defaultValue: number): [number, (value: number) => void] => {
+  const [value, setValue] = React.useState<number>(() => {
+    if (typeof window === 'undefined') {
+      return defaultValue;
+    }
+    const stored = window.localStorage.getItem(key);
+    if (!stored) {
+      return defaultValue;
+    }
+    const parsed = Number(stored);
+    return Number.isFinite(parsed) ? parsed : defaultValue;
+  });
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.localStorage.setItem(key, String(value));
+  }, [key, value]);
+
+  return [value, setValue];
+};
+
+const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
+
 export const ApiCollectionsWorkbench = React.forwardRef<
   ApiCollectionsWorkbenchHandle,
   ApiCollectionsWorkbenchProps
->(({ searchQuery, onConnectionStateChange, onRequestExecuted }, ref) => {
+>(({ onConnectionStateChange, onRequestExecuted, environment, environmentOptions, onEnvironmentChange }, ref) => {
   const [collections, setCollections] = React.useState<ApiCollection[]>([]);
   const [loadingCollections, setLoadingCollections] = React.useState<boolean>(true);
-  const [selectedCollectionId, setSelectedCollectionId] = React.useState<string | null>(null);
   const [collectionSearch, setCollectionSearch] = React.useState('');
   const [tabs, setTabs] = React.useState<RequestTabState[]>([]);
   const [activeTabId, setActiveTabId] = React.useState<string | null>(null);
+  const [sidebarWidth, setSidebarWidth] = usePersistentNumber('apiCollections.sidebarWidth', 280);
+  const [responsePanelHeight, setResponsePanelHeight] = usePersistentNumber(
+    'apiCollections.responseHeight',
+    280
+  );
 
   const activeTab = React.useMemo(
     () => tabs.find((tab) => tab.id === activeTabId) ?? null,
@@ -99,7 +130,6 @@ export const ApiCollectionsWorkbench = React.forwardRef<
         setCollections(data);
         setLoadingCollections(false);
         onConnectionStateChange('online');
-        setSelectedCollectionId((prev) => prev ?? data[0]?.id ?? null);
 
         const firstCollection = data[0];
         const firstRequest = firstCollection?.requests[0];
@@ -129,10 +159,6 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     };
   }, [onConnectionStateChange]);
 
-  const handleSelectCollection = React.useCallback((collectionId: string) => {
-    setSelectedCollectionId(collectionId);
-  }, []);
-
   const handleSelectRequest = React.useCallback(
     (collectionId: string, requestId: string) => {
       const collection = collections.find((item) => item.id === collectionId);
@@ -152,7 +178,6 @@ export const ApiCollectionsWorkbench = React.forwardRef<
         return [...prevTabs, createTabState(collection, request)];
       });
       setActiveTabId(tabId);
-      setSelectedCollectionId(collectionId);
     },
     [collections]
   );
@@ -318,18 +343,84 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     [handleRunActiveRequest, handleSaveActiveRequest]
   );
 
+  const handleSidebarResizeStart = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const startX = event.clientX;
+      const startWidth = sidebarWidth;
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const delta = moveEvent.clientX - startX;
+        setSidebarWidth(clamp(startWidth + delta, 200, 420));
+      };
+
+      const handleMouseUp = () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [sidebarWidth, setSidebarWidth]
+  );
+
+  const handleResponseResizeStart = React.useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const startY = event.clientY;
+      const startHeight = responsePanelHeight;
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        const delta = moveEvent.clientY - startY;
+        setResponsePanelHeight(clamp(startHeight - delta, 200, 520));
+      };
+
+      const handleMouseUp = () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    },
+    [responsePanelHeight, setResponsePanelHeight]
+  );
+
   return (
-    <div style={{ display: 'flex', height: '100%' }}>
-      <CollectionsSidebar
-        collections={collections}
-        selectedCollectionId={selectedCollectionId}
-        onSelectCollection={handleSelectCollection}
-        onSelectRequest={handleSelectRequest}
-        searchTerm={collectionSearch}
-        onSearchTermChange={setCollectionSearch}
-        externalFilter={searchQuery}
-        loading={loadingCollections}
-      />
+    <div style={{ display: 'flex', height: '100%', backgroundColor: '#1f1f24' }}>
+      <div style={{ width: `${sidebarWidth}px`, minWidth: '200px', maxWidth: '420px', height: '100%' }}>
+        <CollectionsSidebar
+          collections={collections}
+          onSelectRequest={handleSelectRequest}
+          searchTerm={collectionSearch}
+          onSearchTermChange={setCollectionSearch}
+          loading={loadingCollections}
+          activeRequestId={activeTab?.requestId ?? null}
+        />
+      </div>
+      <div
+        role="separator"
+        onMouseDown={handleSidebarResizeStart}
+        style={{
+          width: '6px',
+          cursor: 'col-resize',
+          background: 'transparent',
+          position: 'relative',
+        }}
+      >
+        <span
+          style={{
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: '1px',
+            right: '1px',
+            background: 'rgba(255, 255, 255, 0.04)',
+            borderRadius: '99px',
+          }}
+        />
+      </div>
       <section style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <RequestTabs
           tabs={tabs.map((tab) => ({
@@ -342,11 +433,21 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           activeTabId={activeTabId}
           onSelectTab={setActiveTabId}
           onCloseTab={handleCloseTab}
+          environment={environment}
+          environmentOptions={environmentOptions}
+          onEnvironmentChange={onEnvironmentChange}
         />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {activeTab ? (
             <>
-              <div style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
+              <div
+                style={{
+                  flex: 1,
+                  padding: '12px',
+                  minHeight: 0,
+                  overflow: 'hidden',
+                }}
+              >
                 <RequestEditor
                   request={activeTab.draft}
                   isRunning={activeTab.isRunning}
@@ -355,7 +456,36 @@ export const ApiCollectionsWorkbench = React.forwardRef<
                   onSave={handleSaveActiveRequest}
                 />
               </div>
-              <div style={{ borderTop: '1px solid #e5e7eb', padding: '16px', minHeight: '240px' }}>
+              <div
+                role="separator"
+                onMouseDown={handleResponseResizeStart}
+                style={{
+                  height: '6px',
+                  cursor: 'row-resize',
+                  background: 'transparent',
+                  position: 'relative',
+                  margin: '0 12px',
+                }}
+              >
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    top: '2px',
+                    height: '2px',
+                    background: 'rgba(255, 255, 255, 0.08)',
+                    borderRadius: '99px',
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  padding: '12px',
+                  height: `${responsePanelHeight}px`,
+                  minHeight: '200px',
+                }}
+              >
                 <ResponsePanel response={activeTab.response} isRunning={activeTab.isRunning} />
               </div>
             </>

@@ -13,6 +13,9 @@ interface RequestTabsProps {
   activeTabId: string | null;
   onSelectTab: (tabId: string) => void;
   onCloseTab: (tabId: string) => void;
+  environment: string;
+  environmentOptions: string[];
+  onEnvironmentChange: (value: string) => void;
 }
 
 export const RequestTabs: React.FC<RequestTabsProps> = ({
@@ -20,81 +23,126 @@ export const RequestTabs: React.FC<RequestTabsProps> = ({
   activeTabId,
   onSelectTab,
   onCloseTab,
+  environment,
+  environmentOptions,
+  onEnvironmentChange,
 }) => {
-  if (tabs.length === 0) {
-    return (
-      <div
-        style={{
-          borderBottom: '1px solid #e5e7eb',
-          padding: '12px 16px',
-          color: '#9ca3af',
-          fontSize: '0.9rem',
-        }}
-      >
-        Open a request from the left panel to start editing.
-      </div>
-    );
-  }
-
   return (
     <div
       style={{
         display: 'flex',
-        borderBottom: '1px solid #e5e7eb',
-        overflowX: 'auto',
+        alignItems: 'center',
+        borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+        padding: '0 6px',
+        gap: '12px',
+        minHeight: '44px',
+        backgroundColor: '#1f1f24',
       }}
     >
-      {tabs.map((tab) => {
-        const isActive = tab.id === activeTabId;
-        return (
+      <div
+        style={{
+          display: 'flex',
+          overflowX: 'auto',
+          flex: 1,
+        }}
+      >
+        {tabs.length === 0 && (
           <div
-            key={tab.id}
-            role="button"
-            tabIndex={0}
-            onClick={() => onSelectTab(tab.id)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                onSelectTab(tab.id);
-              }
-            }}
             style={{
-              borderBottom: isActive ? '2px solid #2563eb' : '2px solid transparent',
-              padding: '10px 16px',
-              backgroundColor: isActive ? '#f8fafc' : 'transparent',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontWeight: 500,
-              minWidth: '200px',
+              color: '#9ca3af',
+              fontSize: '0.9rem',
+              padding: '12px 8px',
             }}
           >
-            <span>
-              {tab.collectionName} / {tab.title}
-            </span>
-            {tab.isDirty && <span style={{ color: '#dc2626' }}>*</span>}
-            {tab.isRunning && <span style={{ color: '#2563eb', fontSize: '0.8rem' }}>sending…</span>}
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onCloseTab(tab.id);
+            Open a request from the left panel to start editing.
+          </div>
+        )}
+        {tabs.map((tab) => {
+          const isActive = tab.id === activeTabId;
+          return (
+            <div
+              key={tab.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelectTab(tab.id)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onSelectTab(tab.id);
+                }
               }}
               style={{
-                border: 'none',
-                background: 'none',
-                color: '#6b7280',
+                borderBottom: isActive ? '2px solid #2190FF' : '2px solid transparent',
+                padding: '10px 12px',
                 cursor: 'pointer',
-                fontSize: '1rem',
-                marginLeft: 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontWeight: 500,
+                minWidth: '160px',
+                maxWidth: '220px',
+                color: isActive ? '#ffffff' : '#cdd0d5',
+                backgroundColor: isActive ? '#2a2d33' : 'transparent',
+                borderTopLeftRadius: '6px',
+                borderTopRightRadius: '6px',
+                fontSize: '0.85rem',
               }}
             >
-              ×
-            </button>
-          </div>
-        );
-      })}
+              <span
+                style={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flex: 1,
+                }}
+              >
+                {tab.title}
+              </span>
+              {tab.isDirty && <span style={{ color: '#f87171' }}>*</span>}
+              {tab.isRunning && <span style={{ color: '#2190FF', fontSize: '0.8rem' }}>sending…</span>}
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onCloseTab(tab.id);
+                }}
+                style={{
+                  border: 'none',
+                  background: 'none',
+                  color: '#9ca3af',
+                  cursor: 'pointer',
+                  fontSize: '1rem',
+                  marginLeft: 'auto',
+                }}
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Env</span>
+        <select
+          aria-label="Environment selector"
+          value={environment}
+          onChange={(event) => onEnvironmentChange(event.target.value)}
+          style={{
+            border: '1px solid rgba(255, 255, 255, 0.08)',
+            borderRadius: '6px',
+            padding: '6px 10px',
+            fontSize: '0.85rem',
+            backgroundColor: '#2a2d33',
+            color: '#f3f4f6',
+          }}
+        >
+          {environmentOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };

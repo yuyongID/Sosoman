@@ -36,7 +36,7 @@ export const KeyValueEditor: React.FC<KeyValueEditorProps> = ({ rows, emptyLabel
   if (rows.length === 0) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <p style={{ color: '#6b7280', fontSize: '0.9rem' }}>{emptyLabel}</p>
+        <p style={{ color: '#9ca3af', fontSize: '0.9rem' }}>{emptyLabel}</p>
         <button
           type="button"
           onClick={handleAdd}
@@ -44,8 +44,9 @@ export const KeyValueEditor: React.FC<KeyValueEditorProps> = ({ rows, emptyLabel
             width: 'fit-content',
             padding: '6px 12px',
             borderRadius: '6px',
-            border: '1px dashed #9ca3af',
-            background: 'none',
+            border: '1px dashed rgba(255, 255, 255, 0.2)',
+            background: 'transparent',
+            color: '#f3f4f6',
             cursor: 'pointer',
           }}
         >
@@ -80,7 +81,9 @@ export const KeyValueEditor: React.FC<KeyValueEditorProps> = ({ rows, emptyLabel
             style={{
               padding: '6px 8px',
               borderRadius: '6px',
-              border: '1px solid #d1d5db',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              backgroundColor: '#0f1115',
+              color: '#f3f4f6',
             }}
           />
           <input
@@ -90,7 +93,9 @@ export const KeyValueEditor: React.FC<KeyValueEditorProps> = ({ rows, emptyLabel
             style={{
               padding: '6px 8px',
               borderRadius: '6px',
-              border: '1px solid #d1d5db',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              backgroundColor: '#0f1115',
+              color: '#f3f4f6',
             }}
           />
           <button
@@ -99,7 +104,7 @@ export const KeyValueEditor: React.FC<KeyValueEditorProps> = ({ rows, emptyLabel
             style={{
               border: 'none',
               background: 'none',
-              color: '#dc2626',
+              color: '#f87171',
               cursor: 'pointer',
             }}
           >
@@ -114,8 +119,9 @@ export const KeyValueEditor: React.FC<KeyValueEditorProps> = ({ rows, emptyLabel
           width: 'fit-content',
           padding: '6px 12px',
           borderRadius: '6px',
-          border: '1px dashed #9ca3af',
-          background: 'none',
+          border: '1px dashed rgba(255, 255, 255, 0.2)',
+          background: 'transparent',
+          color: '#f3f4f6',
           cursor: 'pointer',
           marginTop: '8px',
         }}

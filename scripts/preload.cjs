@@ -4,7 +4,7 @@
  * Electron requires a JavaScript entry file, so we register ts-node on the fly
  * and then forward to the actual TypeScript module living under src/main/preload.
  */
-const path = require('path');
+const path = require('node:path');
 
 if (!process.env.TS_NODE_PROJECT) {
   process.env.TS_NODE_PROJECT = path.resolve(__dirname, '../tsconfig.json');

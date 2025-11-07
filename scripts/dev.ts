@@ -24,6 +24,7 @@ const electronCommand = {
 concurrently([viteCommand, electronCommand], {
   killOthers: ['failure', 'success'],
   restartTries: 0,
+  successCondition: 'first',
 }).result.catch((error) => {
   console.error('\n[dev] Failed to bootstrap development environment.');
   if (error) {
