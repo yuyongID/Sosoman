@@ -13,12 +13,18 @@ export async function createMainWindow(): Promise<BrowserWindow> {
     return mainWindow;
   }
 
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const projectRoot = path.resolve(__dirname, '../../..');
+  const preloadPath = isDevelopment
+    ? path.join(projectRoot, 'scripts/preload.cjs')
+    : path.join(__dirname, '../preload/index.js');
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
     webPreferences: {
       contextIsolation: true,
-      preload: path.join(__dirname, '../preload/index.js'),
+      preload: preloadPath,
     },
   });
 

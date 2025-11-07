@@ -1,5 +1,18 @@
 import axios from 'axios';
 
+type EnvMap = Record<string, string | undefined>;
+
+const processEnv: EnvMap =
+  typeof process !== 'undefined' && process.env ? (process.env as EnvMap) : {};
+
+const globalEnv: EnvMap =
+  typeof globalThis !== 'undefined' && (globalThis as Record<string, unknown>).__SOSOMAN_ENV__
+    ? ((globalThis as Record<string, unknown>).__SOSOMAN_ENV__ as EnvMap)
+    : {};
+
+const resolveEnv = (key: string, fallback?: string): string | undefined =>
+  globalEnv[key] ?? processEnv[key] ?? fallback;
+
 /**
  * Axios instance shared across the application.
  *
@@ -8,12 +21,12 @@ import axios from 'axios';
  * should remain dumb data mappers on top of this client.
  */
 export const apiClient = axios.create({
-  baseURL: process.env.SOSOTEST_BASE_URL ?? 'http://localhost:3000',
+  baseURL: resolveEnv('SOSOTEST_BASE_URL', 'http://localhost:3000'),
   timeout: 15_000,
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = process.env.SOSOTEST_TOKEN;
+  const token = resolveEnv('SOSOTEST_TOKEN');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
