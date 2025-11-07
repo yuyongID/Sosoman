@@ -1,0 +1,13 @@
+appId: com.sosotest.sosoman
+productName: Sosoman
+files:
+  - dist/**
+extraMetadata:
+  main: dist/main/app.js
+linux:
+  target: AppImage
+mac:
+  target: dmg
+win:
+  target: nsis
+# TODO: refine build configuration once distribution requirements are confirmed.

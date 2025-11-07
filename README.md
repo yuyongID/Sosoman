@@ -76,3 +76,32 @@
   ]
 }
 ```
+
+---
+
+## UI 结构输出规范
+在向 AI 工具描述或生成界面结构时，固定使用下面的区域命名和层次：
+
+1. **appHeader / topBar**
+   - 放应用标题、当前 workspace、环境选择器、全局搜索、运行/保存按钮
+   - 参考 Material 的 top app bar 或 Fluent 的 command bar 做层级和图标布局
+2. **sideNav / navigationPane**
+   - 左侧垂直导航，用来显示 API collections、environments、test suites
+   - 结构类似 Navigation Drawer / NavigationView
+3. **workbench / mainContent**
+   - 中间主工作区
+   - 顶部有 tabs，每个 tab 对应一个 request 或一个测试用例
+   - tab 内部再分成上下两个 panel
+4. **requestEditor (upper panel)**
+   - 包含 method dropdown、URL textField
+   - 下方是分栏 tabs：Params / Auth / Headers / Body / Tests
+5. **responsePanel (lower panel)**
+   - 显示本次调用的响应：Body / Preview / Headers / Console log
+6. **statusBar / footer**
+   - 底部细栏，显示远端测试服务连接状态、当前用户、最近一次执行时间
+
+额外约束：
+- 保持以上英文名称，不要自动翻译
+- 输出 UI 结构时使用树状结构或 JSON，并以这些区域名作为 key
+- 涉及按钮或表单元件时使用通用控件名（button、dropdown、textField、tabs、table）
+- 优先遵循 Material layout 和 Fluent UI 的区域划分规则
