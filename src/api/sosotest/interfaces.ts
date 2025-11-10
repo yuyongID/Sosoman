@@ -43,6 +43,58 @@ const parsePlanIdFromEnv = (): number | undefined => {
 const defaultFilter = parseFilterFromEnv();
 const defaultPlanId = parsePlanIdFromEnv() ?? 0;
 
+const truncate = (value: string, max = 400): string =>
+  value.length > max ? `${value.slice(0, max)}…(+${value.length - max} chars)` : value;
+
+interface FormDataEntrySummary {
+  type: 'text' | 'binary';
+  value?: string;
+  length?: number;
+}
+
+const summarizePayload = (data: unknown): Record<string, unknown> => {
+  if (!data) {
+    return { payloadType: 'none' };
+  }
+  if (typeof FormData !== 'undefined' && data instanceof FormData) {
+    const entries: Record<string, FormDataEntrySummary> = {};
+    data.forEach((value, key) => {
+      if (typeof value === 'string') {
+        entries[key] = {
+          type: 'text',
+          value,
+          length: value.length,
+        };
+      } else {
+        entries[key] = { type: 'binary' };
+      }
+    });
+    return {
+      payloadType: 'form-data',
+      fieldCount: Object.keys(entries).length,
+      entries,
+    };
+  }
+  if (typeof data === 'string') {
+    return {
+      payloadType: 'string',
+      length: data.length,
+      preview: truncate(data, 4000),
+      value: data.length <= 4000 ? data : undefined,
+    };
+  }
+  if (typeof data === 'object') {
+    const jsonSnapshot = JSON.stringify(data);
+    return {
+      payloadType: 'json',
+      keys: Object.keys(data as Record<string, unknown>),
+      preview: truncate(jsonSnapshot, 4000),
+      value: jsonSnapshot.length <= 4000 ? jsonSnapshot : undefined,
+    };
+  }
+  return { payloadType: typeof data, value: data };
+};
+
 sosotestClient.interceptors.request.use((config) => {
   const headers = config.headers ?? {};
   const token = getEnvValue('SOSOTEST_TOKEN');
@@ -60,20 +112,19 @@ sosotestClient.interceptors.request.use((config) => {
   }
   config.headers = headers;
 
-  const payloadSummary =
-    typeof config.data === 'object'
-      ? {
-          page: (config.data as SosotestInterfaceListRequest)?.page,
-          limit: (config.data as SosotestInterfaceListRequest)?.limit,
-          plan_id: (config.data as { plan_id?: number })?.plan_id,
-          filterSize: Array.isArray((config.data as { filter?: unknown[] }).filter)
-            ? ((config.data as { filter?: unknown[] }).filter?.length ?? 0)
-            : 0,
-        }
-      : { payloadType: typeof config.data };
+  const payloadSummary = summarizePayload(config.data);
+  const resolvedBase = config.baseURL ?? sosotestBaseUrl;
+  const resolvedUrl =
+    config.url && resolvedBase ? new URL(config.url, resolvedBase).toString() : config.url ?? '';
+  const paramsSnapshot =
+    typeof config.params === 'object'
+      ? truncate(JSON.stringify(config.params), 400)
+      : config.params ?? '';
 
-  console.info('[sosotest] → %s %s', (config.method ?? 'post').toUpperCase(), config.url ?? '', {
-    baseURL: config.baseURL ?? sosotestBaseUrl,
+  console.info('[sosotest] → %s %s', (config.method ?? 'post').toUpperCase(), resolvedUrl, {
+    baseURL: resolvedBase,
+    path: config.url ?? '',
+    params: paramsSnapshot,
     payload: payloadSummary,
     hasToken: Boolean(token),
     authEmail,
@@ -89,6 +140,8 @@ sosotestClient.interceptors.response.use(
     console.info('[sosotest] ← %s %s', response.config.method?.toUpperCase() ?? 'POST', response.config.url ?? '', {
       status: response.status,
       items: items.length,
+      code: response.data?.code,
+      message: response.data?.message,
     });
     return response;
   },
@@ -141,6 +194,39 @@ export interface SosotestInterfaceItem {
   [key: string]: unknown;
 }
 
+export interface SosotestInterfaceData {
+  id: number;
+  interfaceId: string;
+  title: string;
+  casedesc?: string;
+  businessLineId?: number;
+  moduleId?: number;
+  sourceId?: number;
+  createSourceId?: number;
+  autoStrategyId?: number;
+  caselevel?: number;
+  status?: number;
+  caseType?: number;
+  urlRedirect?: number;
+  useCustomUri?: number;
+  customUri?: string;
+  varsPre?: string;
+  uri?: string;
+  method: string;
+  header?: string;
+  url: string;
+  params?: string;
+  bodyType?: string;
+  bodyContent?: string;
+  timeout?: number;
+  varsPost?: string;
+  performanceTime?: number;
+  state?: number;
+  addBy?: string;
+  modBy?: string;
+  [key: string]: unknown;
+}
+
 export interface SosotestInterfaceListResponse {
   code: number;
   message: string;
@@ -152,6 +238,25 @@ export interface SosotestInterfaceListResponse {
 export interface SosotestInterfaceListResult {
   items: SosotestInterfaceItem[];
   response: SosotestInterfaceListResponse;
+}
+
+export interface SosotestInterfaceDetailResponse {
+  code: number;
+  message: string;
+  body?: {
+    interface_data?: SosotestInterfaceData;
+  };
+}
+
+export interface SosotestInterfaceSaveResponse {
+  code: number;
+  message: string;
+  body?: Record<string, unknown>;
+}
+
+export interface SaveSosotestInterfacePayload {
+  id: number | string;
+  interfaceData: SosotestInterfaceData;
 }
 
 export async function fetchSosotestInterfaceList(
@@ -174,4 +279,38 @@ export async function fetchSosotestInterfaceList(
     items: data.body?.data ?? [],
     response: data,
   };
+}
+
+export async function fetchSosotestInterfaceDetail(
+  id: number | string
+): Promise<SosotestInterfaceData> {
+  const { data } = await sosotestClient.get<SosotestInterfaceDetailResponse>(
+    '/v2/http/interface/get',
+    {
+      params: { id },
+    }
+  );
+  const detail = data.body?.interface_data;
+  if (!detail) {
+    throw new Error('接口详情不存在或返回格式不正确');
+  }
+  return detail;
+}
+
+export async function saveSosotestInterface(
+  payload: SaveSosotestInterfacePayload
+): Promise<SosotestInterfaceSaveResponse> {
+  const formData = new FormData();
+  formData.append('interfaceData', JSON.stringify(payload.interfaceData));
+  formData.append('id', String(payload.id));
+  const { data } = await sosotestClient.post<SosotestInterfaceSaveResponse>(
+    '/v2/http/interface/edit',
+    formData
+  );
+  if (data.code !== 10000) {
+    const message = data.message ?? '未知错误';
+    console.error('[sosotest] Interface save failed', { code: data.code, message, body: data.body });
+    throw new Error(`sosotest 保存失败：${message}`);
+  }
+  return data;
 }

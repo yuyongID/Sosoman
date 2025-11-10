@@ -103,7 +103,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Connection",
@@ -201,7 +201,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://at.ke.com/v2/http/interface/get?id=185146",
+					"raw": "http://at.ke.com/v2/http/interface/get?id=149059",
 					"protocol": "http",
 					"host": [
 						"at",
@@ -217,7 +217,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "185146"
+							"value": "149059"
 						}
 					]
 				},
@@ -225,7 +225,7 @@
 			},
 			"response": [
 				{
-					"name": "API 详情",
+					"name": "API 详情-GET",
 					"originalRequest": {
 						"method": "GET",
 						"header": [
@@ -269,7 +269,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Connection",
@@ -342,6 +342,125 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"code\": 10000,\n    \"message\": \"ok\",\n    \"body\": {\n        \"interface_data\": {\n            \"id\": 185146,\n            \"interfaceId\": \"HTTP_INTERFACE_185146\",\n            \"title\": \"余额首页查询接口\",\n            \"casedesc\": \"余额首页查询接口\",\n            \"businessLineId\": 64,\n            \"moduleId\": 463,\n            \"sourceId\": 1,\n            \"createSourceId\": 1011,\n            \"autoStrategyId\": 0,\n            \"caselevel\": 5,\n            \"status\": 2,\n            \"caseType\": 2,\n            \"urlRedirect\": 0,\n            \"useCustomUri\": 0,\n            \"customUri\": \"\",\n            \"varsPre\": \"\",\n            \"uri\": \"nrs-pay-service\",\n            \"method\": \"GET\",\n            \"header\": \"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\n            \"url\": \"/pc/wallet/dashboard\",\n            \"params\": \"commissionCode=DF23070600001937&source=2\",\n            \"bodyType\": \"none\",\n            \"bodyContent\": \"\",\n            \"timeout\": 20,\n            \"varsPost\": \"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\n            \"performanceTime\": 1,\n            \"state\": 1,\n            \"addBy\": \"dengyu032\",\n            \"modBy\": \"dengyu032\",\n            \"addTime\": \"2024-04-09 11:39:20\",\n            \"modTime\": \"2025-11-07 16:34:20\",\n            \"business_direction_id\": 0,\n            \"business_line_id\": 0,\n            \"system_id\": 0,\n            \"sub_system_id\": 0,\n            \"business_direction_name\": \"\",\n            \"business_line_name\": \"\",\n            \"system_name\": \"\",\n            \"sub_system_name\": \"\",\n            \"privacy_persons\": \"\",\n            \"allowRunProdEnv\": 0,\n            \"teamKey\": \"\",\n            \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n            \"latestApprovalId\": 0,\n            \"statusApprovalId\": 0,\n            \"isAsync\": 0,\n            \"approvalStatus\": 1,\n            \"teamName\": \"\",\n            \"applyEnvIsolation\": 0,\n            \"approvalStatusText\": \"未提审\"\n        },\n        \"permission_list\": [\n            \"add\",\n            \"copy\",\n            \"edit\",\n            \"delete\",\n            \"check\"\n        ]\n    }\n}"
+				},
+				{
+					"name": "API 详情-POST",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://at.ke.com/v2/http/interface/get?id=149059",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"http",
+								"interface",
+								"get"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "149059"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 06:26:11 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.012131929397583008"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762755971.73094"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 06:26:11 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=0667ee5f-8c39-466e-8748-6374d183af26; expires=Mon, 10-Nov-25 06:56:11 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=4d44a8b0-498a-4eff-b959-6ef9d739f0b7; expires=Mon, 10-Nov-25 06:56:11 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762755971.7188082"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762755971.718747-a980d3742e5016b39a7ed53b90082585"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 10000,\n    \"message\": \"ok\",\n    \"body\": {\n        \"interface_data\": {\n            \"id\": 149059,\n            \"interfaceId\": \"HTTP_INTERFACE_149059\",\n            \"title\": \"小程序发起支付（订金）——未查询到款项信息\",\n            \"casedesc\": \"小程序发起支付（订金）\",\n            \"businessLineId\": 64,\n            \"moduleId\": 463,\n            \"sourceId\": 1,\n            \"createSourceId\": 1,\n            \"autoStrategyId\": 0,\n            \"caselevel\": 5,\n            \"status\": 2,\n            \"caseType\": 2,\n            \"urlRedirect\": 1,\n            \"useCustomUri\": 0,\n            \"customUri\": \"\",\n            \"varsPre\": \"# python\\n# 前置准备 pre-script\",\n            \"uri\": \"http-utopia-nrs-sales-project\",\n            \"method\": \"POST\",\n            \"header\": \"{\\\"X-NRS-User-Id\\\":\\\"2000000010283910\\\",\\\"X-NRS-Open-Id\\\":\\\"otsBZ5MzhwE0Q_2EABrDObwG9FIw\\\",\\\"x-nrs-app-id\\\":\\\"JIAZHUANGWEAPP\\\",\\\"x-nrs-app-platform\\\":\\\"miniProgram\\\",\\\"x-nrs-testing-rate\\\":\\\"100\\\",\\\"x-nrs-version\\\":\\\"49\\\",\\\"x-nrs-accept\\\":\\\"image/webp\\\",\\\"x-nrs-service-id\\\":\\\"utopia-nrs-gateway\\\",\\\"Content-Type\\\":\\\"application/json\\\"}\",\n            \"url\": \"/mp/fund/pay\",\n            \"params\": \"\",\n            \"bodyType\": \"raw\",\n            \"bodyContent\": \"{\\n    \\\"fundId\\\": \\\"FU1670347143522758656\\\",\\n    \\\"cashierType\\\": \\\"5\\\",\\n    \\\"amount\\\": \\\"100.86\\\",\\n    \\\"deductList\\\": []\\n}\",\n            \"timeout\": 20,\n            \"varsPost\": \"#python\\n# 断言回复 post-script\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 7019,\\n  \\\"message\\\": \\\"未查询到款项信息\\\",\\n  \\\"data\\\": null,\\n  \\\"success\\\": false\\n}\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True)\",\n            \"performanceTime\": 1,\n            \"state\": 1,\n            \"addBy\": \"dengyu032\",\n            \"modBy\": \"dengyu032\",\n            \"addTime\": \"2023-07-26 16:23:02\",\n            \"modTime\": \"2025-11-10 14:25:58\",\n            \"business_direction_id\": 0,\n            \"business_line_id\": 0,\n            \"system_id\": 0,\n            \"sub_system_id\": 0,\n            \"business_direction_name\": \"\",\n            \"business_line_name\": \"\",\n            \"system_name\": \"\",\n            \"sub_system_name\": \"\",\n            \"privacy_persons\": \"\",\n            \"allowRunProdEnv\": 0,\n            \"teamKey\": \"\",\n            \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n            \"latestApprovalId\": 0,\n            \"statusApprovalId\": 0,\n            \"isAsync\": 0,\n            \"approvalStatus\": 1,\n            \"teamName\": \"\",\n            \"applyEnvIsolation\": 0,\n            \"approvalStatusText\": \"未提审\"\n        },\n        \"permission_list\": [\n            \"add\",\n            \"copy\",\n            \"edit\",\n            \"delete\",\n            \"check\"\n        ]\n    }\n}"
 				}
 			]
 		},
@@ -453,7 +572,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Connection",
@@ -629,7 +748,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Connection",
@@ -1074,7 +1193,7 @@
 					},
 					"status": "OK",
 					"code": 200,
-					"_postman_previewlanguage": "",
+					"_postman_previewlanguage": null,
 					"header": [
 						{
 							"key": "Connection",

@@ -4,7 +4,7 @@ import type {
   HttpMethod,
   KeyValuePair,
 } from '@shared/models/apiCollection';
-import type { SosotestInterfaceItem } from '@api/sosotest/interfaces';
+import type { SosotestInterfaceData, SosotestInterfaceItem } from '@api/sosotest/interfaces';
 
 export const DEFAULT_COLLECTION_ID = 'sosotest';
 
@@ -71,7 +71,9 @@ const parseParamsFromSosotest = (raw: string | null | undefined): KeyValuePair[]
   return pairs;
 };
 
-export const adaptInterfaceItemToRequest = (item: SosotestInterfaceItem): ApiRequestDefinition => ({
+const adaptSosotestLikeToRequest = (
+  item: SosotestInterfaceItem | SosotestInterfaceData
+): ApiRequestDefinition => ({
   id: String(item.id ?? item.interfaceId),
   name: item.title ?? 'Untitled request',
   method: normalizeHttpMethod(item.method),
@@ -84,6 +86,81 @@ export const adaptInterfaceItemToRequest = (item: SosotestInterfaceItem): ApiReq
   preScript: item.varsPre ?? '',
   postScript: item.varsPost ?? '',
 });
+
+export const adaptInterfaceItemToRequest = (item: SosotestInterfaceItem): ApiRequestDefinition =>
+  adaptSosotestLikeToRequest(item);
+
+export const adaptInterfaceDataToRequest = (data: SosotestInterfaceData): ApiRequestDefinition =>
+  adaptSosotestLikeToRequest(data);
+
+const enabledPairsToRecord = (pairs: KeyValuePair[]): Record<string, string> =>
+  pairs
+    .filter((pair) => pair.enabled && pair.key)
+    .reduce<Record<string, string>>((acc, pair) => {
+      acc[pair.key] = pair.value;
+      return acc;
+    }, {});
+
+const enabledPairsToQueryString = (pairs: KeyValuePair[]): string => {
+  const searchParams = new URLSearchParams();
+  pairs
+    .filter((pair) => pair.enabled && pair.key)
+    .forEach((pair) => {
+      searchParams.append(pair.key, pair.value);
+    });
+  const serialized = searchParams.toString();
+  return serialized;
+};
+
+const ALLOWED_INTERFACE_FIELDS: (keyof SosotestInterfaceData)[] = [
+  'createSourceId',
+  'title',
+  'casedesc',
+  'useCustomUri',
+  'customUri',
+  'uri',
+  'url',
+  'method',
+  'urlRedirect',
+  'timeout',
+  'performanceTime',
+  'params',
+  'header',
+  'bodyContent',
+  'bodyType',
+  'varsPre',
+  'varsPost',
+  'isAsync',
+  'id',
+  'interfaceId',
+];
+
+const sanitizeInterfaceData = (data: SosotestInterfaceData): SosotestInterfaceData => {
+  const picked = {} as SosotestInterfaceData;
+  ALLOWED_INTERFACE_FIELDS.forEach((field) => {
+    if (field in data) {
+      (picked as Record<string, unknown>)[field] = data[field];
+    }
+  });
+  return picked;
+};
+
+export const applyRequestOntoInterfaceData = (
+  prevData: SosotestInterfaceData,
+  request: ApiRequestDefinition
+): SosotestInterfaceData => {
+  const nextData: SosotestInterfaceData = {
+    ...prevData,
+    method: request.method,
+    url: request.url,
+    params: enabledPairsToQueryString(request.params),
+    header: JSON.stringify(enabledPairsToRecord(request.headers)),
+    bodyContent: request.body,
+    varsPre: request.preScript ?? '',
+    varsPost: request.postScript ?? '',
+  };
+  return sanitizeInterfaceData(nextData);
+};
 
 export const mergeRequests = (
   existing: ApiRequestDefinition[],

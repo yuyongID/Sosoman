@@ -17,9 +17,15 @@ const methodAccent: Record<HttpMethod, string> = {
 interface RequestEditorProps {
   request: ApiRequestDefinition;
   isRunning: boolean;
+  isSaving: boolean;
+  isDirty: boolean;
+  isHydrating: boolean;
+  hydrationError?: string;
+  saveError?: string;
   onChange: (nextRequest: ApiRequestDefinition) => void;
   onRun: () => void;
   onSave: () => void;
+  onRetryHydration?: () => void;
 }
 
 const sectionLabels: Record<SectionKey, string> = {
@@ -33,9 +39,15 @@ const sectionLabels: Record<SectionKey, string> = {
 export const RequestEditor: React.FC<RequestEditorProps> = ({
   request,
   isRunning,
+  isSaving,
+  isDirty,
+  isHydrating,
+  hydrationError,
+  saveError,
   onChange,
   onRun,
   onSave,
+  onRetryHydration,
 }) => {
   const [activeSection, setActiveSection] = React.useState<SectionKey>('params');
   const [methodMenuOpen, setMethodMenuOpen] = React.useState(false);
@@ -58,6 +70,12 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
       window.removeEventListener('mousedown', handleClickOutside);
     };
   }, [methodMenuOpen]);
+
+  React.useEffect(() => {
+    if (isHydrating && methodMenuOpen) {
+      setMethodMenuOpen(false);
+    }
+  }, [isHydrating, methodMenuOpen]);
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...request, url: event.target.value });
@@ -164,6 +182,47 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
     }
   };
 
+  if (hydrationError) {
+    return (
+      <section
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#2a2d33',
+          borderRadius: '10px',
+          height: '100%',
+        }}
+      >
+        <div style={{ textAlign: 'center', color: '#f87171', maxWidth: '420px', padding: '12px' }}>
+          <p style={{ fontSize: '1rem', fontWeight: 600 }}>API 详情加载失败</p>
+          <p style={{ color: '#cdd0d5', fontSize: '0.9rem', marginTop: '6px' }}>{hydrationError}</p>
+          {onRetryHydration && (
+            <button
+              type="button"
+              onClick={onRetryHydration}
+              style={{
+                marginTop: '16px',
+                padding: '8px 18px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: '#2190FF',
+                color: '#ffffff',
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              重新加载
+            </button>
+          )}
+        </div>
+      </section>
+    );
+  }
+
+  const sendDisabled = isHydrating || isRunning;
+  const saveDisabled = isHydrating || isSaving || !isDirty;
+
   return (
     <section
       style={{
@@ -176,13 +235,19 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
         boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
         color: '#f3f4f6',
         height: '100%',
+        position: 'relative',
       }}
     >
       <header style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
         <div ref={methodMenuRef} style={{ position: 'relative' }}>
           <button
             type="button"
-            onClick={() => setMethodMenuOpen((prev) => !prev)}
+            onClick={() => {
+              if (!isHydrating) {
+                setMethodMenuOpen((prev) => !prev);
+              }
+            }}
+            disabled={isHydrating}
             style={{
               padding: '8px 12px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -190,7 +255,8 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
               fontWeight: 600,
               backgroundColor: '#1f1f24',
               color: methodAccent[request.method],
-              cursor: 'pointer',
+              cursor: isHydrating ? 'not-allowed' : 'pointer',
+              opacity: isHydrating ? 0.6 : 1,
               minWidth: '90px',
               display: 'flex',
               alignItems: 'center',
@@ -244,6 +310,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
           value={request.url}
           onChange={handleUrlChange}
           placeholder="https://api.sosotest.dev/path"
+          disabled={isHydrating}
           style={{
             flex: 1,
             padding: '10px 12px',
@@ -251,19 +318,20 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
             borderRadius: '8px',
             backgroundColor: '#1f1f24',
             color: '#f3f4f6',
+            opacity: isHydrating ? 0.5 : 1,
           }}
         />
         <button
           type="button"
           onClick={onRun}
-          disabled={isRunning}
+          disabled={sendDisabled}
           style={{
             padding: '10px 16px',
             borderRadius: '8px',
             border: 'none',
-            backgroundColor: isRunning ? 'rgba(33, 144, 255, 0.4)' : '#2190FF',
+            backgroundColor: sendDisabled ? 'rgba(33, 144, 255, 0.4)' : '#2190FF',
             color: '#ffffff',
-            cursor: isRunning ? 'not-allowed' : 'pointer',
+            cursor: sendDisabled ? 'not-allowed' : 'pointer',
             fontWeight: 600,
           }}
         >
@@ -272,18 +340,23 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
         <button
           type="button"
           onClick={onSave}
+          disabled={saveDisabled}
           style={{
             padding: '10px 16px',
             borderRadius: '8px',
             border: '1px solid rgba(255, 255, 255, 0.12)',
-            background: 'transparent',
+            background: saveDisabled ? 'rgba(255,255,255,0.05)' : 'transparent',
             color: '#f3f4f6',
-            cursor: 'pointer',
+            cursor: saveDisabled ? 'not-allowed' : 'pointer',
+            opacity: saveDisabled ? 0.6 : 1,
           }}
         >
-          Save
+          {isSaving ? 'Saving…' : 'Save'}
         </button>
       </header>
+      {saveError && (
+        <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '-4px' }}>{saveError}</p>
+      )}
 
       <div>
         <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
@@ -308,6 +381,25 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
         </div>
         <div style={{ paddingTop: '16px' }}>{renderSection()}</div>
       </div>
+      {isHydrating && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            borderRadius: '10px',
+            backgroundColor: 'rgba(15, 17, 21, 0.9)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            color: '#cdd0d5',
+            fontWeight: 600,
+          }}
+        >
+          <span>正在同步 API 详情…</span>
+        </div>
+      )}
     </section>
   );
 };

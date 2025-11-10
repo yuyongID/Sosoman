@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ApiCollection, ApiRequestDefinition, ApiResponseSnapshot } from '@shared/models/apiCollection';
 import { executeApiRequest } from '@api/apiCollections';
+import { fetchSosotestInterfaceDetail, saveSosotestInterface } from '@api/sosotest/interfaces';
 import { usePersistentNumber } from '@renderer/hooks/usePersistentNumber';
 import { CollectionsSidebar } from './components/CollectionsSidebar';
 import { RequestTabs } from './components/RequestTabs';
@@ -8,6 +9,7 @@ import { RequestEditor } from './components/RequestEditor';
 import { ResponsePanel } from './components/ResponsePanel';
 import { useSosotestInterfaces } from './hooks/useSosotestInterfaces';
 import type { ConnectionState } from './types';
+import { adaptInterfaceDataToRequest, applyRequestOntoInterfaceData } from './utils/collectionTransforms';
 import {
   RequestTabState,
   buildTabId,
@@ -46,6 +48,14 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     'apiCollections.responseHeight',
     280
   );
+  const isMountedRef = React.useRef(true);
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
   const ensureDefaultTab = React.useCallback(
     (collection: ApiCollection) => {
       if (defaultTabPrimedRef.current) {
@@ -87,6 +97,78 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     [tabs, activeTabId]
   );
 
+  const hydrateTabDetails = React.useCallback(
+    async (tabId: string, requestId: string) => {
+      setTabs((prevTabs) =>
+        prevTabs.map((tab) =>
+          tab.id === tabId
+            ? {
+                ...tab,
+                hydrationState: 'loading',
+                hydrationError: undefined,
+              }
+            : tab
+        )
+      );
+      try {
+        const detail = await fetchSosotestInterfaceDetail(requestId);
+        if (!isMountedRef.current) {
+          return;
+        }
+        const nextRequest = adaptInterfaceDataToRequest(detail);
+        const nextSignature = serializeRequest(nextRequest);
+        setTabs((prevTabs) =>
+          prevTabs.map((tab) =>
+            tab.id === tabId
+              ? {
+                  ...tab,
+                  request: cloneRequest(nextRequest),
+                  draft: cloneRequest(nextRequest),
+                  baselineSignature: nextSignature,
+                  interfaceData: detail,
+                  hydrationState: 'ready',
+                  hydrationError: undefined,
+                  isDirty: false,
+                  saveError: undefined,
+                }
+              : tab
+          )
+        );
+      } catch (error) {
+        if (!isMountedRef.current) {
+          return;
+        }
+        setTabs((prevTabs) =>
+          prevTabs.map((tab) =>
+            tab.id === tabId
+              ? {
+                  ...tab,
+                  hydrationState: 'error',
+                  hydrationError: (error as Error).message ?? '加载 API 详情失败',
+                }
+              : tab
+          )
+        );
+      }
+    },
+    [setTabs]
+  );
+
+  React.useEffect(() => {
+    tabs.forEach((tab) => {
+      if (tab.hydrationState === 'idle') {
+        hydrateTabDetails(tab.id, tab.requestId);
+      }
+    });
+  }, [tabs, hydrateTabDetails]);
+
+  const handleRetryHydration = React.useCallback(
+    (tabId: string, requestId: string) => {
+      hydrateTabDetails(tabId, requestId);
+    },
+    [hydrateTabDetails]
+  );
+
   const handleSelectRequest = React.useCallback(
     (collectionId: string, requestId: string) => {
       const collection = collections.find((item) => item.id === collectionId);
@@ -112,6 +194,13 @@ export const ApiCollectionsWorkbench = React.forwardRef<
 
   const handleCloseTab = React.useCallback(
     (tabId: string) => {
+      const targetTab = tabs.find((tab) => tab.id === tabId);
+      if (targetTab?.isDirty) {
+        const confirmed = window.confirm('当前标签存在未保存的修改，确定要关闭吗？');
+        if (!confirmed) {
+          return;
+        }
+      }
       setTabs((prevTabs) => {
         const filtered = prevTabs.filter((tab) => tab.id !== tabId);
         if (prevTabs.length !== filtered.length) {
@@ -123,17 +212,19 @@ export const ApiCollectionsWorkbench = React.forwardRef<
         return filtered;
       });
     },
-    [activeTabId]
+    [tabs, activeTabId]
   );
 
   const handleDraftChange = React.useCallback((tabId: string, nextDraft: ApiRequestDefinition) => {
+    const nextSignature = serializeRequest(nextDraft);
     setTabs((prevTabs) =>
       prevTabs.map((tab) =>
         tab.id === tabId
           ? {
               ...tab,
               draft: nextDraft,
-              isDirty: tab.baselineSignature !== serializeRequest(nextDraft),
+              isDirty: tab.baselineSignature !== nextSignature,
+              saveError: undefined,
             }
           : tab
       )
@@ -152,6 +243,12 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     const tab = tabs.find((item) => item.id === activeTabId);
     if (!tab) {
       console.warn('[apiCollections] Active tab not found', { activeTabId });
+      return;
+    }
+    if (tab.hydrationState !== 'ready') {
+      console.warn('[apiCollections] Request not yet hydrated; cancel run', {
+        requestId: tab.requestId,
+      });
       return;
     }
     console.info('[apiCollections] Executing request', { requestId: tab.requestId });
@@ -220,47 +317,93 @@ export const ApiCollectionsWorkbench = React.forwardRef<
   /**
    * Persists the in-flight draft back into the mock data store to mimic a save.
    */
-  const handleSaveActiveRequest = React.useCallback(() => {
+  const handleSaveActiveRequest = React.useCallback(async () => {
     if (!activeTabId) {
       console.warn('[apiCollections] No active tab selected for save');
       return;
     }
+    const targetTab = tabs.find((item) => item.id === activeTabId);
+    if (!targetTab) {
+      console.warn('[apiCollections] Active tab missing during save', { activeTabId });
+      return;
+    }
+    if (!targetTab.interfaceData) {
+      console.warn('[apiCollections] Interface data not hydrated yet', { requestId: targetTab.requestId });
+      return;
+    }
+    const draftSnapshot = cloneRequest(targetTab.draft);
+    const nextSignature = serializeRequest(draftSnapshot);
+    const nextInterfaceData = applyRequestOntoInterfaceData(targetTab.interfaceData, draftSnapshot);
 
-    setTabs((prevTabs) => {
-      const targetTab = prevTabs.find((tab) => tab.id === activeTabId);
-      if (!targetTab) {
-        console.warn('[apiCollections] Active tab missing during save', { activeTabId });
-        return prevTabs;
+    setTabs((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.id === targetTab.id
+          ? {
+              ...tab,
+              isSaving: true,
+              saveError: undefined,
+            }
+          : tab
+      )
+    );
+
+    try {
+      await saveSosotestInterface({
+        id: nextInterfaceData.id ?? targetTab.requestId,
+        interfaceData: nextInterfaceData,
+      });
+      if (!isMountedRef.current) {
+        return;
       }
-      const nextSignature = serializeRequest(targetTab.draft);
-      const savedDraft = cloneRequest(targetTab.draft);
+      console.info('[apiCollections] Persisted request via sosotest API', {
+        requestId: targetTab.requestId,
+      });
+      setTabs((prevTabs) =>
+        prevTabs.map((tab) =>
+          tab.id === targetTab.id
+            ? {
+                ...tab,
+                request: cloneRequest(draftSnapshot),
+                draft: cloneRequest(draftSnapshot),
+                baselineSignature: nextSignature,
+                isDirty: false,
+                isSaving: false,
+                interfaceData: nextInterfaceData,
+                saveError: undefined,
+              }
+            : tab
+        )
+      );
       setCollections((prevCollections) =>
         prevCollections.map((collection) =>
           collection.id === targetTab.collectionId
             ? {
                 ...collection,
                 requests: collection.requests.map((request) =>
-                  request.id === targetTab.requestId ? cloneRequest(savedDraft) : request
+                  request.id === targetTab.requestId ? cloneRequest(draftSnapshot) : request
                 ),
               }
             : collection
         )
       );
-      console.info('[apiCollections] Saved request draft', { requestId: targetTab.requestId });
-
-      return prevTabs.map((tab) =>
-        tab.id === targetTab.id
-          ? {
-              ...tab,
-              request: savedDraft,
-              draft: cloneRequest(savedDraft),
-              baselineSignature: nextSignature,
-              isDirty: false,
-            }
-          : tab
+    } catch (error) {
+      if (!isMountedRef.current) {
+        return;
+      }
+      console.error('[apiCollections] Failed to save sosotest request', error);
+      setTabs((prevTabs) =>
+        prevTabs.map((tab) =>
+          tab.id === targetTab.id
+            ? {
+                ...tab,
+                isSaving: false,
+                saveError: (error as Error).message ?? '保存失败，请稍后重试',
+              }
+            : tab
+        )
       );
-    });
-  }, [activeTabId]);
+    }
+  }, [activeTabId, tabs, setCollections]);
 
   React.useImperativeHandle(
     ref,
@@ -388,9 +531,15 @@ export const ApiCollectionsWorkbench = React.forwardRef<
                 <RequestEditor
                   request={activeTab.draft}
                   isRunning={activeTab.isRunning}
+                  isSaving={activeTab.isSaving}
+                  isDirty={activeTab.isDirty}
+                  isHydrating={activeTab.hydrationState === 'idle' || activeTab.hydrationState === 'loading'}
+                  hydrationError={activeTab.hydrationState === 'error' ? activeTab.hydrationError : undefined}
+                  saveError={activeTab.saveError}
                   onChange={(nextRequest) => handleDraftChange(activeTab.id, nextRequest)}
                   onRun={handleRunActiveRequest}
                   onSave={handleSaveActiveRequest}
+                  onRetryHydration={() => handleRetryHydration(activeTab.id, activeTab.requestId)}
                 />
               </div>
               <div

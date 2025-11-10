@@ -3,6 +3,7 @@ import type {
   ApiRequestDefinition,
   ApiResponseSnapshot,
 } from '@shared/models/apiCollection';
+import type { SosotestInterfaceData } from '@api/sosotest/interfaces';
 
 export interface RequestTabState {
   id: string;
@@ -17,6 +18,11 @@ export interface RequestTabState {
   isDirty: boolean;
   isRunning: boolean;
   lastRunAt?: string;
+  interfaceData?: SosotestInterfaceData;
+  hydrationState: 'idle' | 'loading' | 'ready' | 'error';
+  hydrationError?: string;
+  isSaving: boolean;
+  saveError?: string;
 }
 
 /**
@@ -47,5 +53,10 @@ export const createTabState = (collection: ApiCollection, request: ApiRequestDef
     response: undefined,
     isDirty: false,
     isRunning: false,
+    interfaceData: undefined,
+    hydrationState: 'idle',
+    hydrationError: undefined,
+    isSaving: false,
+    saveError: undefined,
   };
 };

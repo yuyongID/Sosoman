@@ -98,7 +98,17 @@ export const RequestTabs: React.FC<RequestTabsProps> = ({
               >
                 {tab.title}
               </span>
-              {tab.isDirty && <span style={{ color: '#f87171' }}>*</span>}
+              {tab.isDirty && (
+                <span
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: '#f87171',
+                    display: 'inline-block',
+                  }}
+                />
+              )}
               {tab.isRunning && <span style={{ color: '#2190FF', fontSize: '0.8rem' }}>sending…</span>}
               <button
                 type="button"
