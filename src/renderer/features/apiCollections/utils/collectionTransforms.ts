@@ -108,8 +108,7 @@ const enabledPairsToQueryString = (pairs: KeyValuePair[]): string => {
     .forEach((pair) => {
       searchParams.append(pair.key, pair.value);
     });
-  const serialized = searchParams.toString();
-  return serialized;
+  return searchParams.toString();
 };
 
 const ALLOWED_INTERFACE_FIELDS: (keyof SosotestInterfaceData)[] = [
@@ -145,22 +144,24 @@ const sanitizeInterfaceData = (data: SosotestInterfaceData): SosotestInterfaceDa
   return picked;
 };
 
+const buildUpdatedInterfaceData = (
+  prevData: SosotestInterfaceData,
+  request: ApiRequestDefinition
+): SosotestInterfaceData => ({
+  ...prevData,
+  method: request.method,
+  url: request.url,
+  params: enabledPairsToQueryString(request.params),
+  header: JSON.stringify(enabledPairsToRecord(request.headers)),
+  bodyContent: request.body,
+  varsPre: request.preScript ?? '',
+  varsPost: request.postScript ?? '',
+});
+
 export const applyRequestOntoInterfaceData = (
   prevData: SosotestInterfaceData,
   request: ApiRequestDefinition
-): SosotestInterfaceData => {
-  const nextData: SosotestInterfaceData = {
-    ...prevData,
-    method: request.method,
-    url: request.url,
-    params: enabledPairsToQueryString(request.params),
-    header: JSON.stringify(enabledPairsToRecord(request.headers)),
-    bodyContent: request.body,
-    varsPre: request.preScript ?? '',
-    varsPost: request.postScript ?? '',
-  };
-  return sanitizeInterfaceData(nextData);
-};
+): SosotestInterfaceData => sanitizeInterfaceData(buildUpdatedInterfaceData(prevData, request));
 
 export const mergeRequests = (
   existing: ApiRequestDefinition[],
