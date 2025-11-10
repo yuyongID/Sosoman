@@ -3,8 +3,11 @@ import type {
   ApiCollection,
   ApiRequestDefinition,
   ApiResponseSnapshot,
+  KeyValuePair,
+  HttpMethod,
 } from '@shared/models/apiCollection';
 import { executeApiRequest, listApiCollections } from '@api/apiCollections';
+import { fetchSosotestInterfaceList, type SosotestInterfaceItem } from '@api/sosotest/interfaces';
 import { CollectionsSidebar } from './components/CollectionsSidebar';
 import { RequestTabs } from './components/RequestTabs';
 import { RequestEditor } from './components/RequestEditor';
@@ -96,6 +99,105 @@ const usePersistentNumber = (key: string, defaultValue: number): [number, (value
 
 const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
 
+const DEFAULT_COLLECTION_ID = 'sosotest';
+const PAGE_SIZE = 20;
+
+const createBaseCollection = (): ApiCollection => ({
+  id: DEFAULT_COLLECTION_ID,
+  name: 'Sosotest APIs',
+  description: 'Interfaces synchronized from sosotest backend',
+  tags: ['sosotest'],
+  requests: [],
+});
+
+const allowedMethods: HttpMethod[] = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+
+const normalizeHttpMethod = (method?: string): HttpMethod => {
+  const upper = (method ?? 'GET').toUpperCase();
+  return (allowedMethods.includes(upper as HttpMethod) ? upper : 'GET') as HttpMethod;
+};
+
+const safeJsonParse = <T,>(raw: string | null | undefined): T | null => {
+  if (!raw) {
+    return null;
+  }
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    console.warn('[apiCollections] Failed to parse JSON field from sosotest payload');
+    return null;
+  }
+};
+
+const toDisplayValue = (value: unknown): string =>
+  typeof value === 'string' ? value : JSON.stringify(value);
+
+const recordToPairs = (record: Record<string, unknown>, prefix: string): KeyValuePair[] =>
+  Object.entries(record).map(([key, value], index) => ({
+    id: `${prefix}-${index}-${key}`,
+    key,
+    value: toDisplayValue(value),
+    enabled: true,
+  }));
+
+const parseHeadersFromSosotest = (raw: string | null | undefined): KeyValuePair[] => {
+  const parsed = safeJsonParse<Record<string, unknown>>(raw);
+  if (!parsed) {
+    return [];
+  }
+  return recordToPairs(parsed, 'header');
+};
+
+const parseParamsFromSosotest = (raw: string | null | undefined): KeyValuePair[] => {
+  if (!raw) {
+    return [];
+  }
+  const params = new URLSearchParams(raw);
+  const pairs: KeyValuePair[] = [];
+  params.forEach((value, key) => {
+    pairs.push({
+      id: `param-${pairs.length}-${key}`,
+      key,
+      value,
+      enabled: true,
+    });
+  });
+  return pairs;
+};
+
+const mergeRequests = (
+  existing: ApiRequestDefinition[],
+  next: ApiRequestDefinition[]
+): ApiRequestDefinition[] => {
+  if (existing.length === 0) {
+    return next;
+  }
+  const merged = [...existing];
+  next.forEach((request) => {
+    const index = merged.findIndex((item) => item.id === request.id);
+    if (index >= 0) {
+      merged[index] = request;
+    } else {
+      merged.push(request);
+    }
+  });
+  return merged;
+};
+
+const adaptInterfaceItemToRequest = (item: SosotestInterfaceItem): ApiRequestDefinition => ({
+  id: String(item.id ?? item.interfaceId),
+  name: item.title ?? 'Untitled request',
+  method: normalizeHttpMethod(item.method),
+  url: item.url || '/',
+  description: item.casedesc ?? '',
+  params: parseParamsFromSosotest(item.params),
+  headers: parseHeadersFromSosotest(item.header),
+  body: item.bodyContent ?? '',
+  tests: [],
+  preScript: item.varsPre ?? '',
+  postScript: item.varsPost ?? '',
+});
+
 export const ApiCollectionsWorkbench = React.forwardRef<
   ApiCollectionsWorkbenchHandle,
   ApiCollectionsWorkbenchProps
@@ -105,59 +207,189 @@ export const ApiCollectionsWorkbench = React.forwardRef<
   const [collectionSearch, setCollectionSearch] = React.useState('');
   const [tabs, setTabs] = React.useState<RequestTabState[]>([]);
   const [activeTabId, setActiveTabId] = React.useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = React.useState<boolean>(false);
+  const [usingMockFallback, setUsingMockFallback] = React.useState<boolean>(false);
+  const [paginationState, setPaginationState] = React.useState<{
+    nextPage: number;
+    loadedPages: number;
+    hasMore: boolean;
+  }>({
+    nextPage: 1,
+    loadedPages: 0,
+    hasMore: true,
+  });
+  const defaultTabPrimedRef = React.useRef(false);
+  const isMountedRef = React.useRef(false);
   const [sidebarWidth, setSidebarWidth] = usePersistentNumber('apiCollections.sidebarWidth', 280);
   const [responsePanelHeight, setResponsePanelHeight] = usePersistentNumber(
     'apiCollections.responseHeight',
     280
   );
 
+  React.useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const activeTab = React.useMemo(
     () => tabs.find((tab) => tab.id === activeTabId) ?? null,
     [tabs, activeTabId]
   );
 
-  React.useEffect(() => {
-    let isMounted = true;
-    setLoadingCollections(true);
-    onConnectionStateChange('degraded');
+  const ensureDefaultTab = React.useCallback(
+    (collection: ApiCollection) => {
+      if (defaultTabPrimedRef.current) {
+        return;
+      }
+      const firstRequest = collection.requests[0];
+      if (!firstRequest) {
+        return;
+      }
+      const defaultTabId = buildTabId(collection.id, firstRequest.id);
+      setTabs((prevTabs) => {
+        if (prevTabs.some((tab) => tab.id === defaultTabId)) {
+          return prevTabs;
+        }
+        console.info('[apiCollections] Priming default request tab', { requestId: firstRequest.id });
+        return [...prevTabs, createTabState(collection, firstRequest)];
+      });
+      setActiveTabId((prev) => prev ?? defaultTabId);
+      defaultTabPrimedRef.current = true;
+    },
+    [setActiveTabId, setTabs]
+  );
 
-    listApiCollections()
-      .then((data) => {
-        if (!isMounted) {
+  const updateSosotestCollection = React.useCallback(
+    (nextRequests: ApiRequestDefinition[], mode: 'replace' | 'append') => {
+      if (mode === 'append' && nextRequests.length === 0) {
+        return;
+      }
+      setCollections((prevCollections) => {
+        const existingIndex = prevCollections.findIndex((item) => item.id === DEFAULT_COLLECTION_ID);
+        const baseCollection =
+          existingIndex >= 0 ? prevCollections[existingIndex] : createBaseCollection();
+    const mergedRequests =
+      mode === 'append'
+        ? mergeRequests(baseCollection.requests, nextRequests)
+        : nextRequests;
+    const updatedCollection: ApiCollection = {
+      ...baseCollection,
+      requests: mergedRequests,
+    };
+    console.info('[apiCollections] Sosotest collection updated', {
+      mode,
+      totalRequests: mergedRequests.length,
+    });
+    ensureDefaultTab(updatedCollection);
+        if (existingIndex >= 0) {
+          const clone = [...prevCollections];
+          clone[existingIndex] = updatedCollection;
+          return clone;
+        }
+        return [updatedCollection, ...prevCollections];
+      });
+    },
+    [ensureDefaultTab]
+  );
+  React.useEffect(() => {
+    let canceled = false;
+    const loadInitialCollections = async () => {
+      setLoadingCollections(true);
+      onConnectionStateChange('degraded');
+      try {
+        const { items } = await fetchSosotestInterfaceList({ page: 1, limit: PAGE_SIZE });
+        if (canceled || !isMountedRef.current) {
           return;
         }
-        console.info('[apiCollections] Loaded collections', data.length);
-        setCollections(data);
+        console.info('[apiCollections] Loaded sosotest interfaces', items.length);
+        updateSosotestCollection(items.map(adaptInterfaceItemToRequest), 'replace');
+        setPaginationState({
+          nextPage: 2,
+          loadedPages: 1,
+          hasMore: items.length === PAGE_SIZE,
+        });
+        setUsingMockFallback(false);
         setLoadingCollections(false);
         onConnectionStateChange('online');
-
-        const firstCollection = data[0];
-        const firstRequest = firstCollection?.requests[0];
-        if (firstCollection && firstRequest) {
-          const defaultTabId = buildTabId(firstCollection.id, firstRequest.id);
-          setTabs((prevTabs) => {
-            if (prevTabs.some((tab) => tab.id === defaultTabId)) {
-              return prevTabs;
-            }
-            console.info('[apiCollections] Priming default request tab', { requestId: firstRequest.id });
-            return [...prevTabs, createTabState(firstCollection, firstRequest)];
-          });
-          setActiveTabId((prev) => prev ?? defaultTabId);
-        }
-      })
-      .catch((error) => {
-        if (!isMounted) {
+      } catch (error) {
+        if (canceled || !isMountedRef.current) {
           return;
         }
-        console.error('[apiCollections] Failed to load collections', error);
+        console.error('[apiCollections] Failed to load sosotest interfaces', error);
         setLoadingCollections(false);
-        onConnectionStateChange('offline');
-      });
+        setUsingMockFallback(true);
+        setPaginationState({
+          nextPage: 1,
+          loadedPages: 0,
+          hasMore: false,
+        });
+        try {
+          const fallbackCollections = await listApiCollections();
+          if (canceled || !isMountedRef.current) {
+            return;
+          }
+          console.info('[apiCollections] Falling back to local mock collections');
+          setCollections(fallbackCollections);
+          const fallbackPrimary = fallbackCollections[0];
+          if (fallbackPrimary) {
+            ensureDefaultTab(fallbackPrimary);
+          }
+          onConnectionStateChange('online');
+        } catch (fallbackError) {
+          console.error('[apiCollections] Failed to load fallback collections', fallbackError);
+          onConnectionStateChange('offline');
+        }
+      }
+    };
+
+    loadInitialCollections();
 
     return () => {
-      isMounted = false;
+      canceled = true;
     };
-  }, [onConnectionStateChange]);
+  }, [onConnectionStateChange, updateSosotestCollection, ensureDefaultTab]);
+
+  const handleLoadMoreInterfaces = React.useCallback(async () => {
+    if (usingMockFallback || loadingMore || loadingCollections || !paginationState.hasMore) {
+      return;
+    }
+    const targetPage = paginationState.nextPage;
+    setLoadingMore(true);
+    onConnectionStateChange('degraded');
+    try {
+      const { items } = await fetchSosotestInterfaceList({ page: targetPage, limit: PAGE_SIZE });
+      if (!isMountedRef.current) {
+        return;
+      }
+      updateSosotestCollection(items.map(adaptInterfaceItemToRequest), 'append');
+      setPaginationState((prev) => ({
+        nextPage: prev.nextPage + 1,
+        loadedPages: prev.loadedPages + 1,
+        hasMore: items.length === PAGE_SIZE,
+      }));
+      onConnectionStateChange('online');
+    } catch (error) {
+      if (!isMountedRef.current) {
+        return;
+      }
+      console.error('[apiCollections] Failed to load additional sosotest interfaces', error);
+      onConnectionStateChange('degraded');
+    } finally {
+      if (isMountedRef.current) {
+        setLoadingMore(false);
+      }
+    }
+  }, [
+    usingMockFallback,
+    loadingMore,
+    loadingCollections,
+    paginationState.hasMore,
+    paginationState.nextPage,
+    onConnectionStateChange,
+    updateSosotestCollection,
+  ]);
 
   const handleSelectRequest = React.useCallback(
     (collectionId: string, requestId: string) => {
@@ -397,6 +629,15 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           onSearchTermChange={setCollectionSearch}
           loading={loadingCollections}
           activeRequestId={activeTab?.requestId ?? null}
+          pagination={
+            usingMockFallback
+              ? undefined
+              : {
+                  hasMore: paginationState.hasMore,
+                  isLoading: loadingCollections || loadingMore,
+                  onLoadMore: handleLoadMoreInterfaces,
+                }
+          }
         />
       </div>
       <div

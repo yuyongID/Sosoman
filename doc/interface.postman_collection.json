@@ -1,0 +1,1154 @@
+{
+	"info": {
+		"_postman_id": "eef77aec-5829-4d8d-84aa-d2c3ffc59114",
+		"name": "interface",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13134185",
+		"_collection_link": "https://red-astronaut-242441.postman.co/workspace/sosotest~70a4b281-f1ee-4016-bb82-45c152d91e39/collection/13134185-eef77aec-5829-4d8d-84aa-d2c3ffc59114?action=share&source=collection_link&creator=13134185"
+	},
+	"item": [
+		{
+			"name": "API 列表",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "636960ceeb534069301a80092124fd5c",
+						"type": "text"
+					},
+					{
+						"key": "auth-email",
+						"value": "xieying003",
+						"type": "text"
+					},
+					{
+						"key": "user-email",
+						"value": "dengyu032",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"page\": 1,\n    \"limit\": 2,\n    \"filter\": [\n        {\n            \"key\": \"addBy\",\n            \"value\": {\n                \"id\": 1000000026706279,\n                \"name\": \"邓裕\",\n                \"account\": \"dengyu032\",\n                \"user_code\": \"26706279\",\n                \"org_name\": \"销售平台质量组\",\n                \"position_name\": \"研发工程师\",\n                \"second_job_seq_name\": \"测试\",\n                \"three_job_seq_name\": \"测试开发\"\n            },\n            \"type\": \"eq\",\n            \"rule\": \"and\"\n        }\n    ],\n    \"plan_id\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://at.ke.com/v2/http/interface/list",
+					"protocol": "http",
+					"host": [
+						"at",
+						"ke",
+						"com"
+					],
+					"path": [
+						"v2",
+						"http",
+						"interface",
+						"list"
+					]
+				},
+				"description": "Generated from cURL: curl 'https://at.api.ke.com/v2/http/interface/list' \\\n  -H 'AUTH-EMAIL: xieying003' \\\n  -H 'Accept: application/json, text/plain, */*' \\\n  -H 'Accept-Language: zh-CN,zh;q=0.9' \\\n  -H 'Connection: keep-alive' \\\n  -H 'Content-Type: application/json' \\\n  -b 'mt_home_token=2.0111a9beb284e545ba0001cb5451de9bd9def3bf11; bella_workflow_sessionId=41606354-8f57-4793-93a6-0174b3119c41; lianjia_b_token=2.001424b82881684320058d069a623647cc; XH_HistroyRole={\"1000000026706279\":\"superAdmin\"}; crosSdkDT2019DeviceId=5fbcb3-clcyps-smit5hizlsxhzpd-bxqhrthil; intelligentservice_test_token=2.0111a9beb284e730e00001cb542e5983b5d19397cb; ketest-env=production; beikeBaseData=%7B%22parentSceneId%22%3A%22-1%22%7D; bella_openapi_sessionId=db98267a-9e69-42ee-99dd-52f498f6f53a; loginRedirect=https://mp-wx.ke.com/build/makepre; casgwusercred=FHsbS8nf7BFe-lsrPDVBor1ztB7ZFqfFZkeE2OZpBw_jmxOu34P1j19Z2qBS_JQ7Vaq8FcQ9IVB2Ei0oo6yCU276k46W65oiB7Kvf58eHozj10nzRThKzYZFeg011ST_VtcOaiHEnM7xwJDVxcku9PHZQSq7kHsKuTREM2aRbAQ; crosgwusercred=IfGDG-sYG8O-pkcXnuZOenPex9kezRd1kmpiRZTTZsB-zLjV-w81R8rOOw7COQD66-NGw1eY56bLFO-i2VovCQ9a65f80f5c40d7f9df1a0dba4f329709; timezone=Asia%2FShanghai; MOMA_LANGUAGE=zh; _ga_P01KVVLGDF=GS2.1.s1760581853$o1$g1$t1760581983$j18$l0$h0; _ucid_=1000000026706279; _account_=dengyu032; _usercode_=26706279; _userFullEmail_=dengyu032%40ke.com; _displayName_=%E9%82%93%E8%A3%95%28dengyu032%29; intelligentservice_token=2.0111a9beb284e545ba0001cb54904d34f6a9daabee; prd-assistant-token-prod=2.0111a9beb284e545ba0001cb54c970e3e681d872cf; luoshu_t_token=2.00108b8ca685c777ae0122321424226fff; _ga_PM7PPP4S56=GS2.1.s1761899484$o3$g0$t1761899484$j60$l0$h0; lianjia_token_sinan=2.0013e5a09e86a48127024c1e2c50e76a3c; _ga=GA1.2.1665847087.1757664429; ketest-session=wqxlgsxd0t1de8exx9hfjbz8j5u9z7ab; sessionid=1a4q8osv4mkjyneio9hej7lxwejscl15; lianjia_uuid=efe60825-ed76-4604-8449-6ad84ef95889; lianjia_token=2.0111a9beb284e545ba0001cb54a4d22c163c67dfd5; _ga_F0DQ6TTSVW=GS2.2.s1762417146$o28$g0$t1762417146$j60$l0$h0; session_id=bb289d43-a5a0-122a-8e34-e404f5c40bf9; ketest-user=eyJsb2dpbl91c2VyIjogIjEwMDAwMDAwMjY3MDYyNzkiLCAiYWNjb3VudCI6ICJkZW5neXUwMzIiLCAiYWNjb3VudFN5c3RlbUlkIjogImVtcGxveWVlIiwgImF2YXRhciI6IG51bGwsICJiaXJ0aGRheSI6ICJudWxsIiwgImJ1c2luZXNzVG9rZW4iOiAiMi4wMTExYTliZWIyODRlNTQ1YmEwMDAxY2I1NGE0ZDIyYzE2M2M2N2RmZDUiLCAiY29ycElkIjogIm51bGwiLCAiZGlzcGxheU5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgImVtYWlsIjogImRlbmd5dTAzMkBrZS5jb20iLCAiZ2VuZGVyIjogIk1BTEUiLCAiaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJtZmFBdXRoTWV0aG9kTGV2ZWwiOiAiMCIsICJwYXNzZWRNZmFSZWFzb24iOiAiaXBXaGl0ZUxpc3QiLCAicGhvbmUiOiAiMTg1MTE1ODg0NzgiLCAicmVhbE5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInNlcnZpY2VJZCI6ICJzZWxmLWxvZ2luLmtzZy5rZS5jb20iLCAic3RhdGUiOiAiTk9STUFMIiwgInRndElkIjogIlRHVC03MjU4NTg1LWExWWpvNXlrQVl0UjBTRlRLd3ZKc2tMTXJ4ajl3U2djcUVBUUp2bTFVNml5VXZpTnRaYmRENC1VLW0zQUdCeU5VMTQta2UuY29tIiwgInVjaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJ1Y25hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInVpZCI6ICIxMDAwMDAwMDI2NzA2Mjc5IiwgInVzZXJfY29kZSI6ICIyNjcwNjI3OSIsICJ1c2VyVGFnIjogIjAiLCAidmVyc2lvbiI6ICIxNTAxIiwgInpoaWRhb191Y2lkIjogIjIxMTAwMDAwMDMwODA5NjkiLCAibmV4dF91cmwiOiAiaHR0cHM6Ly9jYXNlLW1pbmRlci5rZS5jb20vIy9jYXNlRWRpdG9yP2lkPTE3NDM2JmF1dG9fc2F2ZT10cnVlJmNyZWF0b3JfbmFtZT1kZW5neXUwMzIifQ=a2V0ZXN0LXVzZXI==; lianjia_ssid=58660022-b276-4080-a610-d3b8b4bcc499' \\\n  -H 'DNT: 1' \\\n  -H 'EMAIL-PREFIX: dengyu032' \\\n  -H 'Origin: https://ketest-pro.ke.com' \\\n  -H 'Referer: https://ketest-pro.ke.com/' \\\n  -H 'Sec-Fetch-Dest: empty' \\\n  -H 'Sec-Fetch-Mode: cors' \\\n  -H 'Sec-Fetch-Site: same-site' \\\n  -H 'TOKEN: 636960ceeb534069301a80092124fd5c' \\\n  -H 'UCID: 1000000026706279' \\\n  -H 'USER-EMAIL: dengyu032' \\\n  -H 'USERNAME: 6YKT6KOV' \\\n  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36' \\\n  -H 'sec-ch-ua: \"Not_A Brand\";v=\"99\", \"Chromium\";v=\"142\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"macOS\"' \\\n  --data-raw '{\"page\":1,\"limit\":10,\"filter\":[{\"key\":\"addBy\",\"value\":{\"id\":1000000026706279,\"name\":\"邓裕\",\"account\":\"dengyu032\",\"user_code\":\"26706279\",\"org_name\":\"销售平台质量组\",\"position_name\":\"研发工程师\",\"second_job_seq_name\":\"测试\",\"three_job_seq_name\":\"测试开发\"},\"type\":\"eq\",\"rule\":\"and\"}],\"plan_id\":0}'"
+			},
+			"response": [
+				{
+					"name": "API 列表",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"page\": 1,\n    \"limit\": 2,\n    \"filter\": [\n        {\n            \"key\": \"addBy\",\n            \"value\": {\n                \"id\": 1000000026706279,\n                \"name\": \"邓裕\",\n                \"account\": \"dengyu032\",\n                \"user_code\": \"26706279\",\n                \"org_name\": \"销售平台质量组\",\n                \"position_name\": \"研发工程师\",\n                \"second_job_seq_name\": \"测试\",\n                \"three_job_seq_name\": \"测试开发\"\n            },\n            \"type\": \"eq\",\n            \"rule\": \"and\"\n        }\n    ],\n    \"plan_id\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://at.ke.com/v2/http/interface/list",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"http",
+								"interface",
+								"list"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 02:53:39 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.010134220123291016"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762743219.6768951"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 02:53:39 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:23:39 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:23:39 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762743219.666761"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762743219.6667092-8ac34e973db077fbba3adce965f86c55"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 10000,\n    \"message\": \"ok\",\n    \"body\": {\n        \"data\": [\n            {\n                \"addName\": \"邓裕\",\n                \"modName\": \"邓裕\",\n                \"id\": 185146,\n                \"interfaceId\": \"HTTP_INTERFACE_185146\",\n                \"addBy\": \"dengyu032\",\n                \"title\": \"余额首页查询接口\",\n                \"casedesc\": \"余额首页查询接口\",\n                \"teamName\": null,\n                \"applyEnvIsolation\": null,\n                \"url\": \"/pc/wallet/dashboard\",\n                \"uri\": \"nrs-pay-service\",\n                \"privacy_persons\": \"\",\n                \"state\": 1,\n                \"method\": \"GET\",\n                \"useCustomUri\": 0,\n                \"customUri\": \"\",\n                \"allowRunProdEnv\": 0,\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"teamKey\": \"\",\n                \"isAsync\": 0,\n                \"addTime\": \"2024-04-09 11:39:20\",\n                \"modTime\": \"2025-11-07 16:34:20\",\n                \"modBy\": \"dengyu032\",\n                \"createSourceName\": \"平台\",\n                \"createSourceType\": \"auto\",\n                \"header\": \"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\n                \"params\": \"commissionCode=DF23070600001937&source=2\",\n                \"bodyContent\": \"\",\n                \"bodyType\": \"none\",\n                \"createSourceId\": 1011,\n                \"varsPre\": \"\",\n                \"varsPost\": \"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\n                \"createSourceDesc\": \"大禹测试日志单接口\",\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ],\n                \"approvalStatusText\": \"未提审\"\n            },\n            {\n                \"addName\": \"邓裕\",\n                \"modName\": \"邓裕\",\n                \"id\": 193185,\n                \"interfaceId\": \"HTTP_INTERFACE_193185\",\n                \"addBy\": \"dengyu032\",\n                \"title\": \"支行信息模糊查询\",\n                \"casedesc\": \"https://weapons.ke.com/project/13863/interface/api/1686765\",\n                \"teamName\": null,\n                \"applyEnvIsolation\": null,\n                \"url\": \"/api/fund/subBank/fuzzyQuery\",\n                \"uri\": \"nrs-pay-service\",\n                \"privacy_persons\": \"\",\n                \"state\": 1,\n                \"method\": \"GET\",\n                \"useCustomUri\": 0,\n                \"customUri\": \"\",\n                \"allowRunProdEnv\": 0,\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"teamKey\": \"\",\n                \"isAsync\": 0,\n                \"addTime\": \"2024-10-10 18:10:31\",\n                \"modTime\": \"2025-11-06 10:05:17\",\n                \"modBy\": \"dengyu032\",\n                \"createSourceName\": \"平台\",\n                \"createSourceType\": \"auto\",\n                \"header\": \"{\\\"Accept\\\":\\\"application/json, text/plain, */*\\\",\\\"Accept-Encoding\\\":\\\"gzip, deflate, br\\\",\\\"Accept-Language\\\":\\\"zh-CN,zh;q=0.9\\\",\\\"Authorization\\\":\\\"LJ-HMAC-SHA256 accessKeyId=c763ecbdb70e4456b01926645ac9b5fa; nonce=zqNrpSbF2298WB0jgp0UzKN1dqPXIXUh; timestamp=1710484532; signature=CbjkYDWFTFDxOp1vzvVO62AdN3ujTjm5NnUbEor+ZzU=\\\",\\\"Content-Type\\\":\\\"application/json\\\",\\\"Cookie\\\":\\\"lianjia_ssid=0b04b80b-128b-4f49-ba8e-13207909fb0b; lianjia_ssid=0b04b80b-128b-4f49-ba8e-13207909fb0b; lianjia_ssid=0b04b80b-128b-4f49-ba8e-13207909fb0b; JSESSIONID=36CEBC943632D87A16EF475CAE5A5643; crosSdkDT2019DeviceId=-d5ign6-fyq45g-op3z4rqm4to4q75-mzo1xp11o; _ga=GA1.2.805704847.1709179589; _ga_F0DQ6TTSVW=GS1.2.1709179590.1.0.1709179590.60.0.0; loginRedirect=https\\\",\\\"Dnt\\\":\\\"1\\\",\\\"Forwarded\\\":\\\"proto=http;host=utopia-nrs-biz-gateway.nrs-lingshou-reverse-dev.ttb.test.ke.com;for=\\\\\\\"10.26.14.190\\\",\\\"Ketracespidinfra-Role\\\":\\\"[\\\\\\\"nrs-lingshou-reverse-dev\\\\\\\"]\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"null\\\\\\\"]\\\",\\\"Ketracespidredis_num\\\":\\\"[\\\\\\\"83\\\\\\\"]\\\",\\\"Ketracespidredis_time\\\":\\\"[\\\\\\\"11\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"9ae40d5e-b419-4cad-a3ae-a2fbfc5854e2\\\\\\\",\\\\\\\"c2d7c892-c81f-4e39-b55a-8d29a52a124e\\\\\\\",\\\\\\\"9fbd3e96-f49d-443d-bed1-63560d38c04a\\\\\\\",\\\\\\\"72c5267a-958c-457e-b7f9-3c0a093b4115\\\\\\\",\\\\\\\"1383c72c-4318-4d02-a206-5c04a90303d1\\\\\\\",\\\\\\\"8ed361c9-93dd-4983-9164-389bbc58677b\\\\\\\",\\\\\\\"443d4d86-3a3f-40d3-b412-b8d32a694044\\\\\\\",\\\\\\\"718b7cbd-6df9-44ee-aff1-5d565a855882\\\\\\\",\\\\\\\"b2f8e102-eac2-42ce-be3c-b017416869b4\\\\\\\",\\\\\\\"6c51cf2f-ebe9-46fa-ab86-c63bc2113fc1\\\\\\\",\\\\\\\"39ca64bf-e33c-430d-be55-d87f1ba77e07\\\\\\\",\\\\\\\"e29ea6cf-f0d1-4a95-b351-76580fe0d564\\\\\\\"]\\\",\\\"Origin\\\":\\\"https\\\",\\\"Proxyhost\\\":\\\"http\\\",\\\"Referer\\\":\\\"https\\\",\\\"Sec-Ch-Ua\\\":\\\"\\\\\\\"Not(A\\\",\\\"Sec-Ch-Ua-Mobile\\\":\\\"?0\\\",\\\"Sec-Ch-Ua-Platform\\\":\\\"\\\\\\\"macOS\\\\\\\"\\\",\\\"Sec-Fetch-Dest\\\":\\\"empty\\\",\\\"Sec-Fetch-Mode\\\":\\\"cors\\\",\\\"Sec-Fetch-Site\\\":\\\"same-origin\\\",\\\"Sw3\\\":\\\"152905-10.228.175.139-59-1710484532583-738|1|100|100|#10.228.150.97\\\",\\\"User-Agent\\\":\\\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36\\\",\\\"X-Forwarded-For\\\":\\\"10.33.36.141, 10.19.1.140, 10.226.1.49, 10.26.16.134,10.26.14.190\\\",\\\"X-Forwarded-Host\\\":\\\"fcn.ke.com,utopia-nrs-biz-gateway.nrs-lingshou-reverse-dev.ttb.test.ke.com\\\",\\\"X-Forwarded-Path\\\":\\\"/kemisproxy/nrs-pay-service/api/front/fundCategoryQuery\\\",\\\"X-Forwarded-Port\\\":\\\"443,80\\\",\\\"X-Forwarded-Prefix\\\":\\\"/nrs-pay-service\\\",\\\"X-Forwarded-Proto\\\":\\\"http,http\\\",\\\"X-Is-Ssl\\\":\\\"true\\\",\\\"X-Nrs-Access-Token\\\":\\\"\\\",\\\"X-Nrs-App-Id\\\":\\\"fcn, fcn, fcn, fcn\\\",\\\"X-Nrs-Constraints\\\":\\\"org_data_scope=oneself\\\",\\\"X-Nrs-Daike-User-Id\\\":\\\"\\\",\\\"X-Nrs-Device-Id\\\":\\\"\\\",\\\"X-Nrs-User-Id\\\":\\\"\\\",\\\"X-Real-Ip\\\":\\\"10.226.105.159\\\",\\\"X-Real-Port\\\":\\\"61431\\\",\\\"X-Req-Id\\\":\\\"8a1eec84-851b-49ca-825a-62e06eb7c12b\\\",\\\"X-Request-Id\\\":\\\"a62299dae78f7468bf4f0afa07293455\\\",\\\"X-Server-Port\\\":\\\"443\\\",\\\"X-Ssl-Header\\\":\\\"https\\\"}\",\n                \"params\": \"customTimestamp=1728388706440&subBankName=北京郁花园\",\n                \"bodyContent\": \"{\\\"fundType\\\":\\\"\\\",\\\"offSetType\\\":\\\"\\\",\\\"categoryId\\\":\\\"\\\",\\\"version\\\":\\\"2\\\",\\\"categoryQueryType\\\":1}\",\n                \"bodyType\": \"raw\",\n                \"createSourceId\": 1011,\n                \"varsPre\": \"\",\n                \"varsPost\": \"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 10:05:12\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": [\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"中国建设银行\\\",\\n      \\\"subBankName\\\": \\\"中国建设银行股份有限公司北京郁花园支行\\\",\\n      \\\"bankCnaps\\\": \\\"105100019052\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"中国农业银行\\\",\\n      \\\"subBankName\\\": \\\"中国农业银行股份有限公司北京郁花园支行\\\",\\n      \\\"bankCnaps\\\": \\\"103100011129\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"中信银行\\\",\\n      \\\"subBankName\\\": \\\"中信银行北京花园路支行\\\",\\n      \\\"bankCnaps\\\": \\\"302100011392\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"重庆彭水民泰村镇银行\\\",\\n      \\\"subBankName\\\": \\\"重庆彭水民泰村镇银行股份有限公司郁山支行\\\",\\n      \\\"bankCnaps\\\": \\\"320687500046\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"中国农业银行\\\",\\n      \\\"subBankName\\\": \\\"中国农业银行股份有限公司北京武夷花园支行\\\",\\n      \\\"bankCnaps\\\": \\\"103100009138\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"中国建设银行\\\",\\n      \\\"subBankName\\\": \\\"中国建设银行股份有限公司北京曙光花园支行\\\",\\n      \\\"bankCnaps\\\": \\\"105100050760\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"兴业银行\\\",\\n      \\\"subBankName\\\": \\\"兴业银行股份有限公司北京花园路支行\\\",\\n      \\\"bankCnaps\\\": \\\"309100001194\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"上海浦东发展银行\\\",\\n      \\\"subBankName\\\": \\\"上海浦东发展银行北京花园路支行\\\",\\n      \\\"bankCnaps\\\": \\\"310100000237\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"中国建设银行\\\",\\n      \\\"subBankName\\\": \\\"中国建设银行北京花园路支行\\\",\\n      \\\"bankCnaps\\\": \\\"105100005060\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    },\\n    {\\n      \\\"cardNo\\\": null,\\n      \\\"bankName\\\": \\\"平安银行\\\",\\n      \\\"subBankName\\\": \\\"平安银行股份有限公司北京花园路支行\\\",\\n      \\\"bankCnaps\\\": \\\"307100003035\\\",\\n      \\\"bankReservePhoneNo\\\": null\\n    }\\n  ],\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=False)\",\n                \"createSourceDesc\": \"大禹测试日志单接口\",\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ],\n                \"approvalStatusText\": \"未提审\"\n            }\n        ],\n        \"page\": 1,\n        \"page_count\": 199,\n        \"total\": 397\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "API 详情",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "636960ceeb534069301a80092124fd5c",
+						"type": "text"
+					},
+					{
+						"key": "auth-email",
+						"value": "xieying003",
+						"type": "text"
+					},
+					{
+						"key": "user-email",
+						"value": "dengyu032",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://at.ke.com/v2/http/interface/get?id=185146",
+					"protocol": "http",
+					"host": [
+						"at",
+						"ke",
+						"com"
+					],
+					"path": [
+						"v2",
+						"http",
+						"interface",
+						"get"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "185146"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl 'https://at.api.ke.com/v2/http/interface/get?id=185146' \\\n  -H 'AUTH-EMAIL: xieying003' \\\n  -H 'Accept: application/json, text/plain, */*' \\\n  -H 'Accept-Language: zh-CN,zh;q=0.9' \\\n  -H 'Connection: keep-alive' \\\n  -b 'mt_home_token=2.0111a9beb284e545ba0001cb5451de9bd9def3bf11; bella_workflow_sessionId=41606354-8f57-4793-93a6-0174b3119c41; lianjia_b_token=2.001424b82881684320058d069a623647cc; XH_HistroyRole={\"1000000026706279\":\"superAdmin\"}; crosSdkDT2019DeviceId=5fbcb3-clcyps-smit5hizlsxhzpd-bxqhrthil; intelligentservice_test_token=2.0111a9beb284e730e00001cb542e5983b5d19397cb; ketest-env=production; beikeBaseData=%7B%22parentSceneId%22%3A%22-1%22%7D; bella_openapi_sessionId=db98267a-9e69-42ee-99dd-52f498f6f53a; loginRedirect=https://mp-wx.ke.com/build/makepre; casgwusercred=FHsbS8nf7BFe-lsrPDVBor1ztB7ZFqfFZkeE2OZpBw_jmxOu34P1j19Z2qBS_JQ7Vaq8FcQ9IVB2Ei0oo6yCU276k46W65oiB7Kvf58eHozj10nzRThKzYZFeg011ST_VtcOaiHEnM7xwJDVxcku9PHZQSq7kHsKuTREM2aRbAQ; crosgwusercred=IfGDG-sYG8O-pkcXnuZOenPex9kezRd1kmpiRZTTZsB-zLjV-w81R8rOOw7COQD66-NGw1eY56bLFO-i2VovCQ9a65f80f5c40d7f9df1a0dba4f329709; timezone=Asia%2FShanghai; MOMA_LANGUAGE=zh; _ga_P01KVVLGDF=GS2.1.s1760581853$o1$g1$t1760581983$j18$l0$h0; _ucid_=1000000026706279; _account_=dengyu032; _usercode_=26706279; _userFullEmail_=dengyu032%40ke.com; _displayName_=%E9%82%93%E8%A3%95%28dengyu032%29; intelligentservice_token=2.0111a9beb284e545ba0001cb54904d34f6a9daabee; prd-assistant-token-prod=2.0111a9beb284e545ba0001cb54c970e3e681d872cf; luoshu_t_token=2.00108b8ca685c777ae0122321424226fff; _ga_PM7PPP4S56=GS2.1.s1761899484$o3$g0$t1761899484$j60$l0$h0; lianjia_token_sinan=2.0013e5a09e86a48127024c1e2c50e76a3c; _ga=GA1.2.1665847087.1757664429; ketest-session=wqxlgsxd0t1de8exx9hfjbz8j5u9z7ab; sessionid=1a4q8osv4mkjyneio9hej7lxwejscl15; lianjia_uuid=efe60825-ed76-4604-8449-6ad84ef95889; lianjia_token=2.0111a9beb284e545ba0001cb54a4d22c163c67dfd5; _ga_F0DQ6TTSVW=GS2.2.s1762417146$o28$g0$t1762417146$j60$l0$h0; session_id=bb289d43-a5a0-122a-8e34-e404f5c40bf9; ketest-user=eyJsb2dpbl91c2VyIjogIjEwMDAwMDAwMjY3MDYyNzkiLCAiYWNjb3VudCI6ICJkZW5neXUwMzIiLCAiYWNjb3VudFN5c3RlbUlkIjogImVtcGxveWVlIiwgImF2YXRhciI6IG51bGwsICJiaXJ0aGRheSI6ICJudWxsIiwgImJ1c2luZXNzVG9rZW4iOiAiMi4wMTExYTliZWIyODRlNTQ1YmEwMDAxY2I1NGE0ZDIyYzE2M2M2N2RmZDUiLCAiY29ycElkIjogIm51bGwiLCAiZGlzcGxheU5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgImVtYWlsIjogImRlbmd5dTAzMkBrZS5jb20iLCAiZ2VuZGVyIjogIk1BTEUiLCAiaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJtZmFBdXRoTWV0aG9kTGV2ZWwiOiAiMCIsICJwYXNzZWRNZmFSZWFzb24iOiAiaXBXaGl0ZUxpc3QiLCAicGhvbmUiOiAiMTg1MTE1ODg0NzgiLCAicmVhbE5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInNlcnZpY2VJZCI6ICJzZWxmLWxvZ2luLmtzZy5rZS5jb20iLCAic3RhdGUiOiAiTk9STUFMIiwgInRndElkIjogIlRHVC03MjU4NTg1LWExWWpvNXlrQVl0UjBTRlRLd3ZKc2tMTXJ4ajl3U2djcUVBUUp2bTFVNml5VXZpTnRaYmRENC1VLW0zQUdCeU5VMTQta2UuY29tIiwgInVjaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJ1Y25hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInVpZCI6ICIxMDAwMDAwMDI2NzA2Mjc5IiwgInVzZXJfY29kZSI6ICIyNjcwNjI3OSIsICJ1c2VyVGFnIjogIjAiLCAidmVyc2lvbiI6ICIxNTAxIiwgInpoaWRhb191Y2lkIjogIjIxMTAwMDAwMDMwODA5NjkiLCAibmV4dF91cmwiOiAiaHR0cHM6Ly9jYXNlLW1pbmRlci5rZS5jb20vIy9jYXNlRWRpdG9yP2lkPTE3NDM2JmF1dG9fc2F2ZT10cnVlJmNyZWF0b3JfbmFtZT1kZW5neXUwMzIifQ=a2V0ZXN0LXVzZXI==; lianjia_ssid=58660022-b276-4080-a610-d3b8b4bcc499' \\\n  -H 'EMAIL-PREFIX: dengyu032' \\\n  -H 'Origin: https://ketest-pro.ke.com' \\\n  -H 'Referer: https://ketest-pro.ke.com/' \\\n  -H 'Sec-Fetch-Dest: empty' \\\n  -H 'Sec-Fetch-Mode: cors' \\\n  -H 'Sec-Fetch-Site: same-site' \\\n  -H 'TOKEN: 636960ceeb534069301a80092124fd5c' \\\n  -H 'UCID: 1000000026706279' \\\n  -H 'USER-EMAIL: dengyu032' \\\n  -H 'USERNAME: 6YKT6KOV' \\\n  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36' \\\n  -H 'sec-ch-ua: \"Not_A Brand\";v=\"99\", \"Chromium\";v=\"142\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"macOS\"'"
+			},
+			"response": [
+				{
+					"name": "API 详情",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://at.ke.com/v2/http/interface/get?id=185146",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"http",
+								"interface",
+								"get"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "185146"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 02:54:41 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.012253522872924805"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762743281.6693916"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 02:54:41 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:24:41 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:24:41 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762743281.657138"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762743281.6570587-452534cd0a8635ac2a598d83b8408a42"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 10000,\n    \"message\": \"ok\",\n    \"body\": {\n        \"interface_data\": {\n            \"id\": 185146,\n            \"interfaceId\": \"HTTP_INTERFACE_185146\",\n            \"title\": \"余额首页查询接口\",\n            \"casedesc\": \"余额首页查询接口\",\n            \"businessLineId\": 64,\n            \"moduleId\": 463,\n            \"sourceId\": 1,\n            \"createSourceId\": 1011,\n            \"autoStrategyId\": 0,\n            \"caselevel\": 5,\n            \"status\": 2,\n            \"caseType\": 2,\n            \"urlRedirect\": 0,\n            \"useCustomUri\": 0,\n            \"customUri\": \"\",\n            \"varsPre\": \"\",\n            \"uri\": \"nrs-pay-service\",\n            \"method\": \"GET\",\n            \"header\": \"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\n            \"url\": \"/pc/wallet/dashboard\",\n            \"params\": \"commissionCode=DF23070600001937&source=2\",\n            \"bodyType\": \"none\",\n            \"bodyContent\": \"\",\n            \"timeout\": 20,\n            \"varsPost\": \"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\n            \"performanceTime\": 1,\n            \"state\": 1,\n            \"addBy\": \"dengyu032\",\n            \"modBy\": \"dengyu032\",\n            \"addTime\": \"2024-04-09 11:39:20\",\n            \"modTime\": \"2025-11-07 16:34:20\",\n            \"business_direction_id\": 0,\n            \"business_line_id\": 0,\n            \"system_id\": 0,\n            \"sub_system_id\": 0,\n            \"business_direction_name\": \"\",\n            \"business_line_name\": \"\",\n            \"system_name\": \"\",\n            \"sub_system_name\": \"\",\n            \"privacy_persons\": \"\",\n            \"allowRunProdEnv\": 0,\n            \"teamKey\": \"\",\n            \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n            \"latestApprovalId\": 0,\n            \"statusApprovalId\": 0,\n            \"isAsync\": 0,\n            \"approvalStatus\": 1,\n            \"teamName\": \"\",\n            \"applyEnvIsolation\": 0,\n            \"approvalStatusText\": \"未提审\"\n        },\n        \"permission_list\": [\n            \"add\",\n            \"copy\",\n            \"edit\",\n            \"delete\",\n            \"check\"\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "API 保存",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "636960ceeb534069301a80092124fd5c",
+						"type": "text"
+					},
+					{
+						"key": "auth-email",
+						"value": "xieying003",
+						"type": "text"
+					},
+					{
+						"key": "user-email",
+						"value": "dengyu032",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "interfaceData",
+							"value": "{\"createSourceId\":1011,\"title\":\"余额首页查询接口\",\"casedesc\":\"余额首页查询接口\",\"useCustomUri\":0,\"customUri\":\"\",\"uri\":\"nrs-pay-service\",\"url\":\"/pc/wallet/dashboard\",\"method\":\"GET\",\"urlRedirect\":0,\"timeout\":20,\"performanceTime\":1,\"params\":\"commissionCode=DF23070600001938&source=2\",\"header\":\"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\"bodyContent\":\"\",\"bodyType\":\"none\",\"varsPre\":\"\",\"varsPost\":\"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\"isAsync\":0,\"id\":185146,\"interfaceId\":\"HTTP_INTERFACE_185146\"}",
+							"type": "text"
+						},
+						{
+							"key": "id",
+							"value": "185146",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://at.ke.com/v2/http/interface/edit",
+					"protocol": "http",
+					"host": [
+						"at",
+						"ke",
+						"com"
+					],
+					"path": [
+						"v2",
+						"http",
+						"interface",
+						"edit"
+					]
+				},
+				"description": "Generated from cURL: curl 'https://at.api.ke.com/v2/http/interface/edit' \\\n  -H 'AUTH-EMAIL: xieying003' \\\n  -H 'Accept: application/json, text/plain, */*' \\\n  -H 'Accept-Language: zh-CN,zh;q=0.9' \\\n  -H 'Connection: keep-alive' \\\n  -H 'Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryVCMdFcka1nI8Lh1W' \\\n  -b 'mt_home_token=2.0111a9beb284e545ba0001cb5451de9bd9def3bf11; bella_workflow_sessionId=41606354-8f57-4793-93a6-0174b3119c41; lianjia_b_token=2.001424b82881684320058d069a623647cc; XH_HistroyRole={\"1000000026706279\":\"superAdmin\"}; crosSdkDT2019DeviceId=5fbcb3-clcyps-smit5hizlsxhzpd-bxqhrthil; intelligentservice_test_token=2.0111a9beb284e730e00001cb542e5983b5d19397cb; ketest-env=production; beikeBaseData=%7B%22parentSceneId%22%3A%22-1%22%7D; bella_openapi_sessionId=db98267a-9e69-42ee-99dd-52f498f6f53a; loginRedirect=https://mp-wx.ke.com/build/makepre; casgwusercred=FHsbS8nf7BFe-lsrPDVBor1ztB7ZFqfFZkeE2OZpBw_jmxOu34P1j19Z2qBS_JQ7Vaq8FcQ9IVB2Ei0oo6yCU276k46W65oiB7Kvf58eHozj10nzRThKzYZFeg011ST_VtcOaiHEnM7xwJDVxcku9PHZQSq7kHsKuTREM2aRbAQ; crosgwusercred=IfGDG-sYG8O-pkcXnuZOenPex9kezRd1kmpiRZTTZsB-zLjV-w81R8rOOw7COQD66-NGw1eY56bLFO-i2VovCQ9a65f80f5c40d7f9df1a0dba4f329709; timezone=Asia%2FShanghai; MOMA_LANGUAGE=zh; _ga_P01KVVLGDF=GS2.1.s1760581853$o1$g1$t1760581983$j18$l0$h0; _ucid_=1000000026706279; _account_=dengyu032; _usercode_=26706279; _userFullEmail_=dengyu032%40ke.com; _displayName_=%E9%82%93%E8%A3%95%28dengyu032%29; intelligentservice_token=2.0111a9beb284e545ba0001cb54904d34f6a9daabee; prd-assistant-token-prod=2.0111a9beb284e545ba0001cb54c970e3e681d872cf; luoshu_t_token=2.00108b8ca685c777ae0122321424226fff; _ga_PM7PPP4S56=GS2.1.s1761899484$o3$g0$t1761899484$j60$l0$h0; lianjia_token_sinan=2.0013e5a09e86a48127024c1e2c50e76a3c; _ga=GA1.2.1665847087.1757664429; ketest-session=wqxlgsxd0t1de8exx9hfjbz8j5u9z7ab; sessionid=1a4q8osv4mkjyneio9hej7lxwejscl15; lianjia_uuid=efe60825-ed76-4604-8449-6ad84ef95889; lianjia_token=2.0111a9beb284e545ba0001cb54a4d22c163c67dfd5; _ga_F0DQ6TTSVW=GS2.2.s1762417146$o28$g0$t1762417146$j60$l0$h0; session_id=bb289d43-a5a0-122a-8e34-e404f5c40bf9; ketest-user=eyJsb2dpbl91c2VyIjogIjEwMDAwMDAwMjY3MDYyNzkiLCAiYWNjb3VudCI6ICJkZW5neXUwMzIiLCAiYWNjb3VudFN5c3RlbUlkIjogImVtcGxveWVlIiwgImF2YXRhciI6IG51bGwsICJiaXJ0aGRheSI6ICJudWxsIiwgImJ1c2luZXNzVG9rZW4iOiAiMi4wMTExYTliZWIyODRlNTQ1YmEwMDAxY2I1NGE0ZDIyYzE2M2M2N2RmZDUiLCAiY29ycElkIjogIm51bGwiLCAiZGlzcGxheU5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgImVtYWlsIjogImRlbmd5dTAzMkBrZS5jb20iLCAiZ2VuZGVyIjogIk1BTEUiLCAiaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJtZmFBdXRoTWV0aG9kTGV2ZWwiOiAiMCIsICJwYXNzZWRNZmFSZWFzb24iOiAiaXBXaGl0ZUxpc3QiLCAicGhvbmUiOiAiMTg1MTE1ODg0NzgiLCAicmVhbE5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInNlcnZpY2VJZCI6ICJzZWxmLWxvZ2luLmtzZy5rZS5jb20iLCAic3RhdGUiOiAiTk9STUFMIiwgInRndElkIjogIlRHVC03MjU4NTg1LWExWWpvNXlrQVl0UjBTRlRLd3ZKc2tMTXJ4ajl3U2djcUVBUUp2bTFVNml5VXZpTnRaYmRENC1VLW0zQUdCeU5VMTQta2UuY29tIiwgInVjaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJ1Y25hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInVpZCI6ICIxMDAwMDAwMDI2NzA2Mjc5IiwgInVzZXJfY29kZSI6ICIyNjcwNjI3OSIsICJ1c2VyVGFnIjogIjAiLCAidmVyc2lvbiI6ICIxNTAxIiwgInpoaWRhb191Y2lkIjogIjIxMTAwMDAwMDMwODA5NjkiLCAibmV4dF91cmwiOiAiaHR0cHM6Ly9jYXNlLW1pbmRlci5rZS5jb20vIy9jYXNlRWRpdG9yP2lkPTE3NDM2JmF1dG9fc2F2ZT10cnVlJmNyZWF0b3JfbmFtZT1kZW5neXUwMzIifQ=a2V0ZXN0LXVzZXI==; lianjia_ssid=58660022-b276-4080-a610-d3b8b4bcc499' \\\n  -H 'EMAIL-PREFIX: dengyu032' \\\n  -H 'Origin: https://ketest-pro.ke.com' \\\n  -H 'Referer: https://ketest-pro.ke.com/' \\\n  -H 'Sec-Fetch-Dest: empty' \\\n  -H 'Sec-Fetch-Mode: cors' \\\n  -H 'Sec-Fetch-Site: same-site' \\\n  -H 'TOKEN: 636960ceeb534069301a80092124fd5c' \\\n  -H 'UCID: 1000000026706279' \\\n  -H 'USER-EMAIL: dengyu032' \\\n  -H 'USERNAME: 6YKT6KOV' \\\n  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36' \\\n  -H 'sec-ch-ua: \"Not_A Brand\";v=\"99\", \"Chromium\";v=\"142\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"macOS\"' \\\n  --data-raw $'------WebKitFormBoundaryVCMdFcka1nI8Lh1W\\r\\nContent-Disposition: form-data; name=\"interfaceData\"\\r\\n\\r\\n{\"createSourceId\":1011,\"title\":\"余额首页查询接口\",\"casedesc\":\"余额首页查询接口\",\"useCustomUri\":0,\"customUri\":\"\",\"uri\":\"nrs-pay-service\",\"url\":\"/pc/wallet/dashboard\",\"method\":\"GET\",\"urlRedirect\":0,\"timeout\":20,\"performanceTime\":1,\"params\":\"commissionCode=DF23070600001937&source=2\",\"header\":\"{\\\\\"Accept\\\\\":\\\\\"*/*\\\\\",\\\\\"Connection\\\\\":\\\\\"Keep-Alive\\\\\",\\\\\"Ketracespidinstance-Role\\\\\":\\\\\"[\\\\\\\\\\\\\"default\\\\\\\\\\\\\"]\\\\\",\\\\\"Ketracespidreq_id\\\\\":\\\\\"[\\\\\\\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\\\\\\\"]\\\\\",\\\\\"Sw3\\\\\":\\\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\\\",\\\\\"User-Agent\\\\\":\\\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\\\",\\\\\"X-Ke-Business-Id\\\\\":\\\\\"14\\\\\"}\",\"bodyContent\":\"\",\"bodyType\":\"none\",\"varsPre\":\"\",\"varsPost\":\"#python\\\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\\\n# 返回结果断言\\\\nimports(\\'assert_resp_equal\\')\\\\n# 兼容soso关键字\\\\nimports(\\'define\\')\\\\n# 期待结果\\\\nexpected_result = {\\\\n  \\\\\"code\\\\\": 2000,\\\\n  \\\\\"message\\\\\": \\\\\"操作成功\\\\\",\\\\n  \\\\\"data\\\\\": {\\\\n    \\\\\"availableAmount\\\\\": 0,\\\\n    \\\\\"availableAmountDesc\\\\\": \\\\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\\\",\\\\n    \\\\\"frozenAmount\\\\\": 121.02,\\\\n    \\\\\"frozenAmountDesc\\\\\": \\\\\"截止当前抵扣确认中&退款中的总额\\\\\",\\\\n    \\\\\"refundedAmount\\\\\": 432.02,\\\\n    \\\\\"miniProgramType\\\\\": 1,\\\\n    \\\\\"walletPhone\\\\\": \\\\\"*******4925\\\\\",\\\\n    \\\\\"walletPhoneSec\\\\\": \\\\\"B002ȾⱯƇ4925\\\\\",\\\\n    \\\\\"projectOrderId\\\\\": \\\\\"531645525060452352\\\\\",\\\\n    \\\\\"accountList\\\\\": [\\\\n      {\\\\n        \\\\\"availableAmount\\\\\": 0,\\\\n        \\\\\"frozenAmount\\\\\": 0,\\\\n        \\\\\"accountNo\\\\\": 2004001670000635600,\\\\n        \\\\\"identityCode\\\\\": \\\\\"2000000010533431\\\\\",\\\\n        \\\\\"accountUsageRangeVal\\\\\": \\\\\"V201800236\\\\\",\\\\n        \\\\\"accountName\\\\\": \\\\\"北京贝壳家居科技有限公司\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\"availableAmount\\\\\": 0,\\\\n        \\\\\"frozenAmount\\\\\": 0,\\\\n        \\\\\"accountNo\\\\\": 2004001240000584000,\\\\n        \\\\\"identityCode\\\\\": \\\\\"2000000010533431\\\\\",\\\\n        \\\\\"accountUsageRangeVal\\\\\": \\\\\"V2021034277\\\\\",\\\\n        \\\\\"accountName\\\\\": \\\\\"成都贝壳家居有限公司\\\\\"\\\\n      }\\\\n    ],\\\\n    \\\\\"actionButtonShowInfo\\\\\": null\\\\n  },\\\\n  \\\\\"success\\\\\": true\\\\n}\\\\n\\\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\"isAsync\":0,\"id\":185146,\"interfaceId\":\"HTTP_INTERFACE_185146\"}\\r\\n------WebKitFormBoundaryVCMdFcka1nI8Lh1W\\r\\nContent-Disposition: form-data; name=\"id\"\\r\\n\\r\\n185146\\r\\n------WebKitFormBoundaryVCMdFcka1nI8Lh1W--\\r\\n'"
+			},
+			"response": [
+				{
+					"name": "API 保存",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "interfaceData",
+									"value": "{\"createSourceId\":1011,\"title\":\"余额首页查询接口\",\"casedesc\":\"余额首页查询接口\",\"useCustomUri\":0,\"customUri\":\"\",\"uri\":\"nrs-pay-service\",\"url\":\"/pc/wallet/dashboard\",\"method\":\"GET\",\"urlRedirect\":0,\"timeout\":20,\"performanceTime\":1,\"params\":\"commissionCode=DF23070600001938&source=2\",\"header\":\"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\"bodyContent\":\"\",\"bodyType\":\"none\",\"varsPre\":\"\",\"varsPost\":\"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\"isAsync\":0,\"id\":185146,\"interfaceId\":\"HTTP_INTERFACE_185146\"}",
+									"type": "text"
+								},
+								{
+									"key": "id",
+									"value": "185146",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://at.ke.com/v2/http/interface/edit",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"http",
+								"interface",
+								"edit"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Content-Length",
+							"value": "44"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 02:55:05 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.11860227584838867"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762743305.608226"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 02:55:05 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:05 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:05 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762743305.4896238"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762743305.4895685-b25b38345caa915b14d232d087ba6a85"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 10000,\n    \"message\": \"ok\",\n    \"body\": {}\n}"
+				}
+			]
+		},
+		{
+			"name": "API 运行",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "token",
+						"value": "636960ceeb534069301a80092124fd5c",
+						"type": "text"
+					},
+					{
+						"key": "auth-email",
+						"value": "xieying003",
+						"type": "text"
+					},
+					{
+						"key": "user-email",
+						"value": "dengyu032",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "interfaceData",
+							"value": "{\"createSourceId\":1011,\"title\":\"余额首页查询接口\",\"casedesc\":\"余额首页查询接口\",\"useCustomUri\":0,\"customUri\":\"\",\"uri\":\"nrs-pay-service\",\"url\":\"/pc/wallet/dashboard\",\"method\":\"GET\",\"urlRedirect\":0,\"timeout\":20,\"performanceTime\":1,\"params\":\"commissionCode=DF23070600001937&source=2\",\"header\":\"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\"bodyContent\":\"\",\"bodyType\":\"none\",\"varsPre\":\"\",\"varsPost\":\"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\"isAsync\":0,\"id\":185146,\"interfaceId\":\"HTTP_INTERFACE_185146\",\"httpConfKey\":\"integration\"}",
+							"type": "text"
+						},
+						{
+							"key": "ketest_plan_id",
+							"value": "0",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://at.ke.com/v2/http/interface/debug",
+					"protocol": "http",
+					"host": [
+						"at",
+						"ke",
+						"com"
+					],
+					"path": [
+						"v2",
+						"http",
+						"interface",
+						"debug"
+					]
+				},
+				"description": "Generated from cURL: curl 'https://at.api.ke.com/v2/http/interface/debug' \\\n  -H 'AUTH-EMAIL: xieying003' \\\n  -H 'Accept: application/json, text/plain, */*' \\\n  -H 'Accept-Language: zh-CN,zh;q=0.9' \\\n  -H 'Connection: keep-alive' \\\n  -H 'Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryVIlOrovSuw9Bboaw' \\\n  -b 'mt_home_token=2.0111a9beb284e545ba0001cb5451de9bd9def3bf11; bella_workflow_sessionId=41606354-8f57-4793-93a6-0174b3119c41; lianjia_b_token=2.001424b82881684320058d069a623647cc; XH_HistroyRole={\"1000000026706279\":\"superAdmin\"}; crosSdkDT2019DeviceId=5fbcb3-clcyps-smit5hizlsxhzpd-bxqhrthil; intelligentservice_test_token=2.0111a9beb284e730e00001cb542e5983b5d19397cb; ketest-env=production; beikeBaseData=%7B%22parentSceneId%22%3A%22-1%22%7D; bella_openapi_sessionId=db98267a-9e69-42ee-99dd-52f498f6f53a; loginRedirect=https://mp-wx.ke.com/build/makepre; casgwusercred=FHsbS8nf7BFe-lsrPDVBor1ztB7ZFqfFZkeE2OZpBw_jmxOu34P1j19Z2qBS_JQ7Vaq8FcQ9IVB2Ei0oo6yCU276k46W65oiB7Kvf58eHozj10nzRThKzYZFeg011ST_VtcOaiHEnM7xwJDVxcku9PHZQSq7kHsKuTREM2aRbAQ; crosgwusercred=IfGDG-sYG8O-pkcXnuZOenPex9kezRd1kmpiRZTTZsB-zLjV-w81R8rOOw7COQD66-NGw1eY56bLFO-i2VovCQ9a65f80f5c40d7f9df1a0dba4f329709; timezone=Asia%2FShanghai; MOMA_LANGUAGE=zh; _ga_P01KVVLGDF=GS2.1.s1760581853$o1$g1$t1760581983$j18$l0$h0; _ucid_=1000000026706279; _account_=dengyu032; _usercode_=26706279; _userFullEmail_=dengyu032%40ke.com; _displayName_=%E9%82%93%E8%A3%95%28dengyu032%29; intelligentservice_token=2.0111a9beb284e545ba0001cb54904d34f6a9daabee; prd-assistant-token-prod=2.0111a9beb284e545ba0001cb54c970e3e681d872cf; luoshu_t_token=2.00108b8ca685c777ae0122321424226fff; _ga_PM7PPP4S56=GS2.1.s1761899484$o3$g0$t1761899484$j60$l0$h0; lianjia_token_sinan=2.0013e5a09e86a48127024c1e2c50e76a3c; _ga=GA1.2.1665847087.1757664429; ketest-session=wqxlgsxd0t1de8exx9hfjbz8j5u9z7ab; sessionid=1a4q8osv4mkjyneio9hej7lxwejscl15; lianjia_uuid=efe60825-ed76-4604-8449-6ad84ef95889; lianjia_token=2.0111a9beb284e545ba0001cb54a4d22c163c67dfd5; _ga_F0DQ6TTSVW=GS2.2.s1762417146$o28$g0$t1762417146$j60$l0$h0; session_id=bb289d43-a5a0-122a-8e34-e404f5c40bf9; ketest-user=eyJsb2dpbl91c2VyIjogIjEwMDAwMDAwMjY3MDYyNzkiLCAiYWNjb3VudCI6ICJkZW5neXUwMzIiLCAiYWNjb3VudFN5c3RlbUlkIjogImVtcGxveWVlIiwgImF2YXRhciI6IG51bGwsICJiaXJ0aGRheSI6ICJudWxsIiwgImJ1c2luZXNzVG9rZW4iOiAiMi4wMTExYTliZWIyODRlNTQ1YmEwMDAxY2I1NGE0ZDIyYzE2M2M2N2RmZDUiLCAiY29ycElkIjogIm51bGwiLCAiZGlzcGxheU5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgImVtYWlsIjogImRlbmd5dTAzMkBrZS5jb20iLCAiZ2VuZGVyIjogIk1BTEUiLCAiaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJtZmFBdXRoTWV0aG9kTGV2ZWwiOiAiMCIsICJwYXNzZWRNZmFSZWFzb24iOiAiaXBXaGl0ZUxpc3QiLCAicGhvbmUiOiAiMTg1MTE1ODg0NzgiLCAicmVhbE5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInNlcnZpY2VJZCI6ICJzZWxmLWxvZ2luLmtzZy5rZS5jb20iLCAic3RhdGUiOiAiTk9STUFMIiwgInRndElkIjogIlRHVC03MjU4NTg1LWExWWpvNXlrQVl0UjBTRlRLd3ZKc2tMTXJ4ajl3U2djcUVBUUp2bTFVNml5VXZpTnRaYmRENC1VLW0zQUdCeU5VMTQta2UuY29tIiwgInVjaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJ1Y25hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInVpZCI6ICIxMDAwMDAwMDI2NzA2Mjc5IiwgInVzZXJfY29kZSI6ICIyNjcwNjI3OSIsICJ1c2VyVGFnIjogIjAiLCAidmVyc2lvbiI6ICIxNTAxIiwgInpoaWRhb191Y2lkIjogIjIxMTAwMDAwMDMwODA5NjkiLCAibmV4dF91cmwiOiAiaHR0cHM6Ly9jYXNlLW1pbmRlci5rZS5jb20vIy9jYXNlRWRpdG9yP2lkPTE3NDM2JmF1dG9fc2F2ZT10cnVlJmNyZWF0b3JfbmFtZT1kZW5neXUwMzIifQ=a2V0ZXN0LXVzZXI==; lianjia_ssid=58660022-b276-4080-a610-d3b8b4bcc499' \\\n  -H 'EMAIL-PREFIX: dengyu032' \\\n  -H 'Origin: https://ketest-pro.ke.com' \\\n  -H 'Referer: https://ketest-pro.ke.com/' \\\n  -H 'Sec-Fetch-Dest: empty' \\\n  -H 'Sec-Fetch-Mode: cors' \\\n  -H 'Sec-Fetch-Site: same-site' \\\n  -H 'TOKEN: 636960ceeb534069301a80092124fd5c' \\\n  -H 'UCID: 1000000026706279' \\\n  -H 'USER-EMAIL: dengyu032' \\\n  -H 'USERNAME: 6YKT6KOV' \\\n  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36' \\\n  -H 'sec-ch-ua: \"Not_A Brand\";v=\"99\", \"Chromium\";v=\"142\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"macOS\"' \\\n  --data-raw $'------WebKitFormBoundaryVIlOrovSuw9Bboaw\\r\\nContent-Disposition: form-data; name=\"interfaceData\"\\r\\n\\r\\n{\"createSourceId\":1011,\"title\":\"余额首页查询接口\",\"casedesc\":\"余额首页查询接口\",\"useCustomUri\":0,\"customUri\":\"\",\"uri\":\"nrs-pay-service\",\"url\":\"/pc/wallet/dashboard\",\"method\":\"GET\",\"urlRedirect\":0,\"timeout\":20,\"performanceTime\":1,\"params\":\"commissionCode=DF23070600001937&source=2\",\"header\":\"{\\\\\"Accept\\\\\":\\\\\"*/*\\\\\",\\\\\"Connection\\\\\":\\\\\"Keep-Alive\\\\\",\\\\\"Ketracespidinstance-Role\\\\\":\\\\\"[\\\\\\\\\\\\\"default\\\\\\\\\\\\\"]\\\\\",\\\\\"Ketracespidreq_id\\\\\":\\\\\"[\\\\\\\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\\\\\\\"]\\\\\",\\\\\"Sw3\\\\\":\\\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\\\",\\\\\"User-Agent\\\\\":\\\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\\\",\\\\\"X-Ke-Business-Id\\\\\":\\\\\"14\\\\\"}\",\"bodyContent\":\"\",\"bodyType\":\"none\",\"varsPre\":\"\",\"varsPost\":\"#python\\\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\\\n# 返回结果断言\\\\nimports(\\'assert_resp_equal\\')\\\\n# 兼容soso关键字\\\\nimports(\\'define\\')\\\\n# 期待结果\\\\nexpected_result = {\\\\n  \\\\\"code\\\\\": 2000,\\\\n  \\\\\"message\\\\\": \\\\\"操作成功\\\\\",\\\\n  \\\\\"data\\\\\": {\\\\n    \\\\\"availableAmount\\\\\": 0,\\\\n    \\\\\"availableAmountDesc\\\\\": \\\\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\\\",\\\\n    \\\\\"frozenAmount\\\\\": 121.02,\\\\n    \\\\\"frozenAmountDesc\\\\\": \\\\\"截止当前抵扣确认中&退款中的总额\\\\\",\\\\n    \\\\\"refundedAmount\\\\\": 432.02,\\\\n    \\\\\"miniProgramType\\\\\": 1,\\\\n    \\\\\"walletPhone\\\\\": \\\\\"*******4925\\\\\",\\\\n    \\\\\"walletPhoneSec\\\\\": \\\\\"B002ȾⱯƇ4925\\\\\",\\\\n    \\\\\"projectOrderId\\\\\": \\\\\"531645525060452352\\\\\",\\\\n    \\\\\"accountList\\\\\": [\\\\n      {\\\\n        \\\\\"availableAmount\\\\\": 0,\\\\n        \\\\\"frozenAmount\\\\\": 0,\\\\n        \\\\\"accountNo\\\\\": 2004001670000635600,\\\\n        \\\\\"identityCode\\\\\": \\\\\"2000000010533431\\\\\",\\\\n        \\\\\"accountUsageRangeVal\\\\\": \\\\\"V201800236\\\\\",\\\\n        \\\\\"accountName\\\\\": \\\\\"北京贝壳家居科技有限公司\\\\\"\\\\n      },\\\\n      {\\\\n        \\\\\"availableAmount\\\\\": 0,\\\\n        \\\\\"frozenAmount\\\\\": 0,\\\\n        \\\\\"accountNo\\\\\": 2004001240000584000,\\\\n        \\\\\"identityCode\\\\\": \\\\\"2000000010533431\\\\\",\\\\n        \\\\\"accountUsageRangeVal\\\\\": \\\\\"V2021034277\\\\\",\\\\n        \\\\\"accountName\\\\\": \\\\\"成都贝壳家居有限公司\\\\\"\\\\n      }\\\\n    ],\\\\n    \\\\\"actionButtonShowInfo\\\\\": null\\\\n  },\\\\n  \\\\\"success\\\\\": true\\\\n}\\\\n\\\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\"isAsync\":0,\"id\":185146,\"interfaceId\":\"HTTP_INTERFACE_185146\",\"httpConfKey\":\"integration\"}\\r\\n------WebKitFormBoundaryVIlOrovSuw9Bboaw\\r\\nContent-Disposition: form-data; name=\"ketest_plan_id\"\\r\\n\\r\\n0\\r\\n------WebKitFormBoundaryVIlOrovSuw9Bboaw--\\r\\n'"
+			},
+			"response": [
+				{
+					"name": "API 运行",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "interfaceData",
+									"value": "{\"createSourceId\":1011,\"title\":\"余额首页查询接口\",\"casedesc\":\"余额首页查询接口\",\"useCustomUri\":0,\"customUri\":\"\",\"uri\":\"nrs-pay-service\",\"url\":\"/pc/wallet/dashboard\",\"method\":\"GET\",\"urlRedirect\":0,\"timeout\":20,\"performanceTime\":1,\"params\":\"commissionCode=DF23070600001937&source=2\",\"header\":\"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\"bodyContent\":\"\",\"bodyType\":\"none\",\"varsPre\":\"\",\"varsPost\":\"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\"isAsync\":0,\"id\":185146,\"interfaceId\":\"HTTP_INTERFACE_185146\",\"httpConfKey\":\"integration\"}",
+									"type": "text"
+								},
+								{
+									"key": "ketest_plan_id",
+									"value": "0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://at.ke.com/v2/http/interface/debug",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"http",
+								"interface",
+								"debug"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Content-Length",
+							"value": "82"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 02:55:32 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.08636093139648438"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762743332.7419844"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 02:55:32 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:32 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:32 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762743332.6556234"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762743332.6555812-dde03177cc9db443b31e67bd565c4d16"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 10000,\n    \"message\": \"ok\",\n    \"body\": \"interfaceDebug_dengyu032_1762743332657\"\n}"
+				}
+			]
+		},
+		{
+			"name": "API 运行轮询查询",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "636960ceeb534069301a80092124fd5c",
+						"type": "text"
+					},
+					{
+						"key": "auth-email",
+						"value": "xieying003",
+						"type": "text"
+					},
+					{
+						"key": "user-email",
+						"value": "dengyu032",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://at.ke.com/v2/http/interface/result?test_debug_id=interfaceDebug_dengyu032_1762743332657",
+					"protocol": "http",
+					"host": [
+						"at",
+						"ke",
+						"com"
+					],
+					"path": [
+						"v2",
+						"http",
+						"interface",
+						"result"
+					],
+					"query": [
+						{
+							"key": "test_debug_id",
+							"value": "interfaceDebug_dengyu032_1762743332657"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl 'https://at.api.ke.com/v2/http/interface/result?test_debug_id=interfaceDebug_dengyu032_1762504866842' \\\n  -H 'AUTH-EMAIL: xieying003' \\\n  -H 'Accept: application/json, text/plain, */*' \\\n  -H 'Accept-Language: zh-CN,zh;q=0.9' \\\n  -H 'Connection: keep-alive' \\\n  -b 'mt_home_token=2.0111a9beb284e545ba0001cb5451de9bd9def3bf11; bella_workflow_sessionId=41606354-8f57-4793-93a6-0174b3119c41; lianjia_b_token=2.001424b82881684320058d069a623647cc; XH_HistroyRole={\"1000000026706279\":\"superAdmin\"}; crosSdkDT2019DeviceId=5fbcb3-clcyps-smit5hizlsxhzpd-bxqhrthil; intelligentservice_test_token=2.0111a9beb284e730e00001cb542e5983b5d19397cb; ketest-env=production; beikeBaseData=%7B%22parentSceneId%22%3A%22-1%22%7D; bella_openapi_sessionId=db98267a-9e69-42ee-99dd-52f498f6f53a; loginRedirect=https://mp-wx.ke.com/build/makepre; casgwusercred=FHsbS8nf7BFe-lsrPDVBor1ztB7ZFqfFZkeE2OZpBw_jmxOu34P1j19Z2qBS_JQ7Vaq8FcQ9IVB2Ei0oo6yCU276k46W65oiB7Kvf58eHozj10nzRThKzYZFeg011ST_VtcOaiHEnM7xwJDVxcku9PHZQSq7kHsKuTREM2aRbAQ; crosgwusercred=IfGDG-sYG8O-pkcXnuZOenPex9kezRd1kmpiRZTTZsB-zLjV-w81R8rOOw7COQD66-NGw1eY56bLFO-i2VovCQ9a65f80f5c40d7f9df1a0dba4f329709; timezone=Asia%2FShanghai; MOMA_LANGUAGE=zh; _ga_P01KVVLGDF=GS2.1.s1760581853$o1$g1$t1760581983$j18$l0$h0; _ucid_=1000000026706279; _account_=dengyu032; _usercode_=26706279; _userFullEmail_=dengyu032%40ke.com; _displayName_=%E9%82%93%E8%A3%95%28dengyu032%29; intelligentservice_token=2.0111a9beb284e545ba0001cb54904d34f6a9daabee; prd-assistant-token-prod=2.0111a9beb284e545ba0001cb54c970e3e681d872cf; luoshu_t_token=2.00108b8ca685c777ae0122321424226fff; _ga_PM7PPP4S56=GS2.1.s1761899484$o3$g0$t1761899484$j60$l0$h0; lianjia_token_sinan=2.0013e5a09e86a48127024c1e2c50e76a3c; _ga=GA1.2.1665847087.1757664429; ketest-session=wqxlgsxd0t1de8exx9hfjbz8j5u9z7ab; sessionid=1a4q8osv4mkjyneio9hej7lxwejscl15; lianjia_uuid=efe60825-ed76-4604-8449-6ad84ef95889; lianjia_token=2.0111a9beb284e545ba0001cb54a4d22c163c67dfd5; _ga_F0DQ6TTSVW=GS2.2.s1762417146$o28$g0$t1762417146$j60$l0$h0; session_id=bb289d43-a5a0-122a-8e34-e404f5c40bf9; ketest-user=eyJsb2dpbl91c2VyIjogIjEwMDAwMDAwMjY3MDYyNzkiLCAiYWNjb3VudCI6ICJkZW5neXUwMzIiLCAiYWNjb3VudFN5c3RlbUlkIjogImVtcGxveWVlIiwgImF2YXRhciI6IG51bGwsICJiaXJ0aGRheSI6ICJudWxsIiwgImJ1c2luZXNzVG9rZW4iOiAiMi4wMTExYTliZWIyODRlNTQ1YmEwMDAxY2I1NGE0ZDIyYzE2M2M2N2RmZDUiLCAiY29ycElkIjogIm51bGwiLCAiZGlzcGxheU5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgImVtYWlsIjogImRlbmd5dTAzMkBrZS5jb20iLCAiZ2VuZGVyIjogIk1BTEUiLCAiaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJtZmFBdXRoTWV0aG9kTGV2ZWwiOiAiMCIsICJwYXNzZWRNZmFSZWFzb24iOiAiaXBXaGl0ZUxpc3QiLCAicGhvbmUiOiAiMTg1MTE1ODg0NzgiLCAicmVhbE5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInNlcnZpY2VJZCI6ICJzZWxmLWxvZ2luLmtzZy5rZS5jb20iLCAic3RhdGUiOiAiTk9STUFMIiwgInRndElkIjogIlRHVC03MjU4NTg1LWExWWpvNXlrQVl0UjBTRlRLd3ZKc2tMTXJ4ajl3U2djcUVBUUp2bTFVNml5VXZpTnRaYmRENC1VLW0zQUdCeU5VMTQta2UuY29tIiwgInVjaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJ1Y25hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInVpZCI6ICIxMDAwMDAwMDI2NzA2Mjc5IiwgInVzZXJfY29kZSI6ICIyNjcwNjI3OSIsICJ1c2VyVGFnIjogIjAiLCAidmVyc2lvbiI6ICIxNTAxIiwgInpoaWRhb191Y2lkIjogIjIxMTAwMDAwMDMwODA5NjkiLCAibmV4dF91cmwiOiAiaHR0cHM6Ly9jYXNlLW1pbmRlci5rZS5jb20vIy9jYXNlRWRpdG9yP2lkPTE3NDM2JmF1dG9fc2F2ZT10cnVlJmNyZWF0b3JfbmFtZT1kZW5neXUwMzIifQ=a2V0ZXN0LXVzZXI==; lianjia_ssid=58660022-b276-4080-a610-d3b8b4bcc499' \\\n  -H 'EMAIL-PREFIX: dengyu032' \\\n  -H 'Origin: https://ketest-pro.ke.com' \\\n  -H 'Referer: https://ketest-pro.ke.com/' \\\n  -H 'Sec-Fetch-Dest: empty' \\\n  -H 'Sec-Fetch-Mode: cors' \\\n  -H 'Sec-Fetch-Site: same-site' \\\n  -H 'TOKEN: 636960ceeb534069301a80092124fd5c' \\\n  -H 'UCID: 1000000026706279' \\\n  -H 'USER-EMAIL: dengyu032' \\\n  -H 'USERNAME: 6YKT6KOV' \\\n  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36' \\\n  -H 'sec-ch-ua: \"Not_A Brand\";v=\"99\", \"Chromium\";v=\"142\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"macOS\"'"
+			},
+			"response": [
+				{
+					"name": "API 运行结果轮询-等待",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://at.ke.com/v2/http/interface/result?test_debug_id=interfaceDebug_dengyu032_1762743332657",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"http",
+								"interface",
+								"result"
+							],
+							"query": [
+								{
+									"key": "test_debug_id",
+									"value": "interfaceDebug_dengyu032_1762743332657"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "text",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 02:55:38 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.013844728469848633"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762743338.8668103"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 02:55:38 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:38 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:38 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762743338.8529656"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762743338.8528903-935c2d0203fabacbdcda1c5857408a53"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 16002,\n    \"message\": \"获取结果中...请稍后\",\n    \"body\": {}\n}"
+				},
+				{
+					"name": "API 运行轮询查询-完成",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://at.ke.com/v2/http/interface/result?test_debug_id=interfaceDebug_dengyu032_1762743332657",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"http",
+								"interface",
+								"result"
+							],
+							"query": [
+								{
+									"key": "test_debug_id",
+									"value": "interfaceDebug_dengyu032_1762743332657"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": null,
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 02:55:38 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.013844728469848633"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762743338.8668103"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 02:55:38 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:38 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:25:38 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762743338.8529656"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762743338.8528903-935c2d0203fabacbdcda1c5857408a53"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 10000,\n    \"message\": \"OK\",\n    \"body\": {\n        \"createSourceId\": 1011,\n        \"title\": \"余额首页查询接口\",\n        \"casedesc\": \"余额首页查询接口\",\n        \"useCustomUri\": 0,\n        \"customUri\": \"\",\n        \"uri\": \"http://nrs-pay-service.integration.ttb.test.ke.com\",\n        \"url\": \"http://nrs-pay-service.integration.ttb.test.ke.com/pc/wallet/dashboard\",\n        \"method\": \"GET\",\n        \"urlRedirect\": 0,\n        \"timeout\": 20,\n        \"performanceTime\": 1,\n        \"params\": \"commissionCode=DF23070600001937&source=2\",\n        \"header\": \"{\\\"Host\\\": \\\"nrs-pay-service.integration.ttb.test.ke.com\\\", \\\"User-Agent\\\": \\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\", \\\"Accept-Encoding\\\": \\\"gzip, deflate\\\", \\\"Accept\\\": \\\"*/*\\\", \\\"Connection\\\": \\\"Keep-Alive\\\", \\\"Ketracespidinstance-Role\\\": \\\"[\\\\\\\"default\\\\\\\"]\\\", \\\"Ketracespidreq_id\\\": \\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\", \\\"Sw3\\\": \\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\", \\\"X-Ke-Business-Id\\\": \\\"14\\\", \\\"ketracetraceid\\\": \\\"sosotest-nrs-pay-service.integration.ttb.test.ke.com-10.226.157.92-111-1762743332882-289\\\", \\\"ketracesegmentid\\\": \\\"sosotest-nrs-pay-service.integration.ttb.test.ke.com-10.226.157.92-111-1762743332882-289\\\", \\\"ketracespanid\\\": \\\"0\\\", \\\"x-req-id\\\": \\\"sosotest-b95f0d08-bde0-11f0-a4a4-160134a22235\\\"}\",\n        \"bodyContent\": \"\",\n        \"bodyType\": \"none\",\n        \"varsPre\": \"<p>无准备数据</p>\",\n        \"varsPost\": \"<p>true = True;(来源：[HTTP_INTERFACE_185146:True])</p>\\n<p>false = False;(来源：[HTTP_INTERFACE_185146:False])</p>\\n<p>expected_result = {\\\"code\\\": 2000, \\\"message\\\": \\\"\\\\u64cd\\\\u4f5c\\\\u6210\\\\u529f\\\", \\\"data\\\": {\\\"availableAmount\\\": 0, \\\"availableAmountDesc\\\": \\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u53ef\\\\u7528\\\\u4e8e\\\\u62b5\\\\u6263\\\\u603b\\\\u989d\\\\uff0c\\\\u6263\\\\u9664\\\\u5ba2\\\\u6237\\\\u786e\\\\u8ba4\\\\u4e2d\\\\u91d1\\\\u989d\\\\u540e\\\\u7684\\\\u603b\\\\u989d\\\", \\\"frozenAmount\\\": 121.02, \\\"frozenAmountDesc\\\": \\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u62b5\\\\u6263\\\\u786e\\\\u8ba4\\\\u4e2d&\\\\u9000\\\\u6b3e\\\\u4e2d\\\\u7684\\\\u603b\\\\u989d\\\", \\\"refundedAmount\\\": 432.02, \\\"miniProgramType\\\": 1, \\\"walletPhone\\\": \\\"*******4925\\\", \\\"walletPhoneSec\\\": \\\"B002\\\\u023e\\\\u2c6f\\\\u01874925\\\", \\\"projectOrderId\\\": \\\"531645525060452352\\\", \\\"accountList\\\": [{\\\"availableAmount\\\": 0, \\\"frozenAmount\\\": 0, \\\"accountNo\\\": 2004001670000635600, \\\"identityCode\\\": \\\"2000000010533431\\\", \\\"accountUsageRangeVal\\\": \\\"V201800236\\\", \\\"accountName\\\": \\\"\\\\u5317\\\\u4eac\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u79d1\\\\u6280\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\"}, {\\\"availableAmount\\\": 0, \\\"frozenAmount\\\": 0, \\\"accountNo\\\": 2004001240000584000, \\\"identityCode\\\": \\\"2000000010533431\\\", \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\", \\\"accountName\\\": \\\"\\\\u6210\\\\u90fd\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\"}], \\\"actionButtonShowInfo\\\": null}, \\\"success\\\": true};(来源：[HTTP_INTERFACE_185146:{'code': 2000, 'mes...])</p>\\n<p></p>\\n<p>############################################################</p>\\n<p>python日志：</p>\\n<p>[HTTP_INTERFACE_185146]开始执行...</p>\\n<p>json字符串对比结果：</p>\\n<p>values_changed: {\\\"root['data']['walletPhoneSec']\\\": {'new_value': '19019394925', 'old_value': 'B002ȾⱯƇ4925'}}</p>\\n<p></p>\\n<p></p>\\n<p>实际结果:</p>\\n<p>{</p>\\n<p>    \\\"code\\\": 2000,</p>\\n<p>    \\\"message\\\": \\\"\\\\u64cd\\\\u4f5c\\\\u6210\\\\u529f\\\",</p>\\n<p>    \\\"data\\\": {</p>\\n<p>        \\\"availableAmount\\\": 0,</p>\\n<p>        \\\"availableAmountDesc\\\": \\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u53ef\\\\u7528\\\\u4e8e\\\\u62b5\\\\u6263\\\\u603b\\\\u989d\\\\uff0c\\\\u6263\\\\u9664\\\\u5ba2\\\\u6237\\\\u786e\\\\u8ba4\\\\u4e2d\\\\u91d1\\\\u989d\\\\u540e\\\\u7684\\\\u603b\\\\u989d\\\",</p>\\n<p>        \\\"frozenAmount\\\": 121.02,</p>\\n<p>        \\\"frozenAmountDesc\\\": \\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u62b5\\\\u6263\\\\u786e\\\\u8ba4\\\\u4e2d&\\\\u9000\\\\u6b3e\\\\u4e2d\\\\u7684\\\\u603b\\\\u989d\\\",</p>\\n<p>        \\\"refundedAmount\\\": 432.02,</p>\\n<p>        \\\"miniProgramType\\\": 1,</p>\\n<p>        \\\"walletPhone\\\": \\\"*******4925\\\",</p>\\n<p>        \\\"walletPhoneSec\\\": \\\"19019394925\\\",</p>\\n<p>        \\\"projectOrderId\\\": \\\"531645525060452352\\\",</p>\\n<p>        \\\"accountList\\\": [</p>\\n<p>            {</p>\\n<p>                \\\"availableAmount\\\": 0,</p>\\n<p>                \\\"frozenAmount\\\": 0,</p>\\n<p>                \\\"accountNo\\\": 2004001670000635761,</p>\\n<p>                \\\"identityCode\\\": \\\"2000000010533431\\\",</p>\\n<p>                \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",</p>\\n<p>                \\\"accountName\\\": \\\"\\\\u5317\\\\u4eac\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u79d1\\\\u6280\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\"</p>\\n<p>            },</p>\\n<p>            {</p>\\n<p>                \\\"availableAmount\\\": 0,</p>\\n<p>                \\\"frozenAmount\\\": 0,</p>\\n<p>                \\\"accountNo\\\": 2004001240000583892,</p>\\n<p>                \\\"identityCode\\\": \\\"2000000010533431\\\",</p>\\n<p>                \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",</p>\\n<p>                \\\"accountName\\\": \\\"\\\\u6210\\\\u90fd\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\"</p>\\n<p>            }</p>\\n<p>        ],</p>\\n<p>        \\\"actionButtonShowInfo\\\": null</p>\\n<p>    },</p>\\n<p>    \\\"success\\\": true</p>\\n<p>}</p>\\n<p>期待结果:</p>\\n<p>{</p>\\n<p>    \\\"code\\\": 2000,</p>\\n<p>    \\\"message\\\": \\\"\\\\u64cd\\\\u4f5c\\\\u6210\\\\u529f\\\",</p>\\n<p>    \\\"data\\\": {</p>\\n<p>        \\\"availableAmount\\\": 0,</p>\\n<p>        \\\"availableAmountDesc\\\": \\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u53ef\\\\u7528\\\\u4e8e\\\\u62b5\\\\u6263\\\\u603b\\\\u989d\\\\uff0c\\\\u6263\\\\u9664\\\\u5ba2\\\\u6237\\\\u786e\\\\u8ba4\\\\u4e2d\\\\u91d1\\\\u989d\\\\u540e\\\\u7684\\\\u603b\\\\u989d\\\",</p>\\n<p>        \\\"frozenAmount\\\": 121.02,</p>\\n<p>        \\\"frozenAmountDesc\\\": \\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u62b5\\\\u6263\\\\u786e\\\\u8ba4\\\\u4e2d&\\\\u9000\\\\u6b3e\\\\u4e2d\\\\u7684\\\\u603b\\\\u989d\\\",</p>\\n<p>        \\\"refundedAmount\\\": 432.02,</p>\\n<p>        \\\"miniProgramType\\\": 1,</p>\\n<p>        \\\"walletPhone\\\": \\\"*******4925\\\",</p>\\n<p>        \\\"walletPhoneSec\\\": \\\"B002\\\\u023e\\\\u2c6f\\\\u01874925\\\",</p>\\n<p>        \\\"projectOrderId\\\": \\\"531645525060452352\\\",</p>\\n<p>        \\\"accountList\\\": [</p>\\n<p>            {</p>\\n<p>                \\\"availableAmount\\\": 0,</p>\\n<p>                \\\"frozenAmount\\\": 0,</p>\\n<p>                \\\"accountNo\\\": 2004001670000635600,</p>\\n<p>                \\\"identityCode\\\": \\\"2000000010533431\\\",</p>\\n<p>                \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",</p>\\n<p>                \\\"accountName\\\": \\\"\\\\u5317\\\\u4eac\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u79d1\\\\u6280\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\"</p>\\n<p>            },</p>\\n<p>            {</p>\\n<p>                \\\"availableAmount\\\": 0,</p>\\n<p>                \\\"frozenAmount\\\": 0,</p>\\n<p>                \\\"accountNo\\\": 2004001240000584000,</p>\\n<p>                \\\"identityCode\\\": \\\"2000000010533431\\\",</p>\\n<p>                \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",</p>\\n<p>                \\\"accountName\\\": \\\"\\\\u6210\\\\u90fd\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\"</p>\\n<p>            }</p>\\n<p>        ],</p>\\n<p>        \\\"actionButtonShowInfo\\\": null</p>\\n<p>    },</p>\\n<p>    \\\"success\\\": true</p>\\n<p>}</p>\\n<p style=\\\"color:red\\\">断言结束，断言结果：断言结果是False，断言失败！</p>\\n<p style=\\\"color:red\\\"><p style=\\\"color:red\\\">终止执行，测试结果[FAIL]:</p><p style=\\\"color:red\\\">断言结果是False，断言失败！</p>\\n<p>[HTTP_INTERFACE_185146]&lt;DONE: PYTHON执行成功&gt;</p></p>\",\n        \"isAsync\": 0,\n        \"id\": 185146,\n        \"interfaceId\": \"HTTP_INTERFACE_185146\",\n        \"httpConfKey\": \"integration\",\n        \"third_callback_url\": \"\",\n        \"ketest_plan_id\": \"0\",\n        \"is_crontab\": 0,\n        \"execBy\": \"dengyu032\",\n        \"execPlatform\": \"6\",\n        \"trigger_source\": \"common\",\n        \"httpConfKey_id\": \"integration\",\n        \"actualResult\": \"{\\\"status_code\\\": 200, \\\"reason\\\": \\\"200 \\\", \\\"headers\\\": {\\\"Server\\\": \\\"Lianjia\\\", \\\"Date\\\": \\\"Mon, 10 Nov 2025 02:55:35 GMT\\\", \\\"Content-Type\\\": \\\"application/json;charset=UTF-8\\\", \\\"Content-Length\\\": \\\"840\\\", \\\"Connection\\\": \\\"close\\\", \\\"Set-Cookie\\\": \\\"lianjia_ssid=138cedae-eae9-4c08-867d-b0f64403fbaf; expires=Mon, 10-Nov-25 03:25:32 GMT; Max-Age=1800; domain=.ke.com; path=/, lianjia_uuid=e83392aa-4750-4d91-b531-dffaa0736c17; expires=Thu, 08-Nov-35 02:55:32 GMT; Max-Age=315360000; domain=.ke.com; path=/\\\"}, \\\"content\\\": \\\"{\\\\\\\"code\\\\\\\":2000,\\\\\\\"message\\\\\\\":\\\\\\\"\\\\u64cd\\\\u4f5c\\\\u6210\\\\u529f\\\\\\\",\\\\\\\"data\\\\\\\":{\\\\\\\"availableAmount\\\\\\\":0,\\\\\\\"availableAmountDesc\\\\\\\":\\\\\\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u53ef\\\\u7528\\\\u4e8e\\\\u62b5\\\\u6263\\\\u603b\\\\u989d\\\\uff0c\\\\u6263\\\\u9664\\\\u5ba2\\\\u6237\\\\u786e\\\\u8ba4\\\\u4e2d\\\\u91d1\\\\u989d\\\\u540e\\\\u7684\\\\u603b\\\\u989d\\\\\\\",\\\\\\\"frozenAmount\\\\\\\":121.02,\\\\\\\"frozenAmountDesc\\\\\\\":\\\\\\\"\\\\u622a\\\\u6b62\\\\u5f53\\\\u524d\\\\u62b5\\\\u6263\\\\u786e\\\\u8ba4\\\\u4e2d&\\\\u9000\\\\u6b3e\\\\u4e2d\\\\u7684\\\\u603b\\\\u989d\\\\\\\",\\\\\\\"refundedAmount\\\\\\\":432.02,\\\\\\\"miniProgramType\\\\\\\":1,\\\\\\\"walletPhone\\\\\\\":\\\\\\\"*******4925\\\\\\\",\\\\\\\"walletPhoneSec\\\\\\\":\\\\\\\"19019394925\\\\\\\",\\\\\\\"projectOrderId\\\\\\\":\\\\\\\"531645525060452352\\\\\\\",\\\\\\\"accountList\\\\\\\":[{\\\\\\\"availableAmount\\\\\\\":0,\\\\\\\"frozenAmount\\\\\\\":0,\\\\\\\"accountNo\\\\\\\":2004001670000635761,\\\\\\\"identityCode\\\\\\\":\\\\\\\"2000000010533431\\\\\\\",\\\\\\\"accountUsageRangeVal\\\\\\\":\\\\\\\"V201800236\\\\\\\",\\\\\\\"accountName\\\\\\\":\\\\\\\"\\\\u5317\\\\u4eac\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u79d1\\\\u6280\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\\\\\"},{\\\\\\\"availableAmount\\\\\\\":0,\\\\\\\"frozenAmount\\\\\\\":0,\\\\\\\"accountNo\\\\\\\":2004001240000583892,\\\\\\\"identityCode\\\\\\\":\\\\\\\"2000000010533431\\\\\\\",\\\\\\\"accountUsageRangeVal\\\\\\\":\\\\\\\"V2021034277\\\\\\\",\\\\\\\"accountName\\\\\\\":\\\\\\\"\\\\u6210\\\\u90fd\\\\u8d1d\\\\u58f3\\\\u5bb6\\\\u5c45\\\\u6709\\\\u9650\\\\u516c\\\\u53f8\\\\\\\"}],\\\\\\\"actionButtonShowInfo\\\\\\\":null},\\\\\\\"success\\\\\\\":true}\\\"}\",\n        \"assertResult\": \"<p>[FAIL]: 断言失败！</p>\\n<p></p>\\n<p style=\\\"color:red\\\">断言结果是False，断言失败！</p>\",\n        \"testResult\": \"FAIL\",\n        \"execStatus\": 3,\n        \"beforeExecuteTakeTime\": 13,\n        \"executeTakeTime\": 2522,\n        \"afterExecuteTakeTime\": 606,\n        \"totalTakeTime\": 3141,\n        \"businessLineId\": 1,\n        \"moduleId\": 1,\n        \"caselevel\": 5,\n        \"version\": \"CurrentVersion\",\n        \"service_id\": \"nrs-pay-service\",\n        \"debugStartTime\": \"2025-11-10 10:55:32\",\n        \"caseInvokeData\": {\n            \"createSourceId\": 1011,\n            \"title\": \"余额首页查询接口\",\n            \"casedesc\": \"余额首页查询接口\",\n            \"useCustomUri\": 0,\n            \"customUri\": \"\",\n            \"uri\": \"nrs-pay-service\",\n            \"url\": \"/pc/wallet/dashboard\",\n            \"method\": \"GET\",\n            \"urlRedirect\": 0,\n            \"timeout\": 20,\n            \"performanceTime\": 1,\n            \"params\": \"commissionCode=DF23070600001937&source=2\",\n            \"header\": \"{\\\"Accept\\\":\\\"*/*\\\",\\\"Connection\\\":\\\"Keep-Alive\\\",\\\"Ketracespidinstance-Role\\\":\\\"[\\\\\\\"default\\\\\\\"]\\\",\\\"Ketracespidreq_id\\\":\\\"[\\\\\\\"35a07442-fb58-41b8-b9a4-f942c8b75eb1\\\\\\\"]\\\",\\\"Sw3\\\":\\\"152754-10.228.136.189-7737-1710926849326-1430|3|100|100|#10.228.172.161\\\",\\\"User-Agent\\\":\\\"Apache-HttpClient/4.5.10 (Java/1.8.0_232)\\\",\\\"X-Ke-Business-Id\\\":\\\"14\\\"}\",\n            \"bodyContent\": \"\",\n            \"bodyType\": \"none\",\n            \"varsPre\": \"\",\n            \"varsPost\": \"#python\\n# 恢复断言被 sosotest_diff 修改于：2025-11-06 16:06:45\\n# 返回结果断言\\nimports('assert_resp_equal')\\n# 兼容soso关键字\\nimports('define')\\n# 期待结果\\nexpected_result = {\\n  \\\"code\\\": 2000,\\n  \\\"message\\\": \\\"操作成功\\\",\\n  \\\"data\\\": {\\n    \\\"availableAmount\\\": 0,\\n    \\\"availableAmountDesc\\\": \\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\n    \\\"frozenAmount\\\": 121.02,\\n    \\\"frozenAmountDesc\\\": \\\"截止当前抵扣确认中&退款中的总额\\\",\\n    \\\"refundedAmount\\\": 432.02,\\n    \\\"miniProgramType\\\": 1,\\n    \\\"walletPhone\\\": \\\"*******4925\\\",\\n    \\\"walletPhoneSec\\\": \\\"B002ȾⱯƇ4925\\\",\\n    \\\"projectOrderId\\\": \\\"531645525060452352\\\",\\n    \\\"accountList\\\": [\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001670000635600,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V201800236\\\",\\n        \\\"accountName\\\": \\\"北京贝壳家居科技有限公司\\\"\\n      },\\n      {\\n        \\\"availableAmount\\\": 0,\\n        \\\"frozenAmount\\\": 0,\\n        \\\"accountNo\\\": 2004001240000584000,\\n        \\\"identityCode\\\": \\\"2000000010533431\\\",\\n        \\\"accountUsageRangeVal\\\": \\\"V2021034277\\\",\\n        \\\"accountName\\\": \\\"成都贝壳家居有限公司\\\"\\n      }\\n    ],\\n    \\\"actionButtonShowInfo\\\": null\\n  },\\n  \\\"success\\\": true\\n}\\n\\n# 断言参数：ignore_order不校验顺序；ignore_resp_item_added不校验新增字段；ignore_numeric_type_changes不校验数字类型（断言1.00==1会通过）\\nassert_resp_equal(expected_result, ignore_order=True, ignore_resp_item_added=True, ignore_numeric_type_changes=True)\",\n            \"isAsync\": 0,\n            \"id\": 185146,\n            \"interfaceId\": \"HTTP_INTERFACE_185146\",\n            \"httpConfKey\": \"integration\",\n            \"third_callback_url\": \"\",\n            \"ketest_plan_id\": \"0\",\n            \"is_crontab\": 0,\n            \"execBy\": \"dengyu032\",\n            \"execPlatform\": \"6\",\n            \"trigger_source\": \"common\",\n            \"httpConfKey_id\": \"integration\",\n            \"actualResult\": \"\",\n            \"assertResult\": \"\",\n            \"testResult\": \"NOTRUN\",\n            \"execStatus\": 1,\n            \"beforeExecuteTakeTime\": 0,\n            \"executeTakeTime\": 0,\n            \"afterExecuteTakeTime\": 0,\n            \"totalTakeTime\": 0,\n            \"businessLineId\": 1,\n            \"moduleId\": 1,\n            \"caselevel\": 5,\n            \"version\": \"CurrentVersion\"\n        },\n        \"varsPrePool\": {},\n        \"testDebugId\": \"interfaceDebug_dengyu032_1762743332657\",\n        \"alias\": \"integration\",\n        \"respBodyText\": \"{\\\"code\\\":2000,\\\"message\\\":\\\"操作成功\\\",\\\"data\\\":{\\\"availableAmount\\\":0,\\\"availableAmountDesc\\\":\\\"截止当前可用于抵扣总额，扣除客户确认中金额后的总额\\\",\\\"frozenAmount\\\":121.02,\\\"frozenAmountDesc\\\":\\\"截止当前抵扣确认中&退款中的总额\\\",\\\"refundedAmount\\\":432.02,\\\"miniProgramType\\\":1,\\\"walletPhone\\\":\\\"*******4925\\\",\\\"walletPhoneSec\\\":\\\"19019394925\\\",\\\"projectOrderId\\\":\\\"531645525060452352\\\",\\\"accountList\\\":[{\\\"availableAmount\\\":0,\\\"frozenAmount\\\":0,\\\"accountNo\\\":2004001670000635761,\\\"identityCode\\\":\\\"2000000010533431\\\",\\\"accountUsageRangeVal\\\":\\\"V201800236\\\",\\\"accountName\\\":\\\"北京贝壳家居科技有限公司\\\"},{\\\"availableAmount\\\":0,\\\"frozenAmount\\\":0,\\\"accountNo\\\":2004001240000583892,\\\"identityCode\\\":\\\"2000000010533431\\\",\\\"accountUsageRangeVal\\\":\\\"V2021034277\\\",\\\"accountName\\\":\\\"成都贝壳家居有限公司\\\"}],\\\"actionButtonShowInfo\\\":null},\\\"success\\\":true}\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "测试环境列表",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "token",
+						"value": "636960ceeb534069301a80092124fd5c",
+						"type": "text"
+					},
+					{
+						"key": "auth-email",
+						"value": "xieying003",
+						"type": "text"
+					},
+					{
+						"key": "user-email",
+						"value": "dengyu032",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://at.ke.com/v2/config/uri/group_env?uri=nrs-pay-service",
+					"protocol": "http",
+					"host": [
+						"at",
+						"ke",
+						"com"
+					],
+					"path": [
+						"v2",
+						"config",
+						"uri",
+						"group_env"
+					],
+					"query": [
+						{
+							"key": "uri",
+							"value": "nrs-pay-service"
+						}
+					]
+				},
+				"description": "Generated from cURL: curl 'https://at.api.ke.com/v2/config/uri/group_env?uri=nrs-pay-service' \\\n  -H 'AUTH-EMAIL: xieying003' \\\n  -H 'Accept: application/json, text/plain, */*' \\\n  -H 'Accept-Language: zh-CN,zh;q=0.9' \\\n  -H 'Connection: keep-alive' \\\n  -b 'mt_home_token=2.0111a9beb284e545ba0001cb5451de9bd9def3bf11; bella_workflow_sessionId=41606354-8f57-4793-93a6-0174b3119c41; lianjia_b_token=2.001424b82881684320058d069a623647cc; XH_HistroyRole={\"1000000026706279\":\"superAdmin\"}; crosSdkDT2019DeviceId=5fbcb3-clcyps-smit5hizlsxhzpd-bxqhrthil; intelligentservice_test_token=2.0111a9beb284e730e00001cb542e5983b5d19397cb; ketest-env=production; beikeBaseData=%7B%22parentSceneId%22%3A%22-1%22%7D; bella_openapi_sessionId=db98267a-9e69-42ee-99dd-52f498f6f53a; loginRedirect=https://mp-wx.ke.com/build/makepre; casgwusercred=FHsbS8nf7BFe-lsrPDVBor1ztB7ZFqfFZkeE2OZpBw_jmxOu34P1j19Z2qBS_JQ7Vaq8FcQ9IVB2Ei0oo6yCU276k46W65oiB7Kvf58eHozj10nzRThKzYZFeg011ST_VtcOaiHEnM7xwJDVxcku9PHZQSq7kHsKuTREM2aRbAQ; crosgwusercred=IfGDG-sYG8O-pkcXnuZOenPex9kezRd1kmpiRZTTZsB-zLjV-w81R8rOOw7COQD66-NGw1eY56bLFO-i2VovCQ9a65f80f5c40d7f9df1a0dba4f329709; timezone=Asia%2FShanghai; MOMA_LANGUAGE=zh; _ga_P01KVVLGDF=GS2.1.s1760581853$o1$g1$t1760581983$j18$l0$h0; _ucid_=1000000026706279; _account_=dengyu032; _usercode_=26706279; _userFullEmail_=dengyu032%40ke.com; _displayName_=%E9%82%93%E8%A3%95%28dengyu032%29; intelligentservice_token=2.0111a9beb284e545ba0001cb54904d34f6a9daabee; prd-assistant-token-prod=2.0111a9beb284e545ba0001cb54c970e3e681d872cf; luoshu_t_token=2.00108b8ca685c777ae0122321424226fff; _ga_PM7PPP4S56=GS2.1.s1761899484$o3$g0$t1761899484$j60$l0$h0; lianjia_token_sinan=2.0013e5a09e86a48127024c1e2c50e76a3c; _ga=GA1.2.1665847087.1757664429; ketest-session=wqxlgsxd0t1de8exx9hfjbz8j5u9z7ab; sessionid=1a4q8osv4mkjyneio9hej7lxwejscl15; lianjia_uuid=efe60825-ed76-4604-8449-6ad84ef95889; lianjia_token=2.0111a9beb284e545ba0001cb54a4d22c163c67dfd5; _ga_F0DQ6TTSVW=GS2.2.s1762417146$o28$g0$t1762417146$j60$l0$h0; session_id=bb289d43-a5a0-122a-8e34-e404f5c40bf9; ketest-user=eyJsb2dpbl91c2VyIjogIjEwMDAwMDAwMjY3MDYyNzkiLCAiYWNjb3VudCI6ICJkZW5neXUwMzIiLCAiYWNjb3VudFN5c3RlbUlkIjogImVtcGxveWVlIiwgImF2YXRhciI6IG51bGwsICJiaXJ0aGRheSI6ICJudWxsIiwgImJ1c2luZXNzVG9rZW4iOiAiMi4wMTExYTliZWIyODRlNTQ1YmEwMDAxY2I1NGE0ZDIyYzE2M2M2N2RmZDUiLCAiY29ycElkIjogIm51bGwiLCAiZGlzcGxheU5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgImVtYWlsIjogImRlbmd5dTAzMkBrZS5jb20iLCAiZ2VuZGVyIjogIk1BTEUiLCAiaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJtZmFBdXRoTWV0aG9kTGV2ZWwiOiAiMCIsICJwYXNzZWRNZmFSZWFzb24iOiAiaXBXaGl0ZUxpc3QiLCAicGhvbmUiOiAiMTg1MTE1ODg0NzgiLCAicmVhbE5hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInNlcnZpY2VJZCI6ICJzZWxmLWxvZ2luLmtzZy5rZS5jb20iLCAic3RhdGUiOiAiTk9STUFMIiwgInRndElkIjogIlRHVC03MjU4NTg1LWExWWpvNXlrQVl0UjBTRlRLd3ZKc2tMTXJ4ajl3U2djcUVBUUp2bTFVNml5VXZpTnRaYmRENC1VLW0zQUdCeU5VMTQta2UuY29tIiwgInVjaWQiOiAiMTAwMDAwMDAyNjcwNjI3OSIsICJ1Y25hbWUiOiAiXHU5MDkzXHU4OGQ1IiwgInVpZCI6ICIxMDAwMDAwMDI2NzA2Mjc5IiwgInVzZXJfY29kZSI6ICIyNjcwNjI3OSIsICJ1c2VyVGFnIjogIjAiLCAidmVyc2lvbiI6ICIxNTAxIiwgInpoaWRhb191Y2lkIjogIjIxMTAwMDAwMDMwODA5NjkiLCAibmV4dF91cmwiOiAiaHR0cHM6Ly9jYXNlLW1pbmRlci5rZS5jb20vIy9jYXNlRWRpdG9yP2lkPTE3NDM2JmF1dG9fc2F2ZT10cnVlJmNyZWF0b3JfbmFtZT1kZW5neXUwMzIifQ=a2V0ZXN0LXVzZXI==; lianjia_ssid=58660022-b276-4080-a610-d3b8b4bcc499' \\\n  -H 'EMAIL-PREFIX: dengyu032' \\\n  -H 'Origin: https://ketest-pro.ke.com' \\\n  -H 'Referer: https://ketest-pro.ke.com/' \\\n  -H 'Sec-Fetch-Dest: empty' \\\n  -H 'Sec-Fetch-Mode: cors' \\\n  -H 'Sec-Fetch-Site: same-site' \\\n  -H 'TOKEN: 636960ceeb534069301a80092124fd5c' \\\n  -H 'UCID: 1000000026706279' \\\n  -H 'USER-EMAIL: dengyu032' \\\n  -H 'USERNAME: 6YKT6KOV' \\\n  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36' \\\n  -H 'sec-ch-ua: \"Not_A Brand\";v=\"99\", \"Chromium\";v=\"142\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"macOS\"'"
+			},
+			"response": [
+				{
+					"name": "测试环境列表",
+					"originalRequest": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "636960ceeb534069301a80092124fd5c",
+								"type": "text"
+							},
+							{
+								"key": "auth-email",
+								"value": "xieying003",
+								"type": "text"
+							},
+							{
+								"key": "user-email",
+								"value": "dengyu032",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://at.ke.com/v2/config/uri/group_env?uri=nrs-pay-service",
+							"protocol": "http",
+							"host": [
+								"at",
+								"ke",
+								"com"
+							],
+							"path": [
+								"v2",
+								"config",
+								"uri",
+								"group_env"
+							],
+							"query": [
+								{
+									"key": "uri",
+									"value": "nrs-pay-service"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "",
+					"header": [
+						{
+							"key": "Connection",
+							"value": "close"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						},
+						{
+							"key": "Auth_time",
+							"value": "0.0"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 10 Nov 2025 02:56:18 GMT"
+						},
+						{
+							"key": "Elapsed",
+							"value": "0.047585248947143555"
+						},
+						{
+							"key": "End_timestamp",
+							"value": "1762743378.992968"
+						},
+						{
+							"key": "Server",
+							"value": "Lianjia"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "sessionid=tcs99x0qvprstpm54oxtteh1l3n5gnzl; expires=Mon, 24-Nov-2025 02:56:18 GMT; HttpOnly; Max-Age=1209600; Path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:26:18 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "lianjia_ssid=7aa618a4-0aed-414a-96ad-29174887e8a2; expires=Mon, 10-Nov-25 03:26:18 GMT; Max-Age=1800; domain=.ke.com; path=/"
+						},
+						{
+							"key": "Start_timestamp",
+							"value": "1762743378.9453828"
+						},
+						{
+							"key": "Traceid",
+							"value": "1762743378.945301-a689458aaa80fc5a20a39eea49a2ae5b"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Vary",
+							"value": "Origin, Cookie"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "ALLOW-FROM"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 10000,\n    \"message\": \"ok\",\n    \"body\": {\n        \"online_group\": [\n            {\n                \"id\": 12552,\n                \"httpConfKey\": \"lingshou-online\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://i.nrs-pay-service.home.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"xieyuchang002\",\n                \"modBy\": \"xieyuchang002\",\n                \"addTime\": \"2023-07-26 18:39:34\",\n                \"modTime\": \"2023-07-26 18:39:34\",\n                \"addrEnvType\": 1,\n                \"teamKey\": \"xinjiaju\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"lingshou-online\",\n                \"env_name\": \"零售线上环境\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 3424,\n                \"teamName\": \"新家居平台\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            }\n        ],\n        \"test_group\": [\n            {\n                \"id\": 19749,\n                \"httpConfKey\": \"integration\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.integration.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"dengyu032\",\n                \"modBy\": \"dengyu032\",\n                \"addTime\": \"2025-07-01 11:53:00\",\n                \"modTime\": \"2025-07-01 11:53:00\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"xinjiaju\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"integration\",\n                \"env_name\": \"integration\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 3653,\n                \"teamName\": \"新家居平台\",\n                \"applyEnvIsolation\": 0,\n                \"approvalStatusText\": \"未提审\",\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 19593,\n                \"httpConfKey\": \"fanshuhui001\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.fanshuhui001.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"fanshuhui001\",\n                \"modBy\": \"fanshuhui001\",\n                \"addTime\": \"2025-05-07 14:12:39\",\n                \"modTime\": \"2025-05-07 14:12:39\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"fanshuhui001\",\n                \"env_name\": \"fanshuhui001\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 1825,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"check\",\n                    \"copy\"\n                ]\n            },\n            {\n                \"id\": 19287,\n                \"httpConfKey\": \"fengzihan-test\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.fengzihan-test.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"fengzihan001\",\n                \"modBy\": \"fengzihan001\",\n                \"addTime\": \"2024-12-04 17:40:55\",\n                \"modTime\": \"2024-12-04 17:40:55\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"fengzihan-test\",\n                \"env_name\": \"fengzihan-test\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2969,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 18402,\n                \"httpConfKey\": \"test4app\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.test4app.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"dengyu032\",\n                \"modBy\": \"dengyu032\",\n                \"addTime\": \"2024-05-21 10:21:44\",\n                \"modTime\": \"2024-05-21 10:21:44\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"test4app\",\n                \"env_name\": \"test4app\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 3663,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 9561,\n                \"httpConfKey\": \"offline-beta\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.offline-beta.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"dengyu032\",\n                \"modBy\": \"dengyu032\",\n                \"addTime\": \"2022-09-30 15:03:46\",\n                \"modTime\": \"2023-11-02 11:25:35\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"xinjiaju\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"offline-beta\",\n                \"env_name\": \"offline-beta\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 1797,\n                \"teamName\": \"新家居平台\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 8857,\n                \"httpConfKey\": \"nrs-lingshou-dev\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.nrs-lingshou-dev.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"caizhenhang001\",\n                \"modBy\": \"chenwenlong009\",\n                \"addTime\": \"2023-06-13 19:01:18\",\n                \"modTime\": \"2023-06-13 19:01:18\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"nrs-lingshou-dev\",\n                \"env_name\": \"nrs-lingshou-dev\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2817,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"check\",\n                    \"copy\"\n                ]\n            },\n            {\n                \"id\": 9687,\n                \"httpConfKey\": \"chenjiongxitest01\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.chenjiongxitest01.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"chenbin082\",\n                \"modBy\": \"chenbin082\",\n                \"addTime\": \"2023-03-26 05:08:02\",\n                \"modTime\": \"2023-03-26 05:08:02\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"chenjiongxitest01\",\n                \"env_name\": \"chenjiongxitest01\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 1973,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"check\",\n                    \"copy\"\n                ]\n            },\n            {\n                \"id\": 9370,\n                \"httpConfKey\": \"nrs-jit-test\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.nrs-jit-test.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"xieyuchang002\",\n                \"modBy\": \"xieyuchang002\",\n                \"addTime\": \"2022-08-22 17:41:59\",\n                \"modTime\": \"2022-08-22 17:41:59\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"nrs-jit-test\",\n                \"env_name\": \"nrs-jit-test\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2946,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 9254,\n                \"httpConfKey\": \"nrs-lingshou-reverse-dev\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.nrs-lingshou-reverse-dev.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"sunchangfei001\",\n                \"modBy\": \"sunchangfei001\",\n                \"addTime\": \"2022-08-03 21:23:50\",\n                \"modTime\": \"2022-08-03 21:23:50\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"nrs-lingshou-reverse-dev\",\n                \"env_name\": \"nrs-lingshou-reverse-dev\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2924,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 7996,\n                \"httpConfKey\": \"nrs-test-base\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.nrs-test-base.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"chenbin082\",\n                \"modBy\": \"chenbin082\",\n                \"addTime\": \"2022-07-20 18:18:43\",\n                \"modTime\": \"2022-07-20 18:18:43\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"nrs-test-base\",\n                \"env_name\": \"nrs-test-base\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 1702,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"check\",\n                    \"copy\"\n                ]\n            },\n            {\n                \"id\": 8775,\n                \"httpConfKey\": \"nrs-tongcheng-test\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.nrs-tongcheng-test.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"xieyuchang002\",\n                \"modBy\": \"xieyuchang002\",\n                \"addTime\": \"2022-05-06 17:16:34\",\n                \"modTime\": \"2022-05-06 17:16:34\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"nrs-tongcheng-test\",\n                \"env_name\": \"nrs-tongcheng-test\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2803,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 8661,\n                \"httpConfKey\": \"nrs-dev\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.nrs-dev.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"xieyuchang002\",\n                \"modBy\": \"xieyuchang002\",\n                \"addTime\": \"2022-04-24 11:30:52\",\n                \"modTime\": \"2022-04-24 11:30:52\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"nrs-dev\",\n                \"env_name\": \"nrs-dev\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2787,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 8222,\n                \"httpConfKey\": \"packages-qa\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.packages-qa.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"xieyuchang002\",\n                \"modBy\": \"xieyuchang002\",\n                \"addTime\": \"2022-03-10 20:13:29\",\n                \"modTime\": \"2022-03-10 20:13:29\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"packages-qa\",\n                \"env_name\": \"packages-qa\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2676,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 8156,\n                \"httpConfKey\": \"pos-qa-test\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.pos-qa-test.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"dengyu032\",\n                \"modBy\": \"xieyuchang002\",\n                \"addTime\": \"2022-03-08 16:54:31\",\n                \"modTime\": \"2022-03-08 16:54:31\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"pos-qa-test\",\n                \"env_name\": \"pos-qa-test\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2661,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            },\n            {\n                \"id\": 7933,\n                \"httpConfKey\": \"sj-qa-test\",\n                \"uriKey\": \"nrs-pay-service\",\n                \"requestAddr\": \"http://nrs-pay-service.sj-qa-test.ttb.test.ke.com\",\n                \"state\": 1,\n                \"addBy\": \"xieyuchang002\",\n                \"modBy\": \"xieyuchang002\",\n                \"addTime\": \"2022-01-14 17:39:51\",\n                \"modTime\": \"2022-01-14 17:39:51\",\n                \"addrEnvType\": 2,\n                \"teamKey\": \"\",\n                \"latestApprovalTime\": \"1970-10-10 00:00:00\",\n                \"latestApprovalId\": 0,\n                \"statusApprovalId\": 0,\n                \"approvalStatus\": 1,\n                \"env_key\": \"sj-qa-test\",\n                \"env_name\": \"sj-qa-test\",\n                \"service_key\": \"test1db\",\n                \"env_id\": 2567,\n                \"teamName\": \"\",\n                \"applyEnvIsolation\": 0,\n                \"permissions\": [\n                    \"add\",\n                    \"copy\",\n                    \"edit\",\n                    \"delete\",\n                    \"check\"\n                ]\n            }\n        ],\n        \"local_group\": []\n    }\n}"
+				}
+			]
+		}
+	]
+}

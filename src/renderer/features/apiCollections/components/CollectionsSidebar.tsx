@@ -1,6 +1,12 @@
 import React from 'react';
 import type { ApiCollection, HttpMethod } from '@shared/models/apiCollection';
 
+interface PaginationControls {
+  hasMore: boolean;
+  isLoading: boolean;
+  onLoadMore: () => void;
+}
+
 interface CollectionsSidebarProps {
   collections: ApiCollection[];
   activeRequestId: string | null;
@@ -8,6 +14,7 @@ interface CollectionsSidebarProps {
   searchTerm: string;
   onSearchTermChange: (value: string) => void;
   loading: boolean;
+  pagination?: PaginationControls;
 }
 
 const methodColor: Record<HttpMethod, string> = {
@@ -44,7 +51,9 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
   searchTerm,
   onSearchTermChange,
   loading,
+  pagination,
 }) => {
+  const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
   const treeRequests = React.useMemo(() => {
     const result: TreeRequest[] = [];
     collections.forEach((collection) => {
@@ -76,6 +85,43 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
     );
   }, [treeRequests, searchTerm]);
 
+  React.useEffect(() => {
+    if (!pagination) {
+      return;
+    }
+    const container = scrollContainerRef.current;
+    if (!container) {
+      return;
+    }
+    let ticking = false;
+    const handleScroll = () => {
+      if (!pagination.hasMore || pagination.isLoading) {
+        return;
+      }
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      if (scrollHeight - (scrollTop + clientHeight) < 160) {
+        pagination.onLoadMore();
+      }
+    };
+    const onScroll = () => {
+      if (ticking) {
+        return;
+      }
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        ticking = false;
+        handleScroll();
+      });
+    };
+    container.addEventListener('scroll', onScroll);
+    handleScroll();
+    return () => {
+      container.removeEventListener('scroll', onScroll);
+    };
+  }, [pagination?.hasMore, pagination?.isLoading, pagination?.onLoadMore]);
+
+  const showEmptyState = !loading && filteredRequests.length === 0;
+
   return (
     <aside style={sidebarStyles}>
       <div
@@ -104,22 +150,39 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
       {loading && (
         <div style={{ padding: '16px', fontSize: '0.9rem', color: '#9ca3af' }}>Loading collections…</div>
       )}
-      {!loading && filteredRequests.length === 0 && (
-        <div style={{ padding: '16px', fontSize: '0.9rem', color: '#9ca3af' }}>No requests match your search.</div>
-      )}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      {showEmptyState ? (
         <div
           style={{
-            borderLeft: '1px solid rgba(255, 255, 255, 0.04)',
-            margin: '8px 0',
-            paddingLeft: '10px',
+            flex: 1,
             display: 'flex',
-            flexDirection: 'column',
-            gap: '2px',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            padding: '24px',
+            color: '#9ca3af',
+            fontSize: '0.9rem',
           }}
         >
-          {filteredRequests.map((request) => {
-            const isActive = request.id === activeRequestId;
+          暂无接口，请调整筛选条件或稍后再试。
+        </div>
+      ) : (
+        <div
+          ref={scrollContainerRef}
+          className="dark-scrollbar"
+          style={{ flex: 1, overflowY: 'auto' }}
+        >
+          <div
+            style={{
+              borderLeft: '1px solid rgba(255, 255, 255, 0.04)',
+              margin: '8px 0',
+              paddingLeft: '10px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2px',
+            }}
+          >
+            {filteredRequests.map((request) => {
+              const isActive = request.id === activeRequestId;
               return (
                 <button
                   key={request.id}
@@ -176,9 +239,22 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
                   </div>
                 </button>
               );
-          })}
+            })}
+          </div>
+          {pagination && filteredRequests.length > 0 && (
+            <div
+              style={{
+                padding: '12px 0 18px',
+                textAlign: 'center',
+                fontSize: '0.8rem',
+                color: '#6b7280',
+              }}
+            >
+              {pagination.isLoading ? '加载中…' : pagination.hasMore ? '下滑加载更多' : '已加载全部接口'}
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </aside>
   );
 };

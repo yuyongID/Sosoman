@@ -14,6 +14,13 @@ const resolveEnv = (key: string, fallback?: string): string | undefined =>
   globalEnv[key] ?? processEnv[key] ?? fallback;
 
 /**
+ * Shared helper so feature-specific clients can read from the same env priority
+ * order (renderer injected env → process.env → fallback).
+ */
+export const getEnvValue = (key: string, fallback?: string): string | undefined =>
+  resolveEnv(key, fallback);
+
+/**
  * Axios instance shared across the application.
  *
  * Centralising HTTP configuration here ensures authentication headers,
