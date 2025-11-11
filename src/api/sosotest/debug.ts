@@ -30,9 +30,38 @@ export interface ExecuteSosotestDebugRequestOptions {
   onSnapshot?: (snapshot: ApiResponseSnapshot) => void;
   pollIntervalMs?: number;
   maxAttempts?: number;
+  signal?: AbortSignal;
 }
 
-const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+const createAbortError = (): Error => {
+  if (typeof DOMException !== 'undefined') {
+    return new DOMException('Aborted', 'AbortError');
+  }
+  const error = new Error('Aborted');
+  error.name = 'AbortError';
+  return error;
+};
+
+const wait = (ms: number, signal?: AbortSignal): Promise<void> =>
+  new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(createAbortError());
+      return;
+    }
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      resolve();
+    }, ms);
+    const cleanup = () => {
+      clearTimeout(timeoutId);
+      signal?.removeEventListener('abort', onAbort);
+    };
+    const onAbort = () => {
+      cleanup();
+      reject(createAbortError());
+    };
+    signal?.addEventListener('abort', onAbort);
+  });
 
 const normalizeHeaderValue = (value: unknown): string =>
   Array.isArray(value) ? value.join(', ') : String(value ?? '');
@@ -89,12 +118,15 @@ const buildSnapshot = (
 
 const runSosotestInterface = async (
   interfaceData: SosotestInterfaceData,
-  planId: number
+  planId: number,
+  signal?: AbortSignal
 ): Promise<string> => {
   const formData = new FormData();
   formData.append('interfaceData', JSON.stringify(interfaceData));
   formData.append('ketest_plan_id', String(planId));
-  const { data } = await sosotestClient.post<SosotestRunDebugResponse>(RUN_PATH, formData);
+  const { data } = await sosotestClient.post<SosotestRunDebugResponse>(RUN_PATH, formData, {
+    signal,
+  });
   const debugId = data.body;
   if (!debugId) {
     throw new Error('[sosotest] 调试接口未返回调试 ID');
@@ -108,12 +140,14 @@ const runSosotestInterface = async (
 };
 
 const pollSosotestResult = (
-  debugId: string
+  debugId: string,
+  signal?: AbortSignal
 ): Promise<AxiosResponse<SosotestRunResultResponse>> =>
   sosotestClient.get<SosotestRunResultResponse>(RESULT_PATH, {
     params: {
       test_debug_id: debugId,
     },
+    signal,
   });
 
 export async function executeSosotestDebugRequest(
@@ -125,15 +159,16 @@ export async function executeSosotestDebugRequest(
   const planId = payload.planId ?? DEFAULT_SOSOTEST_PLAN_ID;
   const consoleLog: string[] = [];
   const startedAt = new Date().toISOString();
+  const signal = options.signal;
 
-  const debugId = await runSosotestInterface(payload.interfaceData, planId);
+  const debugId = await runSosotestInterface(payload.interfaceData, planId, signal);
   consoleLog.push(`调试任务已发起，调试编号 ${debugId}`);
 
   let lastSnapshot: ApiResponseSnapshot | null = null;
   let lastCode: number | undefined;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const response = await pollSosotestResult(debugId);
+    const response = await pollSosotestResult(debugId, signal);
     const finishedAt = new Date().toISOString();
     const code = response.data?.code;
     const message = response.data?.message ?? '';
@@ -162,7 +197,7 @@ export async function executeSosotestDebugRequest(
     }
 
     if (attempt < maxAttempts) {
-      await wait(pollIntervalMs);
+      await wait(pollIntervalMs, signal);
     }
   }
 

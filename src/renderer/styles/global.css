@@ -188,3 +188,22 @@ textarea {
   display: none;
   height: 0;
 }
+
+@keyframes sosoman-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: #2190ff;
+  animation: sosoman-spin 1s linear infinite;
+  display: inline-flex;
+}

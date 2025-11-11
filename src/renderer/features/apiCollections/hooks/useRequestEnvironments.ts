@@ -5,6 +5,47 @@ import {
 } from '@api/sosotest/environments';
 import type { EnvironmentOption } from '../types';
 
+const ENVIRONMENT_SELECTION_STORAGE_KEY = 'apiCollections.environmentSelection.byUri';
+
+const loadStoredEnvironmentSelections = (): Record<string, string> => {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+  const raw = window.localStorage.getItem(ENVIRONMENT_SELECTION_STORAGE_KEY);
+  if (!raw) {
+    return {};
+  }
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed !== 'object' || parsed === null) {
+      return {};
+    }
+    return Object.entries(parsed).reduce<Record<string, string>>((acc, [uri, key]) => {
+      if (typeof uri === 'string' && typeof key === 'string') {
+        acc[uri] = key;
+      }
+      return acc;
+    }, {});
+  } catch (error) {
+    console.warn('[apiCollections] Failed to parse persisted environment selections', error);
+    return {};
+  }
+};
+
+const persistEnvironmentSelections = (selections: Record<string, string>): void => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  try {
+    window.localStorage.setItem(
+      ENVIRONMENT_SELECTION_STORAGE_KEY,
+      JSON.stringify(selections)
+    );
+  } catch (error) {
+    console.warn('[apiCollections] Failed to persist environment selections', error);
+  }
+};
+
 const determineDefaultKey = (
   list: SosotestEnvironmentEntry[],
   storedKey?: string
@@ -68,6 +109,7 @@ export interface UseRequestEnvironmentsResult {
   environmentButtonDisabled: boolean;
   hasSelectableEnvironment: boolean;
   handleEnvironmentChange: (key: string) => void;
+  persistActiveEnvironmentSelection: () => void;
 }
 
 /**
@@ -80,7 +122,9 @@ export function useRequestEnvironments(activeUri: string): UseRequestEnvironment
   const [environments, setEnvironments] = React.useState<SosotestEnvironmentEntry[]>([]);
   const [selectedEnvironmentKey, setSelectedEnvironmentKey] = React.useState<string | null>(null);
   const environmentCacheRef = React.useRef<Record<string, SosotestEnvironmentEntry[]>>({});
-  const environmentSelectionRef = React.useRef<Record<string, string>>({});
+  const environmentSelectionRef = React.useRef<Record<string, string>>(
+    loadStoredEnvironmentSelections()
+  );
   const isMountedRef = React.useRef(false);
 
   React.useEffect(() => {
@@ -204,6 +248,17 @@ export function useRequestEnvironments(activeUri: string): UseRequestEnvironment
     [uniqueEnvironments, setEnvironmentSelectionForUri]
   );
 
+  const persistActiveEnvironmentSelection = React.useCallback(() => {
+    if (!activeUri) {
+      return;
+    }
+    const key = environmentSelectionRef.current[activeUri];
+    if (!key) {
+      return;
+    }
+    persistEnvironmentSelections(environmentSelectionRef.current);
+  }, [activeUri]);
+
   return {
     selectedEnvironment,
     selectedEnvironmentLabel,
@@ -213,5 +268,6 @@ export function useRequestEnvironments(activeUri: string): UseRequestEnvironment
     environmentButtonDisabled,
     hasSelectableEnvironment,
     handleEnvironmentChange,
+    persistActiveEnvironmentSelection,
   };
 }

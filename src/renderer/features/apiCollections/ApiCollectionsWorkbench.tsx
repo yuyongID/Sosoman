@@ -6,7 +6,7 @@ import type {
 } from '@shared/models/apiCollection';
 import { executeSosotestDebugRequest } from '@api/sosotest/debug';
 import { fetchSosotestInterfaceDetail, saveSosotestInterface } from '@api/sosotest/interfaces';
-import { usePersistentNumber } from '@renderer/hooks/usePersistentNumber';
+import { usePersistentNumber, usePersistentString } from '@renderer/hooks/usePersistentNumber';
 import { CollectionsSidebar } from './components/CollectionsSidebar';
 import { RequestTabs } from './components/RequestTabs';
 import { RequestEditor } from './components/RequestEditor';
@@ -39,6 +39,30 @@ interface ApiCollectionsWorkbenchProps {
 
 
 const clamp = (value: number, min: number, max: number): number => Math.min(Math.max(value, min), max);
+const MIN_REQUEST_PANEL_HEIGHT = 200;
+const MIN_RESPONSE_PANEL_HEIGHT = 200;
+
+const isAbortError = (error: unknown): boolean => {
+  if (!error) {
+    return false;
+  }
+  if (error instanceof DOMException && error.name === 'AbortError') {
+    return true;
+  }
+  if (typeof error === 'object') {
+    const knownError = error as { name?: string; code?: string; message?: string };
+    if (knownError.name === 'CanceledError' || knownError.code === 'ERR_CANCELED') {
+      return true;
+    }
+    if (knownError.message?.toLowerCase().includes('canceled')) {
+      return true;
+    }
+  }
+  if (typeof error === 'string' && error.toLowerCase().includes('canceled')) {
+    return true;
+  }
+  return false;
+};
 
 export const ApiCollectionsWorkbench = React.forwardRef<
   ApiCollectionsWorkbenchHandle,
@@ -49,11 +73,22 @@ export const ApiCollectionsWorkbench = React.forwardRef<
   const [activeTabId, setActiveTabId] = React.useState<string | null>(null);
   const defaultTabPrimedRef = React.useRef(false);
   const [sidebarWidth, setSidebarWidth] = usePersistentNumber('apiCollections.sidebarWidth', 280);
-  const [responsePanelHeight, setResponsePanelHeight] = usePersistentNumber(
+  const [responsePanelHeight, setResponsePanelHeight, responseHeightStored] = usePersistentNumber(
     'apiCollections.responseHeight',
-    280
+    0
+  );
+  const [fullScreenPanel, setFullScreenPanel] = usePersistentString(
+    'apiCollections.panelFullscreen',
+    'none'
   );
   const isMountedRef = React.useRef(true);
+  const runAbortControllers = React.useRef<Map<string, AbortController>>(new Map());
+  const contentAreaRef = React.useRef<HTMLDivElement | null>(null);
+  const [contentAreaHeight, setContentAreaHeight] = React.useState(0);
+  const responseHeightInitializedRef = React.useRef(responseHeightStored);
+  const isRequestPanelFullscreen = fullScreenPanel === 'request';
+  const isResponsePanelFullscreen = fullScreenPanel === 'response';
+  const isAnyPanelFullscreen = fullScreenPanel !== 'none';
 
   React.useEffect(() => {
     isMountedRef.current = true;
@@ -61,6 +96,58 @@ export const ApiCollectionsWorkbench = React.forwardRef<
       isMountedRef.current = false;
     };
   }, []);
+  React.useLayoutEffect(() => {
+    if (typeof ResizeObserver === 'undefined') {
+      return;
+    }
+    const node = contentAreaRef.current;
+    if (!node) {
+      return;
+    }
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) {
+        return;
+      }
+      setContentAreaHeight(entry.contentRect.height);
+    });
+    observer.observe(node);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+  const applyResponsePanelHeight = React.useCallback(
+    (nextHeight: number) => {
+      if (!contentAreaHeight) {
+        setResponsePanelHeight(Math.max(MIN_RESPONSE_PANEL_HEIGHT, nextHeight));
+        return;
+      }
+      const maxAllowed = Math.max(
+        MIN_RESPONSE_PANEL_HEIGHT,
+        contentAreaHeight - MIN_REQUEST_PANEL_HEIGHT
+      );
+      const clampedHeight = clamp(nextHeight, MIN_RESPONSE_PANEL_HEIGHT, maxAllowed);
+      setResponsePanelHeight(clampedHeight);
+    },
+    [contentAreaHeight, setResponsePanelHeight]
+  );
+  const togglePanelFullscreen = React.useCallback(
+    (panel: 'request' | 'response') => {
+      setFullScreenPanel((prev) => (prev === panel ? 'none' : panel));
+    },
+    [setFullScreenPanel]
+  );
+  React.useEffect(() => {
+    if (!contentAreaHeight) {
+      return;
+    }
+    if (!responseHeightInitializedRef.current) {
+      responseHeightInitializedRef.current = true;
+      applyResponsePanelHeight(Math.round(contentAreaHeight / 2));
+      return;
+    }
+    applyResponsePanelHeight(responsePanelHeight);
+  }, [contentAreaHeight, responsePanelHeight, applyResponsePanelHeight]);
   const ensureDefaultTab = React.useCallback(
     (collection: ApiCollection) => {
       if (defaultTabPrimedRef.current) {
@@ -111,6 +198,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     environmentButtonDisabled,
     hasSelectableEnvironment,
     handleEnvironmentChange,
+    persistActiveEnvironmentSelection,
   } = useRequestEnvironments(activeUri);
   const consoleLines = React.useMemo(() => {
     const response = activeTab?.response;
@@ -309,8 +397,18 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     onConnectionStateChange('degraded');
 
     const tabId = tab.id;
+    const abortController = new AbortController();
+    runAbortControllers.current.set(tabId, abortController);
+    const cleanupAbortController = () => {
+      const existing = runAbortControllers.current.get(tabId);
+      if (existing === abortController) {
+        runAbortControllers.current.delete(tabId);
+      }
+    };
     const handleSnapshot = (snapshot: ApiResponseSnapshot) => {
       if (!isMountedRef.current) {
+        abortController.abort();
+        cleanupAbortController();
         return;
       }
       setTabs((prev) =>
@@ -333,6 +431,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
       if (!selectedEnvironment) {
         throw new Error('请选择一个测试环境后再发送');
       }
+      persistActiveEnvironmentSelection();
       const preparedInterface = applyRequestOntoInterfaceData(tab.interfaceData, tab.draft);
       const interfaceWithEnv = {
         ...preparedInterface,
@@ -343,9 +442,10 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           requestId: tab.requestId,
           interfaceData: interfaceWithEnv,
         },
-        { onSnapshot: handleSnapshot }
+        { onSnapshot: handleSnapshot, signal: abortController.signal }
       );
       if (!isMountedRef.current) {
+        cleanupAbortController();
         return;
       }
       setTabs((prev) =>
@@ -362,7 +462,19 @@ export const ApiCollectionsWorkbench = React.forwardRef<
       );
       onConnectionStateChange('online');
       onRequestExecuted?.(finalSnapshot.finishedAt);
+      cleanupAbortController();
     } catch (error) {
+      if (isAbortError(error)) {
+        console.info('[apiCollections] Request cancelled by user', { tabId });
+        setTabs((prev) =>
+          prev.map((tabState) =>
+            tabState.id === tabId ? { ...tabState, isRunning: false } : tabState
+          )
+        );
+        onConnectionStateChange('online');
+        cleanupAbortController();
+        return;
+      }
       console.error('[apiCollections] Execution failed', error);
       const errorSnapshot: ApiResponseSnapshot = {
         id: `error-${Date.now()}`,
@@ -397,8 +509,38 @@ export const ApiCollectionsWorkbench = React.forwardRef<
         )
       );
       onConnectionStateChange('degraded');
+      cleanupAbortController();
     }
-  }, [activeTabId, tabs, onConnectionStateChange, onRequestExecuted, selectedEnvironment]);
+  }, [
+    activeTabId,
+    tabs,
+    onConnectionStateChange,
+    onRequestExecuted,
+    selectedEnvironment,
+    persistActiveEnvironmentSelection,
+  ]);
+
+  const handleCancelActiveRequest = React.useCallback(() => {
+    if (!activeTabId) {
+      return;
+    }
+    const controller = runAbortControllers.current.get(activeTabId);
+    if (!controller) {
+      return;
+    }
+    controller.abort();
+    setTabs((prevTabs) =>
+      prevTabs.map((tab) =>
+        tab.id === activeTabId
+          ? {
+              ...tab,
+              isRunning: false,
+            }
+          : tab
+      )
+    );
+    onConnectionStateChange('online');
+  }, [activeTabId, onConnectionStateChange]);
 
   /**
    * Persists the in-flight draft back into the mock data store to mimic a save.
@@ -525,13 +667,16 @@ export const ApiCollectionsWorkbench = React.forwardRef<
 
   const handleResponseResizeStart = React.useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
+      if (isAnyPanelFullscreen) {
+        return;
+      }
       event.preventDefault();
       const startY = event.clientY;
       const startHeight = responsePanelHeight;
 
       const handleMouseMove = (moveEvent: MouseEvent) => {
         const delta = moveEvent.clientY - startY;
-        setResponsePanelHeight(Math.max(200, startHeight - delta));
+        applyResponsePanelHeight(startHeight - delta);
       };
 
       const handleMouseUp = () => {
@@ -542,7 +687,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     },
-    [responsePanelHeight, setResponsePanelHeight]
+    [responsePanelHeight, applyResponsePanelHeight, isAnyPanelFullscreen]
   );
 
   return (
@@ -615,6 +760,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           onEnvironmentChange={handleEnvironmentChange}
         />
         <div
+          ref={contentAreaRef}
           style={{
             flex: 1,
             display: 'flex',
@@ -625,69 +771,93 @@ export const ApiCollectionsWorkbench = React.forwardRef<
         >
           {activeTab ? (
             <>
-              <div
-                style={{
-                  flex: 1,
-                  padding: '12px',
-                  minHeight: 0,
-                  overflow: 'hidden',
-                }}
-              >
-                <RequestEditor
-                  request={activeTab.draft}
-                  isRunning={activeTab.isRunning}
-                  isSaving={activeTab.isSaving}
-                  isDirty={activeTab.isDirty}
-                  isHydrating={activeTab.hydrationState === 'idle' || activeTab.hydrationState === 'loading'}
-                  hydrationError={activeTab.hydrationState === 'error' ? activeTab.hydrationError : undefined}
-                  saveError={activeTab.saveError}
-                  onChange={(nextRequest) => handleDraftChange(activeTab.id, nextRequest)}
-                  onRun={handleRunActiveRequest}
-                  onSave={handleSaveActiveRequest}
-                  onRetryHydration={() => handleRetryHydration(activeTab.id, activeTab.requestId)}
-                  isRunReady={isRunReady}
-                  environmentOptions={environmentOptions}
-                  environmentDisabled={environmentButtonDisabled}
-                  environmentPlaceholder={environmentPlaceholder}
-                  selectedEnvironmentKey={selectedEnvironment?.httpConfKey ?? null}
-                  selectedEnvironmentLabel={selectedEnvironmentLabel}
-                  selectedEnvironmentRequestAddr={selectedEnvironmentRequestAddr}
-                  onEnvironmentChange={handleEnvironmentChange}
-                  runReadyMessage={!isRunReady ? environmentPlaceholder : undefined}
-                />
-              </div>
-              <div
-                role="separator"
-                onMouseDown={handleResponseResizeStart}
-                style={{
-                  height: '6px',
-                  cursor: 'row-resize',
-                  background: 'transparent',
-                  position: 'relative',
-                  margin: '0 12px',
-                }}
-              >
-                <span
+              {!isResponsePanelFullscreen && (
+                <div
                   style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top: '2px',
-                    height: '2px',
-                    background: 'rgba(255, 255, 255, 0.08)',
-                    borderRadius: '99px',
+                    flex: 1,
+                    padding: '12px',
+                    minHeight: 0,
+                    overflow: 'hidden',
                   }}
-                />
-              </div>
-              <div
-                style={{
-                  padding: '12px',
-                  height: `${responsePanelHeight}px`,
-                  minHeight: '200px',
-                }}
-              >
-                <ResponsePanel response={activeTab.response} isRunning={activeTab.isRunning} />
-              </div>
+                >
+                  <RequestEditor
+                    request={activeTab.draft}
+                    isRunning={activeTab.isRunning}
+                    isSaving={activeTab.isSaving}
+                    isDirty={activeTab.isDirty}
+                    isHydrating={activeTab.hydrationState === 'idle' || activeTab.hydrationState === 'loading'}
+                    hydrationError={activeTab.hydrationState === 'error' ? activeTab.hydrationError : undefined}
+                    saveError={activeTab.saveError}
+                    onChange={(nextRequest) => handleDraftChange(activeTab.id, nextRequest)}
+                    onRun={handleRunActiveRequest}
+                    onSave={handleSaveActiveRequest}
+                    onRetryHydration={() => handleRetryHydration(activeTab.id, activeTab.requestId)}
+                    isRunReady={isRunReady}
+                    environmentOptions={environmentOptions}
+                    environmentDisabled={environmentButtonDisabled}
+                    environmentPlaceholder={environmentPlaceholder}
+                    selectedEnvironmentKey={selectedEnvironment?.httpConfKey ?? null}
+                    selectedEnvironmentLabel={selectedEnvironmentLabel}
+                    selectedEnvironmentRequestAddr={selectedEnvironmentRequestAddr}
+                    onEnvironmentChange={handleEnvironmentChange}
+                    runReadyMessage={!isRunReady ? environmentPlaceholder : undefined}
+                    isFullscreen={isRequestPanelFullscreen}
+                    onToggleFullscreen={() => togglePanelFullscreen('request')}
+                  />
+                </div>
+              )}
+              {!isAnyPanelFullscreen && (
+                <div
+                  role="separator"
+                  onMouseDown={handleResponseResizeStart}
+                  style={{
+                    height: '6px',
+                    cursor: 'row-resize',
+                    background: 'transparent',
+                    position: 'relative',
+                    margin: '0 12px',
+                  }}
+                >
+                  <span
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      right: 0,
+                      top: '2px',
+                      height: '2px',
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      borderRadius: '99px',
+                    }}
+                  />
+                </div>
+              )}
+              {!isRequestPanelFullscreen && (
+                <div
+                  style={
+                    isResponsePanelFullscreen
+                      ? {
+                          flex: 1,
+                          minHeight: 0,
+                          padding: '12px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                        }
+                      : {
+                          padding: '12px',
+                          height: `${responsePanelHeight}px`,
+                          minHeight: `${MIN_RESPONSE_PANEL_HEIGHT}px`,
+                        }
+                  }
+                >
+                  <ResponsePanel
+                    response={activeTab.response}
+                    isRunning={activeTab.isRunning}
+                    onCancel={handleCancelActiveRequest}
+                    isFullscreen={isResponsePanelFullscreen}
+                    onToggleFullscreen={() => togglePanelFullscreen('response')}
+                  />
+                </div>
+              )}
             </>
           ) : (
             <div

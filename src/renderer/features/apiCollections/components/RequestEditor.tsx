@@ -1,4 +1,5 @@
 import React from 'react';
+import { MonacoCodeEditor } from '@renderer/components/MonacoCodeEditor';
 import type { ApiRequestDefinition, HttpMethod } from '@shared/models/apiCollection';
 import { KeyValueEditor } from './KeyValueEditor';
 import type { EnvironmentOption } from '../types';
@@ -14,8 +15,6 @@ const methodAccent: Record<HttpMethod, string> = {
   PATCH: '#facc15',
   DELETE: '#f87171',
 };
-
-const SURFACE_COLOR = '#1d1f26';
 
 interface RequestEditorProps {
   request: ApiRequestDefinition;
@@ -38,6 +37,8 @@ interface RequestEditorProps {
   selectedEnvironmentLabel?: string;
   selectedEnvironmentRequestAddr?: string;
   onEnvironmentChange: (value: string) => void;
+  isFullscreen: boolean;
+  onToggleFullscreen: () => void;
 }
 
 const sectionLabels: Record<SectionKey, string> = {
@@ -69,6 +70,8 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
   selectedEnvironmentLabel,
   selectedEnvironmentRequestAddr,
   onEnvironmentChange,
+  isFullscreen,
+  onToggleFullscreen,
 }) => {
   const [activeSection, setActiveSection] = React.useState<SectionKey>('params');
   const [methodMenuOpen, setMethodMenuOpen] = React.useState(false);
@@ -149,8 +152,8 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
     onChange({ ...request, url: event.target.value });
   };
 
-  const handleBodyChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange({ ...request, body: event.target.value });
+  const handleBodyChange = (value: string) => {
+    onChange({ ...request, body: value });
   };
 
   const handleParamsChange = (nextRows: ApiRequestDefinition['params']) => {
@@ -169,38 +172,6 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
     onChange({ ...request, method });
     setMethodMenuOpen(false);
   };
-
-  const renderTextEditor = (
-    value: string,
-    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void,
-    placeholder: string,
-    backgroundColor: string
-  ) => (
-    <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
-      <textarea
-        className="dark-scrollbar"
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        style={{
-          flex: 1,
-          minHeight: 0,
-          width: '100%',
-          height: '100%',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '12px',
-          fontFamily: 'monospace',
-          fontSize: '0.95rem',
-          backgroundColor,
-          color: '#f3f4f6',
-          boxSizing: 'border-box',
-          resize: 'none',
-          scrollbarColor: '#4b5563 transparent',
-        }}
-      />
-    </div>
-  );
 
   const renderSection = (): React.ReactNode => {
     switch (activeSection) {
@@ -225,20 +196,39 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
           </div>
         );
       case 'body':
-        return renderTextEditor(request.body, handleBodyChange, 'Raw JSON body', SURFACE_COLOR);
+        return (
+          <MonacoCodeEditor
+            language="json"
+            value={request.body ?? ''}
+            placeholder="// 在此粘贴或编辑请求 JSON Body"
+            onChange={handleBodyChange}
+            ariaLabel="request-body-editor"
+            options={{
+              tabSize: 2,
+              bracketPairColorization: { enabled: true },
+              fontLigatures: true,
+            }}
+          />
+        );
       case 'pre':
-        return renderTextEditor(
-          request.preScript ?? '',
-          (event) => handleScriptChange('preScript', event.target.value),
-          '// pre-script to run before request',
-          SURFACE_COLOR
+        return (
+          <MonacoCodeEditor
+            language="python"
+            value={request.preScript ?? ''}
+            placeholder="# 在请求发送前运行的 Python 预处理脚本"
+            onChange={(nextValue) => handleScriptChange('preScript', nextValue)}
+            ariaLabel="pre-script-editor"
+          />
         );
       case 'post':
-        return renderTextEditor(
-          request.postScript ?? '',
-          (event) => handleScriptChange('postScript', event.target.value),
-          '// post-script to run after response',
-          SURFACE_COLOR
+        return (
+          <MonacoCodeEditor
+            language="python"
+            value={request.postScript ?? ''}
+            placeholder="# 在响应返回后运行的 Python 后置脚本"
+            onChange={(nextValue) => handleScriptChange('postScript', nextValue)}
+            ariaLabel="post-script-editor"
+          />
         );
       default:
         return null;
@@ -530,6 +520,25 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
           }}
         >
           {isSaving ? 'Saving…' : 'Save'}
+        </button>
+        <button
+          type="button"
+          onClick={onToggleFullscreen}
+          aria-pressed={isFullscreen}
+          title={isFullscreen ? '退出请求编辑器全屏' : '切换请求编辑器全屏'}
+          style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.12)',
+            backgroundColor: isFullscreen ? 'rgba(33, 144, 255, 0.2)' : 'transparent',
+            color: '#f3f4f6',
+            cursor: 'pointer',
+            fontSize: '0.95rem',
+            fontWeight: 600,
+          }}
+        >
+          {isFullscreen ? '⤡' : '⤢'}
         </button>
       </header>
       {saveError && (
