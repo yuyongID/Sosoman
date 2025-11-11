@@ -85,13 +85,6 @@ export const KeyValueEditor: React.FC<KeyValueEditorProps> = ({ rows, emptyLabel
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1, minHeight: 0 }}>
-      <div style={{ minHeight: '18px', display: 'flex', alignItems: 'center' }}>
-        {emptyLabel && rows.length === 0 && pendingRow.key === '' && pendingRow.value === '' ? (
-          <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>{emptyLabel}</span>
-        ) : (
-          <span style={{ color: '#9ca3af', fontSize: '0.75rem' }}>&nbsp;</span>
-        )}
-      </div>
       <div
         className="dark-scrollbar"
         style={{

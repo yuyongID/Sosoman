@@ -1,7 +1,10 @@
 import React from 'react';
-import type { ApiCollection, ApiRequestDefinition, ApiResponseSnapshot } from '@shared/models/apiCollection';
+import type {
+  ApiCollection,
+  ApiRequestDefinition,
+  ApiResponseSnapshot,
+} from '@shared/models/apiCollection';
 import { executeSosotestDebugRequest } from '@api/sosotest/debug';
-import { fetchSosotestEnvironmentList, type SosotestEnvironmentEntry } from '@api/sosotest/environments';
 import { fetchSosotestInterfaceDetail, saveSosotestInterface } from '@api/sosotest/interfaces';
 import { usePersistentNumber } from '@renderer/hooks/usePersistentNumber';
 import { CollectionsSidebar } from './components/CollectionsSidebar';
@@ -9,7 +12,8 @@ import { RequestTabs } from './components/RequestTabs';
 import { RequestEditor } from './components/RequestEditor';
 import { ResponsePanel } from './components/ResponsePanel';
 import { useSosotestInterfaces } from './hooks/useSosotestInterfaces';
-import type { ConnectionState, EnvironmentOption } from './types';
+import { useRequestEnvironments } from './hooks/useRequestEnvironments';
+import type { ConnectionState } from './types';
 import { adaptInterfaceDataToRequest, applyRequestOntoInterfaceData } from './utils/collectionTransforms';
 import {
   RequestTabState,
@@ -18,6 +22,7 @@ import {
   createTabState,
   serializeRequest,
 } from './utils/requestTabs';
+import { ConsoleDrawer } from './components/ConsoleDrawer';
 export type { ConnectionState } from './types';
 
 export interface ApiCollectionsWorkbenchHandle {
@@ -48,10 +53,6 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     'apiCollections.responseHeight',
     280
   );
-  const [environments, setEnvironments] = React.useState<SosotestEnvironmentEntry[]>([]);
-  const [selectedEnvironmentKey, setSelectedEnvironmentKey] = React.useState<string | null>(null);
-  const environmentCacheRef = React.useRef<Record<string, SosotestEnvironmentEntry[]>>({});
-  const environmentSelectionRef = React.useRef<Record<string, string>>({});
   const isMountedRef = React.useRef(true);
 
   React.useEffect(() => {
@@ -101,6 +102,16 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     [tabs, activeTabId]
   );
   const activeUri = React.useMemo(() => activeTab?.interfaceData?.uri ?? '', [activeTab]);
+  const {
+    selectedEnvironment,
+    selectedEnvironmentLabel,
+    selectedEnvironmentRequestAddr,
+    environmentOptions,
+    environmentPlaceholder,
+    environmentButtonDisabled,
+    hasSelectableEnvironment,
+    handleEnvironmentChange,
+  } = useRequestEnvironments(activeUri);
   const consoleLines = React.useMemo(() => {
     const response = activeTab?.response;
     if (!response) {
@@ -115,75 +126,6 @@ export const ApiCollectionsWorkbench = React.forwardRef<
   }, [activeTab?.response]);
   const hasConsoleEntries = consoleLines.length > 0;
   const [consoleDrawerOpen, setConsoleDrawerOpen] = React.useState(false);
-  const setEnvironmentSelectionForUri = React.useCallback(
-    (key: string | null) => {
-      setSelectedEnvironmentKey(key);
-      if (!activeUri) {
-        return;
-      }
-      if (key) {
-        environmentSelectionRef.current[activeUri] = key;
-      } else {
-        delete environmentSelectionRef.current[activeUri];
-      }
-    },
-    [activeUri]
-  );
-  React.useEffect(() => {
-    if (!activeUri) {
-      setEnvironments([]);
-      setEnvironmentSelectionForUri(null);
-      return;
-    }
-
-    const determineDefaultKey = (list: SosotestEnvironmentEntry[], storedKey?: string): string | null => {
-      if (!list.length) {
-        return null;
-      }
-      const restored = list.find(
-        (entry) => entry.httpConfKey === storedKey && entry.groupType !== 'online'
-      );
-      if (restored) {
-        return restored.httpConfKey;
-      }
-      const fallback = list.find((entry) => entry.groupType !== 'online');
-      return fallback?.httpConfKey ?? null;
-    };
-
-    const cached = environmentCacheRef.current[activeUri];
-    if (cached?.length) {
-      setEnvironments(cached);
-      const nextKey = determineDefaultKey(cached, environmentSelectionRef.current[activeUri]);
-      setEnvironmentSelectionForUri(nextKey);
-      return;
-    }
-
-    let canceled = false;
-    const loadEnvironments = async () => {
-      try {
-        const list = await fetchSosotestEnvironmentList(activeUri);
-        if (canceled) {
-          return;
-        }
-        environmentCacheRef.current[activeUri] = list;
-        setEnvironments(list);
-        const nextKey = determineDefaultKey(list, environmentSelectionRef.current[activeUri]);
-        setEnvironmentSelectionForUri(nextKey);
-      } catch (error) {
-        if (canceled) {
-          return;
-        }
-        console.error('[apiCollections] Failed to load sosotest environments', error);
-        setEnvironments([]);
-        setEnvironmentSelectionForUri(null);
-      }
-    };
-
-    loadEnvironments();
-    return () => {
-      canceled = true;
-    };
-  }, [activeUri, setEnvironmentSelectionForUri]);
 
   React.useEffect(() => {
     onConsoleAvailabilityChange?.(consoleLines.length);
@@ -201,65 +143,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     });
   }, [hasConsoleEntries]);
 
-  const uniqueEnvironments = React.useMemo(() => {
-    const seen = new Set<string>();
-    return environments.filter((env) => {
-      if (!env.httpConfKey) {
-        return false;
-      }
-      if (seen.has(env.httpConfKey)) {
-        return false;
-      }
-      seen.add(env.httpConfKey);
-      return true;
-    });
-  }, [environments]);
-  const selectedEnvironment = React.useMemo(() => {
-    if (!uniqueEnvironments.length) {
-      return null;
-    }
-    const stored = uniqueEnvironments.find(
-      (env) => env.httpConfKey === selectedEnvironmentKey && env.groupType !== 'online'
-    );
-    if (stored) {
-      return stored;
-    }
-    return uniqueEnvironments.find((env) => env.groupType !== 'online') ?? null;
-  }, [uniqueEnvironments, selectedEnvironmentKey]);
-  const environmentOptions = React.useMemo<EnvironmentOption[]>(() => {
-    return uniqueEnvironments.map((env) => ({
-      value: env.httpConfKey,
-      label: env.env_name ?? env.env_key ?? env.httpConfKey,
-      requestAddr: env.requestAddr,
-      description: env.env_name ?? env.env_key ?? env.httpConfKey,
-      disabled: env.groupType === 'online',
-    }));
-  }, [uniqueEnvironments]);
-  const hasSelectableEnvironment = uniqueEnvironments.some((env) => env.groupType !== 'online');
-  const environmentButtonDisabled = !activeUri || environments.length === 0;
-  const environmentPlaceholder = !activeUri
-    ? '请选择一个接口以加载环境'
-    : environments.length === 0
-    ? '正在查询环境列表…'
-    : !hasSelectableEnvironment
-    ? '当前接口暂无可选环境'
-    : '点击选择环境';
-  const selectedEnvironmentLabel =
-    selectedEnvironment?.env_name ?? selectedEnvironment?.env_key ?? selectedEnvironment?.httpConfKey ?? '';
-  const selectedEnvironmentRequestAddr =
-    selectedEnvironment?.requestAddr ?? selectedEnvironment?.httpConfKey ?? '';
   const isRunReady = Boolean(activeTab?.interfaceData && selectedEnvironment);
-
-  const handleEnvironmentChange = React.useCallback(
-    (value: string) => {
-      const target = uniqueEnvironments.find((entry) => entry.httpConfKey === value);
-      if (!target || target.groupType === 'online') {
-        return;
-      }
-      setEnvironmentSelectionForUri(target.httpConfKey);
-    },
-    [uniqueEnvironments, setEnvironmentSelectionForUri]
-  );
 
   const hydrateTabDetails = React.useCallback(
     async (tabId: string, requestId: string) => {
@@ -818,119 +702,11 @@ export const ApiCollectionsWorkbench = React.forwardRef<
               Choose an API request from the left to begin editing.
             </div>
           )}
-          {consoleDrawerOpen && (
-            <div
-              role="dialog"
-              aria-label="Console Logs"
-              style={{
-                position: 'absolute',
-                left: '12px',
-                right: '12px',
-                bottom: '12px',
-                maxHeight: '60%',
-                backgroundColor: '#111218',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                borderRadius: '12px',
-                boxShadow: '0 25px 45px rgba(0, 0, 0, 0.45)',
-                padding: '16px',
-                zIndex: 5,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#f3f4f6' }}>
-                  Console Logs ({consoleLines.length})
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setConsoleDrawerOpen(false)}
-                  style={{
-                    border: 'none',
-                    background: 'none',
-                    color: '#9ca3af',
-                    cursor: 'pointer',
-                    fontSize: '1rem',
-                  }}
-                >
-                  ×
-                </button>
-              </div>
-              <div
-                className="dark-scrollbar"
-                style={{
-                  flex: 1,
-                  minHeight: 0,
-                  overflowY: 'auto',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  paddingRight: '6px',
-                }}
-              >
-                {consoleLines.length === 0 ? (
-                  <div
-                    style={{
-                      color: '#9ca3af',
-                      fontSize: '0.85rem',
-                      padding: '12px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    暂无 Console 输出
-                  </div>
-                ) : (
-                  consoleLines.map((line, index) => {
-                    const summaryLine = line.split('\n')[0] ?? '';
-                    const truncated =
-                      summaryLine.length > 110 ? `${summaryLine.slice(0, 110)}…` : summaryLine;
-                    return (
-                      <details
-                        key={`console-${index}`}
-                        style={{
-                          borderRadius: '8px',
-                          border: '1px solid rgba(255, 255, 255, 0.1)',
-                          backgroundColor: '#1d1f26',
-                          padding: '10px',
-                        }}
-                      >
-                        <summary
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            cursor: 'pointer',
-                            color: '#f3f4f6',
-                            fontSize: '0.85rem',
-                            gap: '8px',
-                          }}
-                        >
-                          <span style={{ fontWeight: 600 }}>Log {index + 1}</span>
-                          <span style={{ color: '#9ca3af', flex: 1, textAlign: 'right' }}>
-                            {truncated || '空日志'}
-                          </span>
-                        </summary>
-                        <pre
-                          style={{
-                            margin: 0,
-                            whiteSpace: 'pre-wrap',
-                            wordBreak: 'break-word',
-                            overflowWrap: 'anywhere',
-                            fontSize: '0.85rem',
-                            color: '#cdd0d5',
-                            padding: '8px 0 0',
-                          }}
-                        >
-                          {line}
-                        </pre>
-                      </details>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          )}
+          <ConsoleDrawer
+            isOpen={consoleDrawerOpen}
+            lines={consoleLines}
+            onClose={() => setConsoleDrawerOpen(false)}
+          />
         </div>
       </section>
     </div>
