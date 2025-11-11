@@ -41,7 +41,7 @@ const parsePlanIdFromEnv = (): number | undefined => {
 };
 
 const defaultFilter = parseFilterFromEnv();
-const defaultPlanId = parsePlanIdFromEnv() ?? 0;
+export const DEFAULT_SOSOTEST_PLAN_ID = parsePlanIdFromEnv() ?? 0;
 
 const truncate = (value: string, max = 400): string =>
   value.length > max ? `${value.slice(0, max)}…(+${value.length - max} chars)` : value;
@@ -224,6 +224,7 @@ export interface SosotestInterfaceData {
   state?: number;
   addBy?: string;
   modBy?: string;
+  httpConfKey?: string;
   [key: string]: unknown;
 }
 
@@ -264,7 +265,7 @@ export async function fetchSosotestInterfaceList(
 ): Promise<SosotestInterfaceListResult> {
   const resolvedFilter =
     params.filter ?? defaultFilter ?? ([] as SosotestInterfaceFilter[]);
-  const resolvedPlanId = params.planId ?? defaultPlanId;
+  const resolvedPlanId = params.planId ?? DEFAULT_SOSOTEST_PLAN_ID;
   const payload = {
     page: params.page,
     limit: params.limit,
@@ -314,3 +315,5 @@ export async function saveSosotestInterface(
   }
   return data;
 }
+
+export { sosotestClient };

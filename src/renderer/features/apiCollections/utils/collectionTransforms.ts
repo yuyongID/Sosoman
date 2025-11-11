@@ -132,6 +132,7 @@ const ALLOWED_INTERFACE_FIELDS: (keyof SosotestInterfaceData)[] = [
   'isAsync',
   'id',
   'interfaceId',
+  'httpConfKey',
 ];
 
 const sanitizeInterfaceData = (data: SosotestInterfaceData): SosotestInterfaceData => {

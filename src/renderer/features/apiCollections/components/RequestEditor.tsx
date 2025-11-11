@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ApiRequestDefinition, HttpMethod } from '@shared/models/apiCollection';
 import { KeyValueEditor } from './KeyValueEditor';
+import type { EnvironmentOption } from '../types';
 
 type SectionKey = 'params' | 'headers' | 'body' | 'pre' | 'post';
 
@@ -26,6 +27,15 @@ interface RequestEditorProps {
   onRun: () => void;
   onSave: () => void;
   onRetryHydration?: () => void;
+  isRunReady: boolean;
+  runReadyMessage?: string;
+  environmentOptions: EnvironmentOption[];
+  environmentDisabled: boolean;
+  environmentPlaceholder: string;
+  selectedEnvironmentKey?: string | null;
+  selectedEnvironmentLabel?: string;
+  selectedEnvironmentRequestAddr?: string;
+  onEnvironmentChange: (value: string) => void;
 }
 
 const sectionLabels: Record<SectionKey, string> = {
@@ -48,6 +58,15 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
   onRun,
   onSave,
   onRetryHydration,
+  isRunReady,
+  runReadyMessage,
+  environmentOptions,
+  environmentDisabled,
+  environmentPlaceholder,
+  selectedEnvironmentKey,
+  selectedEnvironmentLabel,
+  selectedEnvironmentRequestAddr,
+  onEnvironmentChange,
 }) => {
   const [activeSection, setActiveSection] = React.useState<SectionKey>('params');
   const [methodMenuOpen, setMethodMenuOpen] = React.useState(false);
@@ -76,6 +95,53 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
       setMethodMenuOpen(false);
     }
   }, [isHydrating, methodMenuOpen]);
+
+  const [envMenuOpen, setEnvMenuOpen] = React.useState(false);
+  const envMenuRef = React.useRef<HTMLDivElement | null>(null);
+  const envButtonRef = React.useRef<HTMLButtonElement | null>(null);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        envMenuOpen &&
+        envMenuRef.current &&
+        !envMenuRef.current.contains(event.target as Node) &&
+        envButtonRef.current &&
+        !envButtonRef.current.contains(event.target as Node)
+      ) {
+        setEnvMenuOpen(false);
+      }
+    };
+    if (envMenuOpen) {
+      window.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      window.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [envMenuOpen]);
+
+  React.useEffect(() => {
+    if (environmentDisabled || environmentOptions.length === 0) {
+      setEnvMenuOpen(false);
+    }
+  }, [environmentDisabled, environmentOptions.length]);
+
+  const toggleEnvironmentMenu = () => {
+    if (environmentDisabled || environmentOptions.length === 0) {
+      return;
+    }
+    setEnvMenuOpen((prev) => !prev);
+  };
+
+  const handleEnvironmentOptionClick = (option: EnvironmentOption) => {
+    if (option.disabled) {
+      return;
+    }
+    onEnvironmentChange(option.value);
+    setEnvMenuOpen(false);
+  };
+
+  const environmentButtonLabel = selectedEnvironmentRequestAddr || environmentPlaceholder;
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...request, url: event.target.value });
@@ -128,6 +194,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
             placeholder="Raw JSON body"
             style={{
               width: '100%',
+              maxWidth: '100%',
               minHeight: '220px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: '8px',
@@ -136,6 +203,9 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
               fontSize: '0.95rem',
               backgroundColor: '#1f1f24',
               color: '#f3f4f6',
+              boxSizing: 'border-box',
+              resize: 'none',
+              scrollbarColor: '#4b5563 transparent',
             }}
           />
         );
@@ -147,6 +217,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
             placeholder="// pre-script to run before request"
             style={{
               width: '100%',
+              maxWidth: '100%',
               minHeight: '220px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: '8px',
@@ -155,6 +226,9 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
               fontSize: '0.95rem',
               backgroundColor: '#0f1115',
               color: '#f3f4f6',
+              boxSizing: 'border-box',
+              resize: 'none',
+              scrollbarColor: '#4b5563 transparent',
             }}
           />
         );
@@ -166,6 +240,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
             placeholder="// post-script to run after response"
             style={{
               width: '100%',
+              maxWidth: '100%',
               minHeight: '220px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: '8px',
@@ -174,6 +249,9 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
               fontSize: '0.95rem',
               backgroundColor: '#0f1115',
               color: '#f3f4f6',
+              boxSizing: 'border-box',
+              resize: 'none',
+              scrollbarColor: '#4b5563 transparent',
             }}
           />
         );
@@ -220,7 +298,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
     );
   }
 
-  const sendDisabled = isHydrating || isRunning;
+  const sendDisabled = isHydrating || isRunning || !isRunReady;
   const saveDisabled = isHydrating || isSaving || !isDirty;
 
   return (
@@ -277,7 +355,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '8px',
                 boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-                zIndex: 10,
+                zIndex: 9999,
                 minWidth: '120px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -306,6 +384,117 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
             </div>
           )}
         </div>
+        <div style={{ position: 'relative' }}>
+          <button
+            ref={envButtonRef}
+            type="button"
+            onClick={toggleEnvironmentMenu}
+            disabled={environmentDisabled || environmentOptions.length === 0}
+            aria-haspopup="menu"
+            aria-expanded={envMenuOpen}
+            title={environmentPlaceholder}
+            style={{
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              borderRadius: '8px',
+              backgroundColor: '#111218',
+              color: '#f3f4f6',
+              padding: '8px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+              cursor: environmentDisabled || environmentOptions.length === 0 ? 'not-allowed' : 'pointer',
+              minWidth: '220px',
+              width: 'auto',
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                color: '#f3f4f6',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {environmentButtonLabel}
+            </span>
+            <span style={{ color: '#cdd0d5', fontSize: '0.8rem' }}>▾</span>
+          </button>
+          {envMenuOpen && (
+            <div
+              ref={envMenuRef}
+              role="menu"
+              aria-label="环境切换列表"
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                left: 0,
+                minWidth: '320px',
+                width: 'max-content',
+                maxWidth: '70vw',
+                maxHeight: '280px',
+                overflowY: 'auto',
+                backgroundColor: '#0f1115',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 20px 45px rgba(0, 0, 0, 0.45)',
+                zIndex: 9999,
+              }}
+            >
+              {environmentOptions.length === 0 ? (
+                <div style={{ padding: '12px', color: '#cdd0d5', fontSize: '0.85rem' }}>
+                  {environmentPlaceholder}
+                </div>
+              ) : (
+                environmentOptions.map((option) => {
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleEnvironmentOptionClick(option)}
+                      disabled={option.disabled}
+                      title={option.disabled ? '生产环境不可选取' : option.description}
+                      style={{
+                        width: '100%',
+                        border: 'none',
+                        background: option.value === selectedEnvironmentKey ? 'rgba(33, 144, 255, 0.12)' : 'transparent',
+                        color: option.disabled ? '#7c8798' : '#f3f4f6',
+                        padding: '10px 14px',
+                        cursor: option.disabled ? 'not-allowed' : 'pointer',
+                        textAlign: 'left',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '8px',
+                      }}
+                    >
+                <span
+                  style={{
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    color: option.disabled ? '#9ca3af' : '#f3f4f6',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {option.requestAddr ?? option.label}
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.75rem',
+                    color: option.disabled ? '#9ca3af' : '#cdd0d5',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {option.value}
+                </span>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+          )}
+        </div>
         <input
           value={request.url}
           onChange={handleUrlChange}
@@ -313,6 +502,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
           disabled={isHydrating}
           style={{
             flex: 1,
+            minWidth: 0,
             padding: '10px 12px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '8px',
@@ -356,6 +546,9 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
       </header>
       {saveError && (
         <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '-4px' }}>{saveError}</p>
+      )}
+      {!isRunReady && runReadyMessage && (
+        <p style={{ color: '#fbbf24', fontSize: '0.8rem', marginTop: '-2px' }}>{runReadyMessage}</p>
       )}
 
       <div>

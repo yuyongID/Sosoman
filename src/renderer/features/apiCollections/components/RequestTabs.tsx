@@ -1,4 +1,5 @@
 import React from 'react';
+import type { EnvironmentOption } from '../types';
 
 export interface RequestTabUiModel {
   id: string;
@@ -14,7 +15,9 @@ interface RequestTabsProps {
   onSelectTab: (tabId: string) => void;
   onCloseTab: (tabId: string) => void;
   environment: string;
-  environmentOptions: string[];
+  environmentOptions: EnvironmentOption[];
+  environmentSelectDisabled?: boolean;
+  environmentPlaceholder?: string;
   onEnvironmentChange: (value: string) => void;
 }
 
@@ -25,6 +28,8 @@ export const RequestTabs: React.FC<RequestTabsProps> = ({
   onCloseTab,
   environment,
   environmentOptions,
+  environmentSelectDisabled,
+  environmentPlaceholder,
   onEnvironmentChange,
 }) => {
   return (
@@ -137,6 +142,7 @@ export const RequestTabs: React.FC<RequestTabsProps> = ({
           aria-label="Environment selector"
           value={environment}
           onChange={(event) => onEnvironmentChange(event.target.value)}
+          disabled={environmentSelectDisabled ?? environmentOptions.length === 0}
           style={{
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '6px',
@@ -146,9 +152,17 @@ export const RequestTabs: React.FC<RequestTabsProps> = ({
             color: '#f3f4f6',
           }}
         >
+          {(environmentOptions.length === 0 || environmentPlaceholder) && (
+            <option value="">{environmentPlaceholder ?? '暂无可用环境'}</option>
+          )}
           {environmentOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
+            <option
+              key={option.value}
+              value={option.value}
+              disabled={option.disabled}
+              title={option.disabled ? '生产环境不可选取' : option.description}
+            >
+              {option.label}
             </option>
           ))}
         </select>

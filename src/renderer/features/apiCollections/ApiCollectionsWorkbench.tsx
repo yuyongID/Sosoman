@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ApiCollection, ApiRequestDefinition, ApiResponseSnapshot } from '@shared/models/apiCollection';
-import { executeApiRequest } from '@api/apiCollections';
+import { executeSosotestDebugRequest } from '@api/sosotest/debug';
+import { fetchSosotestEnvironmentList, type SosotestEnvironmentEntry } from '@api/sosotest/environments';
 import { fetchSosotestInterfaceDetail, saveSosotestInterface } from '@api/sosotest/interfaces';
 import { usePersistentNumber } from '@renderer/hooks/usePersistentNumber';
 import { CollectionsSidebar } from './components/CollectionsSidebar';
@@ -8,7 +9,7 @@ import { RequestTabs } from './components/RequestTabs';
 import { RequestEditor } from './components/RequestEditor';
 import { ResponsePanel } from './components/ResponsePanel';
 import { useSosotestInterfaces } from './hooks/useSosotestInterfaces';
-import type { ConnectionState } from './types';
+import type { ConnectionState, EnvironmentOption } from './types';
 import { adaptInterfaceDataToRequest, applyRequestOntoInterfaceData } from './utils/collectionTransforms';
 import {
   RequestTabState,
@@ -27,9 +28,6 @@ export interface ApiCollectionsWorkbenchHandle {
 interface ApiCollectionsWorkbenchProps {
   onConnectionStateChange: (state: ConnectionState) => void;
   onRequestExecuted?: (isoTimestamp: string) => void;
-  environment: string;
-  environmentOptions: string[];
-  onEnvironmentChange: (env: string) => void;
 }
 
 
@@ -38,7 +36,7 @@ const clamp = (value: number, min: number, max: number): number => Math.min(Math
 export const ApiCollectionsWorkbench = React.forwardRef<
   ApiCollectionsWorkbenchHandle,
   ApiCollectionsWorkbenchProps
->(({ onConnectionStateChange, onRequestExecuted, environment, environmentOptions, onEnvironmentChange }, ref) => {
+>(({ onConnectionStateChange, onRequestExecuted }, ref) => {
   const [collectionSearch, setCollectionSearch] = React.useState('');
   const [tabs, setTabs] = React.useState<RequestTabState[]>([]);
   const [activeTabId, setActiveTabId] = React.useState<string | null>(null);
@@ -48,6 +46,10 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     'apiCollections.responseHeight',
     280
   );
+  const [environments, setEnvironments] = React.useState<SosotestEnvironmentEntry[]>([]);
+  const [selectedEnvironmentKey, setSelectedEnvironmentKey] = React.useState<string | null>(null);
+  const environmentCacheRef = React.useRef<Record<string, SosotestEnvironmentEntry[]>>({});
+  const environmentSelectionRef = React.useRef<Record<string, string>>({});
   const isMountedRef = React.useRef(true);
 
   React.useEffect(() => {
@@ -95,6 +97,136 @@ export const ApiCollectionsWorkbench = React.forwardRef<
   const activeTab = React.useMemo(
     () => tabs.find((tab) => tab.id === activeTabId) ?? null,
     [tabs, activeTabId]
+  );
+  const activeUri = React.useMemo(() => activeTab?.interfaceData?.uri ?? '', [activeTab]);
+  const setEnvironmentSelectionForUri = React.useCallback(
+    (key: string | null) => {
+      setSelectedEnvironmentKey(key);
+      if (!activeUri) {
+        return;
+      }
+      if (key) {
+        environmentSelectionRef.current[activeUri] = key;
+      } else {
+        delete environmentSelectionRef.current[activeUri];
+      }
+    },
+    [activeUri]
+  );
+  React.useEffect(() => {
+    if (!activeUri) {
+      setEnvironments([]);
+      setEnvironmentSelectionForUri(null);
+      return;
+    }
+
+    const determineDefaultKey = (list: SosotestEnvironmentEntry[], storedKey?: string): string | null => {
+      if (!list.length) {
+        return null;
+      }
+      const restored = list.find(
+        (entry) => entry.httpConfKey === storedKey && entry.groupType !== 'online'
+      );
+      if (restored) {
+        return restored.httpConfKey;
+      }
+      const fallback = list.find((entry) => entry.groupType !== 'online');
+      return fallback?.httpConfKey ?? null;
+    };
+
+    const cached = environmentCacheRef.current[activeUri];
+    if (cached?.length) {
+      setEnvironments(cached);
+      const nextKey = determineDefaultKey(cached, environmentSelectionRef.current[activeUri]);
+      setEnvironmentSelectionForUri(nextKey);
+      return;
+    }
+
+    let canceled = false;
+    const loadEnvironments = async () => {
+      try {
+        const list = await fetchSosotestEnvironmentList(activeUri);
+        if (canceled) {
+          return;
+        }
+        environmentCacheRef.current[activeUri] = list;
+        setEnvironments(list);
+        const nextKey = determineDefaultKey(list, environmentSelectionRef.current[activeUri]);
+        setEnvironmentSelectionForUri(nextKey);
+      } catch (error) {
+        if (canceled) {
+          return;
+        }
+        console.error('[apiCollections] Failed to load sosotest environments', error);
+        setEnvironments([]);
+        setEnvironmentSelectionForUri(null);
+      }
+    };
+
+    loadEnvironments();
+    return () => {
+      canceled = true;
+    };
+  }, [activeUri, setEnvironmentSelectionForUri]);
+
+  const uniqueEnvironments = React.useMemo(() => {
+    const seen = new Set<string>();
+    return environments.filter((env) => {
+      if (!env.httpConfKey) {
+        return false;
+      }
+      if (seen.has(env.httpConfKey)) {
+        return false;
+      }
+      seen.add(env.httpConfKey);
+      return true;
+    });
+  }, [environments]);
+  const selectedEnvironment = React.useMemo(() => {
+    if (!uniqueEnvironments.length) {
+      return null;
+    }
+    const stored = uniqueEnvironments.find(
+      (env) => env.httpConfKey === selectedEnvironmentKey && env.groupType !== 'online'
+    );
+    if (stored) {
+      return stored;
+    }
+    return uniqueEnvironments.find((env) => env.groupType !== 'online') ?? null;
+  }, [uniqueEnvironments, selectedEnvironmentKey]);
+  const environmentOptions = React.useMemo<EnvironmentOption[]>(() => {
+    return uniqueEnvironments.map((env) => ({
+      value: env.httpConfKey,
+      label: env.env_name ?? env.env_key ?? env.httpConfKey,
+      requestAddr: env.requestAddr,
+      description: env.env_name ?? env.env_key ?? env.httpConfKey,
+      disabled: env.groupType === 'online',
+    }));
+  }, [uniqueEnvironments]);
+  const hasSelectableEnvironment = uniqueEnvironments.some((env) => env.groupType !== 'online');
+  const environmentButtonDisabled = !activeUri || environments.length === 0;
+  const environmentPlaceholder = !activeUri
+    ? '请选择一个接口以加载环境'
+    : environments.length === 0
+    ? '正在查询环境列表…'
+    : !hasSelectableEnvironment
+    ? '当前接口暂无可选环境'
+    : '点击选择环境';
+  const selectedEnvironmentLabel =
+    selectedEnvironment?.env_name ?? selectedEnvironment?.env_key ?? selectedEnvironment?.httpConfKey ?? '';
+  const selectedEnvironmentRequestAddr =
+    selectedEnvironment?.requestAddr ?? selectedEnvironment?.httpConfKey ?? '';
+  const isRunReady = Boolean(activeTab?.interfaceData && selectedEnvironment);
+
+  const handleEnvironmentChange = React.useCallback(
+    (value: string) => {
+      const target = uniqueEnvironments.find((entry) => entry.httpConfKey === value);
+      if (!target || target.groupType === 'online') {
+        return;
+      }
+      setEnvironmentSelectionForUri(target.httpConfKey);
+    },
+    [uniqueEnvironments, setEnvironmentSelectionForUri]
   );
 
   const hydrateTabDetails = React.useCallback(
@@ -260,22 +392,60 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     );
     onConnectionStateChange('degraded');
 
-    try {
-      const response = await executeApiRequest({ request: tab.draft });
+    const tabId = tab.id;
+    const handleSnapshot = (snapshot: ApiResponseSnapshot) => {
+      if (!isMountedRef.current) {
+        return;
+      }
       setTabs((prev) =>
         prev.map((tabState) =>
-          tabState.id === tab.id
+          tabState.id === tabId
             ? {
                 ...tabState,
-                response,
+                response: snapshot,
+                lastRunAt: snapshot.finishedAt,
+              }
+            : tabState
+        )
+      );
+    };
+
+    try {
+      if (!tab.interfaceData) {
+        throw new Error('接口详情尚未同步完成，无法执行');
+      }
+      if (!selectedEnvironment) {
+        throw new Error('请选择一个测试环境后再发送');
+      }
+      const preparedInterface = applyRequestOntoInterfaceData(tab.interfaceData, tab.draft);
+      const interfaceWithEnv = {
+        ...preparedInterface,
+        httpConfKey: selectedEnvironment.httpConfKey,
+      };
+      const finalSnapshot = await executeSosotestDebugRequest(
+        {
+          requestId: tab.requestId,
+          interfaceData: interfaceWithEnv,
+        },
+        { onSnapshot: handleSnapshot }
+      );
+      if (!isMountedRef.current) {
+        return;
+      }
+      setTabs((prev) =>
+        prev.map((tabState) =>
+          tabState.id === tabId
+            ? {
+                ...tabState,
+                response: finalSnapshot,
                 isRunning: false,
-                lastRunAt: response.finishedAt,
+                lastRunAt: finalSnapshot.finishedAt,
               }
             : tabState
         )
       );
       onConnectionStateChange('online');
-      onRequestExecuted?.(response.finishedAt);
+      onRequestExecuted?.(finalSnapshot.finishedAt);
     } catch (error) {
       console.error('[apiCollections] Execution failed', error);
       const errorSnapshot: ApiResponseSnapshot = {
@@ -300,7 +470,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
       };
       setTabs((prev) =>
         prev.map((tabState) =>
-          tabState.id === tab.id
+          tabState.id === tabId
             ? {
                 ...tabState,
                 response: errorSnapshot,
@@ -312,7 +482,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
       );
       onConnectionStateChange('degraded');
     }
-  }, [activeTabId, tabs, onConnectionStateChange, onRequestExecuted]);
+  }, [activeTabId, tabs, onConnectionStateChange, onRequestExecuted, selectedEnvironment]);
 
   /**
    * Persists the in-flight draft back into the mock data store to mimic a save.
@@ -513,9 +683,11 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           activeTabId={activeTabId}
           onSelectTab={setActiveTabId}
           onCloseTab={handleCloseTab}
-          environment={environment}
+          environment={selectedEnvironment?.httpConfKey ?? ''}
           environmentOptions={environmentOptions}
-          onEnvironmentChange={onEnvironmentChange}
+          environmentSelectDisabled={!hasSelectableEnvironment || environmentOptions.length === 0}
+          environmentPlaceholder={environmentPlaceholder}
+          onEnvironmentChange={handleEnvironmentChange}
         />
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           {activeTab ? (
@@ -540,6 +712,15 @@ export const ApiCollectionsWorkbench = React.forwardRef<
                   onRun={handleRunActiveRequest}
                   onSave={handleSaveActiveRequest}
                   onRetryHydration={() => handleRetryHydration(activeTab.id, activeTab.requestId)}
+                  isRunReady={isRunReady}
+                  environmentOptions={environmentOptions}
+                  environmentDisabled={environmentButtonDisabled}
+                  environmentPlaceholder={environmentPlaceholder}
+                  selectedEnvironmentKey={selectedEnvironment?.httpConfKey ?? null}
+                  selectedEnvironmentLabel={selectedEnvironmentLabel}
+                  selectedEnvironmentRequestAddr={selectedEnvironmentRequestAddr}
+                  onEnvironmentChange={handleEnvironmentChange}
+                  runReadyMessage={!isRunReady ? environmentPlaceholder : undefined}
                 />
               </div>
               <div

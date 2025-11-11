@@ -11,8 +11,6 @@ const navItems = [
   { id: 'testSuites', label: 'Test suites', icon: '🧪' },
 ];
 
-const environmentOptions = ['Mock', 'Local', 'Staging', 'Production'];
-
 const connectionLabels: Record<ConnectionState, string> = {
   online: 'Online (mock data)',
   degraded: 'Syncing…',
@@ -37,7 +35,6 @@ const PlaceholderView: React.FC<{ label: string }> = ({ label }) => (
 export const App: React.FC = () => {
   const { token } = useSession();
   const [activeNav, setActiveNav] = React.useState<NavKey>('apiCollections');
-  const [environment, setEnvironment] = React.useState(environmentOptions[0]);
   const [connectionState, setConnectionState] = React.useState<ConnectionState>('offline');
   const [lastRunAt, setLastRunAt] = React.useState<string | null>(null);
 
@@ -62,9 +59,6 @@ export const App: React.FC = () => {
         <ApiCollectionsWorkbench
           onConnectionStateChange={setConnectionState}
           onRequestExecuted={setLastRunAt}
-          environment={environment}
-          environmentOptions={environmentOptions}
-          onEnvironmentChange={setEnvironment}
         />
       )}
       {activeNav === 'environments' && <PlaceholderView label="Environments" />}
