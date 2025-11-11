@@ -23,11 +23,13 @@ export type { ConnectionState } from './types';
 export interface ApiCollectionsWorkbenchHandle {
   runActiveRequest: () => void;
   saveActiveRequest: () => void;
+  toggleConsoleDrawer: () => void;
 }
 
 interface ApiCollectionsWorkbenchProps {
   onConnectionStateChange: (state: ConnectionState) => void;
   onRequestExecuted?: (isoTimestamp: string) => void;
+  onConsoleAvailabilityChange?: (count: number) => void;
 }
 
 
@@ -36,7 +38,7 @@ const clamp = (value: number, min: number, max: number): number => Math.min(Math
 export const ApiCollectionsWorkbench = React.forwardRef<
   ApiCollectionsWorkbenchHandle,
   ApiCollectionsWorkbenchProps
->(({ onConnectionStateChange, onRequestExecuted }, ref) => {
+>(({ onConnectionStateChange, onRequestExecuted, onConsoleAvailabilityChange }, ref) => {
   const [collectionSearch, setCollectionSearch] = React.useState('');
   const [tabs, setTabs] = React.useState<RequestTabState[]>([]);
   const [activeTabId, setActiveTabId] = React.useState<string | null>(null);
@@ -99,6 +101,20 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     [tabs, activeTabId]
   );
   const activeUri = React.useMemo(() => activeTab?.interfaceData?.uri ?? '', [activeTab]);
+  const consoleLines = React.useMemo(() => {
+    const response = activeTab?.response;
+    if (!response) {
+      return [];
+    }
+    const logs = Array.isArray(response.consoleLog) ? response.consoleLog : [];
+    const lines = [...logs];
+    if (response.sosotestBody) {
+      lines.push(JSON.stringify(response.sosotestBody, null, 2));
+    }
+    return lines;
+  }, [activeTab?.response]);
+  const hasConsoleEntries = consoleLines.length > 0;
+  const [consoleDrawerOpen, setConsoleDrawerOpen] = React.useState(false);
   const setEnvironmentSelectionForUri = React.useCallback(
     (key: string | null) => {
       setSelectedEnvironmentKey(key);
@@ -168,6 +184,22 @@ export const ApiCollectionsWorkbench = React.forwardRef<
       canceled = true;
     };
   }, [activeUri, setEnvironmentSelectionForUri]);
+
+  React.useEffect(() => {
+    onConsoleAvailabilityChange?.(consoleLines.length);
+    if (!consoleLines.length) {
+      setConsoleDrawerOpen(false);
+    }
+  }, [consoleLines.length, onConsoleAvailabilityChange]);
+
+  const toggleConsoleDrawer = React.useCallback(() => {
+    setConsoleDrawerOpen((prev) => {
+      if (prev) {
+        return false;
+      }
+      return hasConsoleEntries;
+    });
+  }, [hasConsoleEntries]);
 
   const uniqueEnvironments = React.useMemo(() => {
     const seen = new Set<string>();
@@ -580,8 +612,9 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     () => ({
       runActiveRequest: handleRunActiveRequest,
       saveActiveRequest: handleSaveActiveRequest,
+      toggleConsoleDrawer,
     }),
-    [handleRunActiveRequest, handleSaveActiveRequest]
+    [handleRunActiveRequest, handleSaveActiveRequest, toggleConsoleDrawer]
   );
 
   const handleSidebarResizeStart = React.useCallback(
@@ -614,7 +647,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
 
       const handleMouseMove = (moveEvent: MouseEvent) => {
         const delta = moveEvent.clientY - startY;
-        setResponsePanelHeight(clamp(startHeight - delta, 200, 520));
+        setResponsePanelHeight(Math.max(200, startHeight - delta));
       };
 
       const handleMouseUp = () => {
@@ -671,7 +704,15 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           }}
         />
       </div>
-      <section style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <section
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: 0,
+          position: 'relative',
+        }}
+      >
         <RequestTabs
           tabs={tabs.map((tab) => ({
             id: tab.id,
@@ -689,7 +730,15 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           environmentPlaceholder={environmentPlaceholder}
           onEnvironmentChange={handleEnvironmentChange}
         />
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            position: 'relative',
+          }}
+        >
           {activeTab ? (
             <>
               <div
@@ -767,6 +816,119 @@ export const ApiCollectionsWorkbench = React.forwardRef<
               }}
             >
               Choose an API request from the left to begin editing.
+            </div>
+          )}
+          {consoleDrawerOpen && (
+            <div
+              role="dialog"
+              aria-label="Console Logs"
+              style={{
+                position: 'absolute',
+                left: '12px',
+                right: '12px',
+                bottom: '12px',
+                maxHeight: '60%',
+                backgroundColor: '#111218',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+                boxShadow: '0 25px 45px rgba(0, 0, 0, 0.45)',
+                padding: '16px',
+                zIndex: 5,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '12px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#f3f4f6' }}>
+                  Console Logs ({consoleLines.length})
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setConsoleDrawerOpen(false)}
+                  style={{
+                    border: 'none',
+                    background: 'none',
+                    color: '#9ca3af',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              <div
+                className="dark-scrollbar"
+                style={{
+                  flex: 1,
+                  minHeight: 0,
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  paddingRight: '6px',
+                }}
+              >
+                {consoleLines.length === 0 ? (
+                  <div
+                    style={{
+                      color: '#9ca3af',
+                      fontSize: '0.85rem',
+                      padding: '12px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    暂无 Console 输出
+                  </div>
+                ) : (
+                  consoleLines.map((line, index) => {
+                    const summaryLine = line.split('\n')[0] ?? '';
+                    const truncated =
+                      summaryLine.length > 110 ? `${summaryLine.slice(0, 110)}…` : summaryLine;
+                    return (
+                      <details
+                        key={`console-${index}`}
+                        style={{
+                          borderRadius: '8px',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          backgroundColor: '#1d1f26',
+                          padding: '10px',
+                        }}
+                      >
+                        <summary
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            color: '#f3f4f6',
+                            fontSize: '0.85rem',
+                            gap: '8px',
+                          }}
+                        >
+                          <span style={{ fontWeight: 600 }}>Log {index + 1}</span>
+                          <span style={{ color: '#9ca3af', flex: 1, textAlign: 'right' }}>
+                            {truncated || '空日志'}
+                          </span>
+                        </summary>
+                        <pre
+                          style={{
+                            margin: 0,
+                            whiteSpace: 'pre-wrap',
+                            wordBreak: 'break-word',
+                            overflowWrap: 'anywhere',
+                            fontSize: '0.85rem',
+                            color: '#cdd0d5',
+                            padding: '8px 0 0',
+                          }}
+                        >
+                          {line}
+                        </pre>
+                      </details>
+                    );
+                  })
+                )}
+              </div>
             </div>
           )}
         </div>

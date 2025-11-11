@@ -54,6 +54,7 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
   pagination,
 }) => {
   const scrollContainerRef = React.useRef<HTMLDivElement | null>(null);
+  const [hasScrollbar, setHasScrollbar] = React.useState(false);
   const treeRequests = React.useMemo(() => {
     const result: TreeRequest[] = [];
     collections.forEach((collection) => {
@@ -120,6 +121,30 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
     };
   }, [pagination?.hasMore, pagination?.isLoading, pagination?.onLoadMore]);
 
+  const checkScrollbarPresence = React.useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container) {
+      setHasScrollbar(false);
+      return;
+    }
+    const hasOverflow = container.scrollHeight > container.clientHeight + 1;
+    setHasScrollbar(hasOverflow);
+  }, []);
+
+  React.useLayoutEffect(() => {
+    checkScrollbarPresence();
+  }, [filteredRequests.length, loading, pagination?.isLoading, pagination?.hasMore, checkScrollbarPresence]);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      checkScrollbarPresence();
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [checkScrollbarPresence]);
+
   const showEmptyState = !loading && filteredRequests.length === 0;
 
   return (
@@ -166,82 +191,84 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
           暂无接口，请调整筛选条件或稍后再试。
         </div>
       ) : (
-        <div
-          ref={scrollContainerRef}
-          className="dark-scrollbar"
-          style={{ flex: 1, overflowY: 'auto' }}
-        >
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <div
-            style={{
-              borderLeft: '1px solid rgba(255, 255, 255, 0.04)',
-              margin: '8px 0',
-              paddingLeft: '10px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px',
-            }}
+            ref={scrollContainerRef}
+            className="dark-scrollbar"
+            style={{ flex: 1, overflowY: 'auto' }}
           >
-            {filteredRequests.map((request) => {
-              const isActive = request.id === activeRequestId;
-              return (
-                <button
-                  key={request.id}
-                  type="button"
-                  onClick={() => onSelectRequest(request.collectionId, request.id)}
-                  style={{
-                    border: 'none',
-                    background: isActive ? 'rgba(33, 144, 255, 0.12)' : 'transparent',
-                    textAlign: 'left',
-                    padding: '4px 6px 4px 12px',
-                    display: 'flex',
-                    gap: '8px',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    color: isActive ? '#ffffff' : '#cdd0d5',
-                    borderRadius: '8px',
-                    fontSize: '0.8rem',
-                  }}
-                >
-                  <span
+            <div
+              style={{
+                borderLeft: '1px solid rgba(255, 255, 255, 0.04)',
+                margin: '8px 0',
+                paddingLeft: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '2px',
+              }}
+            >
+              {filteredRequests.map((request) => {
+                const isActive = request.id === activeRequestId;
+                return (
+                  <button
+                    key={request.id}
+                    type="button"
+                    onClick={() => onSelectRequest(request.collectionId, request.id)}
                     style={{
-                      fontSize: '0.6rem',
-                      fontWeight: 700,
-                      color: '#fff',
-                      backgroundColor: methodColor[request.method] ?? '#4b5563',
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      minWidth: '40px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    {request.method}
-                  </span>
-                  <div
-                    style={{
+                      border: 'none',
+                      background: isActive ? 'rgba(33, 144, 255, 0.12)' : 'transparent',
+                      textAlign: 'left',
+                      padding: '4px 6px 4px 12px',
                       display: 'flex',
-                      flexDirection: 'column',
-                      gap: '2px',
-                      overflow: 'hidden',
+                      gap: '8px',
+                      alignItems: 'center',
+                      cursor: 'pointer',
+                      color: isActive ? '#ffffff' : '#cdd0d5',
+                      borderRadius: '8px',
+                      fontSize: '0.8rem',
                     }}
                   >
                     <span
                       style={{
-                        fontSize: '0.8rem',
-                        fontWeight: isActive ? 600 : 500,
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
+                        fontSize: '0.6rem',
+                        fontWeight: 700,
+                        color: '#fff',
+                        backgroundColor: methodColor[request.method] ?? '#4b5563',
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        minWidth: '40px',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {request.method}
+                    </span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '2px',
                         overflow: 'hidden',
                       }}
                     >
-                      {request.name}
-                    </span>
-                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{request.url}</span>
-                  </div>
-                </button>
-              );
-            })}
+                      <span
+                        style={{
+                          fontSize: '0.8rem',
+                          fontWeight: isActive ? 600 : 500,
+                          whiteSpace: 'nowrap',
+                          textOverflow: 'ellipsis',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {request.name}
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{request.url}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          {pagination && filteredRequests.length > 0 && (
+          {pagination?.hasMore && !pagination.isLoading && !hasScrollbar && (
             <div
               style={{
                 padding: '12px 0 18px',
@@ -250,7 +277,20 @@ export const CollectionsSidebar: React.FC<CollectionsSidebarProps> = ({
                 color: '#6b7280',
               }}
             >
-              {pagination.isLoading ? '加载中…' : pagination.hasMore ? '下滑加载更多' : '已加载全部接口'}
+              <button
+                type="button"
+                onClick={pagination.onLoadMore}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  color: '#d1d5db',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                点击「+」加载更多
+              </button>
             </div>
           )}
         </div>

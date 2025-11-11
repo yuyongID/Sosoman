@@ -20,6 +20,7 @@ interface DashboardLayoutProps {
   onNavChange: (navId: string) => void;
   workspaceName: string;
   status: StatusBarSnapshot;
+  statusBarActions?: React.ReactNode;
 }
 
 /**
@@ -33,6 +34,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   onNavChange,
   workspaceName,
   status,
+  statusBarActions,
 }) => {
   return (
     <div
@@ -132,14 +134,21 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           padding: '8px 24px',
           fontSize: '0.85rem',
           display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
           gap: '24px',
           color: '#9ca3af',
           backgroundColor: '#1b1b1f',
         }}
       >
-        <span>Connection: {status.connection}</span>
-        <span>User: {status.userLabel}</span>
-        <span>Last run: {status.lastRunLabel ?? '—'}</span>
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', flex: 1 }}>
+          <span>Connection: {status.connection}</span>
+          <span>User: {status.userLabel}</span>
+          <span>Last run: {status.lastRunLabel ?? '—'}</span>
+        </div>
+        {statusBarActions && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{statusBarActions}</div>
+        )}
       </footer>
     </div>
   );

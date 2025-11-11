@@ -1,12 +1,16 @@
 import React from 'react';
 import type { ApiResponseSnapshot } from '@shared/models/apiCollection';
 
-type ResponseTabKey = 'body' | 'headers' | 'console' | 'testResult';
+type ResponseTabKey = 'body' | 'headers' | 'testResult';
 
 interface ResponsePanelProps {
   response?: ApiResponseSnapshot;
   isRunning: boolean;
 }
+
+const PANEL_SURFACE = '#2a2d33';
+const DATA_SURFACE = '#1d1f26';
+const PANEL_SHADOW = '0 10px 30px rgba(0, 0, 0, 0.25)';
 
 const parseHeaderData = (headerData: unknown): Record<string, string> => {
   if (!headerData) {
@@ -30,6 +34,8 @@ const parseHeaderData = (headerData: unknown): Record<string, string> => {
 
 export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunning }) => {
   const [activeTab, setActiveTab] = React.useState<ResponseTabKey>('body');
+  const [activeTestResultTab, setActiveTestResultTab] =
+    React.useState<'assertResult' | 'varsPre' | 'varsPost'>('assertResult');
 
   React.useEffect(() => {
     if (response) {
@@ -37,19 +43,62 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
     }
   }, [response?.id]);
 
+  const assertResult = response?.sosotestBody?.assertResult;
+  const testResultOptions = React.useMemo(
+    () => [
+      { key: 'assertResult' as const, label: 'Assert 结果', value: assertResult },
+      { key: 'varsPre' as const, label: 'varsPre', value: response?.sosotestBody?.varsPre },
+      { key: 'varsPost' as const, label: 'varsPost', value: response?.sosotestBody?.varsPost },
+    ],
+    [assertResult, response],
+  );
+  const activeTestResultContent = testResultOptions.find((tab) => tab.key === activeTestResultTab);
+
+  React.useEffect(() => {
+    const defaultTab = testResultOptions.find((tab) => Boolean(tab.value))?.key ?? 'assertResult';
+    setActiveTestResultTab(defaultTab);
+  }, [testResultOptions]);
+
+  const bodyContent = response?.sosotestBody?.respBodyText ?? response?.body;
+  const headerTable = parseHeaderData(response?.sosotestBody?.header ?? null);
+  const fallbackHeaderTable =
+    (response?.headers ?? []).reduce<Record<string, string>>((acc, header) => {
+      acc[header.key] = header.value;
+      return acc;
+    }, {});
+
+  const baseSectionStyle: React.CSSProperties = {
+    flex: 1,
+    minHeight: 0,
+    height: '100%',
+    padding: '12px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    backgroundColor: PANEL_SURFACE,
+    borderRadius: '10px',
+    boxShadow: PANEL_SHADOW,
+    color: '#f3f4f6',
+  };
+  const centerContentStyle: React.CSSProperties = {
+    flex: 1,
+    minHeight: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
+
   if (isRunning) {
     return (
       <section
         style={{
-          padding: '16px',
-          color: '#2190FF',
-          minHeight: '200px',
-          backgroundColor: '#2a2d33',
-          borderRadius: '12px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35)',
+          ...baseSectionStyle,
+          padding: '18px',
         }}
       >
-        Sending request…
+        <div style={centerContentStyle}>
+          <span style={{ color: '#2190FF' }}>Sending request…</span>
+        </div>
       </section>
     );
   }
@@ -58,90 +107,66 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
     return (
       <section
         style={{
-          padding: '16px',
-          color: '#9ca3af',
-          minHeight: '200px',
-          backgroundColor: '#2a2d33',
-          borderRadius: '12px',
-          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.35)',
+          ...baseSectionStyle,
+          padding: '24px',
+          backgroundColor: DATA_SURFACE,
         }}
       >
-        Send a request to preview the response payload.
+        <div style={centerContentStyle}>
+          <span style={{ color: '#cdd0d5', fontSize: '0.95rem', textAlign: 'center' }}>
+            点击“发送”按钮获取返回结果
+          </span>
+        </div>
       </section>
     );
   }
 
-  const bodyContent = response.sosotestBody?.respBodyText ?? response.body;
-  const headerTable = parseHeaderData(response.sosotestBody?.header ?? null);
-  const fallbackHeaderTable =
-    response.headers.reduce<Record<string, string>>((acc, header) => {
-      acc[header.key] = header.value;
-      return acc;
-    }, {});
-  const assertResult = response.sosotestBody?.assertResult;
-  const consoleLines = [...response.consoleLog];
-  if (response.sosotestBody) {
-    consoleLines.push(JSON.stringify(response.sosotestBody, null, 2));
-  }
-
   const renderHeaderTable = () => (
-    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+    <table
+      style={{
+        width: '100%',
+        borderCollapse: 'collapse',
+        fontSize: '0.9rem',
+        tableLayout: 'fixed',
+      }}
+    >
       <tbody>
         {Object.entries(Object.keys(headerTable).length ? headerTable : fallbackHeaderTable).map(
           ([key, value]) => (
             <tr key={key}>
-            <td
-              style={{
-                borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
-                padding: '6px 8px',
-                color: '#9ca3af',
-                width: '30%',
-              }}
-            >
-              {key}
-            </td>
-            <td style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)', padding: '6px 8px' }}>
-              {value}
-            </td>
-          </tr>
-        ))}
+              <td
+                style={{
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                  padding: '6px 8px',
+                  color: '#9ca3af',
+                  width: '30%',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {key}
+              </td>
+              <td
+                style={{
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+                  padding: '6px 8px',
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {value}
+              </td>
+            </tr>
+          )
+        )}
       </tbody>
     </table>
   );
 
   return (
-    <section
-      style={{
-        padding: '12px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        minHeight: '220px',
-        backgroundColor: '#2a2d33',
-        borderRadius: '10px',
-        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
-        color: '#f3f4f6',
-        height: '100%',
-      }}
-    >
-      <header style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-        <span
-          style={{
-            fontWeight: 600,
-            color: response.status >= 400 ? '#f87171' : '#4ade80',
-          }}
-        >
-          {response.status} {response.statusText}
-        </span>
-        <span style={{ color: '#9ca3af', fontSize: '0.9rem' }}>
-          {response.durationMs} ms · {(response.sizeInBytes / 1024).toFixed(1)} kb
-        </span>
-        <span style={{ color: '#9ca3af', fontSize: '0.85rem', marginLeft: 'auto' }}>
-          {new Date(response.finishedAt).toLocaleTimeString()}
-        </span>
-      </header>
+    <section style={baseSectionStyle}>
       <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-        {(['body', 'headers', 'console', 'testResult'] as ResponseTabKey[]).map((tabKey) => (
+        {(['body', 'headers', 'testResult'] as ResponseTabKey[]).map((tabKey) => (
           <button
             key={tabKey}
             type="button"
@@ -160,126 +185,128 @@ export const ResponsePanel: React.FC<ResponsePanelProps> = ({ response, isRunnin
           </button>
         ))}
       </div>
-      <div>
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
         {activeTab === 'body' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
             <pre
+              className="dark-scrollbar"
               style={{
-                background: '#0f1115',
+                flex: 1,
+                margin: 0,
+                background: DATA_SURFACE,
                 color: '#e2e8f0',
                 borderRadius: '8px',
                 padding: '12px',
-                maxHeight: '320px',
                 overflow: 'auto',
                 fontSize: '0.85rem',
                 boxSizing: 'border-box',
                 width: '100%',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                overflowWrap: 'anywhere',
+                lineHeight: 1.45,
                 scrollbarColor: '#4b5563 transparent',
               }}
             >
-              {bodyContent}
+              {bodyContent ?? '暂无响应 Body'}
             </pre>
           </div>
         )}
-        {activeTab === 'headers' && renderHeaderTable()}
-        {activeTab === 'console' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {consoleLines.map((line, index) => (
-              <pre
-                key={`${response.id}-${index}`}
-                style={{
-                  margin: 0,
-                  backgroundColor: '#0f1115',
-                  borderRadius: '6px',
-                  padding: '8px 10px',
-                  fontSize: '0.8rem',
-                  color: '#cdd0d5',
-                  boxSizing: 'border-box',
-                  width: '100%',
-                  overflow: 'auto',
-                  scrollbarColor: '#4b5563 transparent',
-                }}
-              >
-                {line}
-              </pre>
-            ))}
+        {activeTab === 'headers' && (
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              className="dark-scrollbar"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                overflow: 'auto',
+                borderRadius: '8px',
+                backgroundColor: DATA_SURFACE,
+                padding: '12px',
+              }}
+            >
+              {renderHeaderTable()}
+            </div>
           </div>
         )}
         {activeTab === 'testResult' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {assertResult && (
-              <div
-                style={{
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  padding: '10px',
-                  backgroundColor: '#0f1115',
-                }}
-              >
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#9ca3af' }}>校验响应</p>
-                <pre
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+              {testResultOptions.map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => setActiveTestResultTab(tab.key)}
                   style={{
-                    margin: '6px 0 0',
+                    border: 'none',
+                    borderBottom:
+                      activeTestResultTab === tab.key ? '2px solid #2190FF' : '2px solid transparent',
+                    background: activeTestResultTab === tab.key ? '#1f1f24' : 'transparent',
+                    padding: '4px 10px',
+                    cursor: 'pointer',
+                    fontWeight: activeTestResultTab === tab.key ? 600 : 500,
+                    color: tab.value ? '#ffffff' : '#6b7280',
+                    fontSize: '0.85rem',
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div
+              className="dark-scrollbar"
+              style={{
+                flex: 1,
+                minHeight: 0,
+                overflow: 'auto',
+                borderRadius: '8px',
+                backgroundColor: DATA_SURFACE,
+                padding: '12px',
+              }}
+            >
+              {activeTestResultContent?.value ? (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: activeTestResultContent.value,
+                  }}
+                  style={{
                     whiteSpace: 'pre-wrap',
-                    fontSize: '0.8rem',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'anywhere',
+                    fontSize: '0.9rem',
                     color: '#f3f4f6',
-                    boxSizing: 'border-box',
-                    width: '100%',
-                    overflow: 'auto',
-                    scrollbarColor: '#4b5563 transparent',
                   }}
-                >
-                  {assertResult}
-                </pre>
-              </div>
-            )}
-            {response.sosotestBody?.varsPre && (
-              <div
-                style={{
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  padding: '10px',
-                  backgroundColor: '#0f1115',
-                }}
-              >
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cdd0d5' }}>varsPre</p>
-                <pre
-                  style={{
-                    margin: '6px 0 0',
-                    whiteSpace: 'pre-wrap',
-                    fontSize: '0.85rem',
-                  }}
-                >
-                  {response.sosotestBody.varsPre}
-                </pre>
-              </div>
-            )}
-            {response.sosotestBody?.varsPost && (
-              <div
-                style={{
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  padding: '10px',
-                  backgroundColor: '#0f1115',
-                }}
-              >
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#cdd0d5' }}>varsPost</p>
-                <pre
-                  style={{
-                    margin: '6px 0 0',
-                    whiteSpace: 'pre-wrap',
-                    fontSize: '0.85rem',
-                  }}
-                >
-                  {response.sosotestBody.varsPost}
-                </pre>
-              </div>
-            )}
-            {!assertResult &&
-              !response.sosotestBody?.varsPre &&
-              !response.sosotestBody?.varsPost && (
-                <div style={{ color: '#cdd0d5', fontSize: '0.85rem' }}>暂无 TestResult 结果</div>
+                />
+              ) : (
+                <div style={{ color: '#9ca3af', textAlign: 'center', padding: '28px 0' }}>
+                  当前分项暂未提供数据
+                </div>
               )}
+            </div>
           </div>
         )}
       </div>

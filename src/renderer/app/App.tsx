@@ -1,6 +1,10 @@
 import React from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
-import { ApiCollectionsWorkbench, type ConnectionState } from '../features/apiCollections/ApiCollectionsWorkbench';
+import {
+  ApiCollectionsWorkbench,
+  type ApiCollectionsWorkbenchHandle,
+  type ConnectionState,
+} from '../features/apiCollections/ApiCollectionsWorkbench';
 import { useSession } from '../store/sessionStore';
 
 type NavKey = 'apiCollections' | 'environments' | 'testSuites';
@@ -37,6 +41,12 @@ export const App: React.FC = () => {
   const [activeNav, setActiveNav] = React.useState<NavKey>('apiCollections');
   const [connectionState, setConnectionState] = React.useState<ConnectionState>('offline');
   const [lastRunAt, setLastRunAt] = React.useState<string | null>(null);
+  const [consoleCount, setConsoleCount] = React.useState(0);
+  const workbenchRef = React.useRef<ApiCollectionsWorkbenchHandle | null>(null);
+
+  const handleConsoleToggle = React.useCallback(() => {
+    workbenchRef.current?.toggleConsoleDrawer();
+  }, []);
 
   const statusBar = React.useMemo(
     () => ({
@@ -47,6 +57,34 @@ export const App: React.FC = () => {
     [connectionState, token, lastRunAt]
   );
 
+  const statusBarActions = React.useMemo(
+    () => (
+      <button
+        type="button"
+        onClick={handleConsoleToggle}
+        disabled={consoleCount === 0}
+        style={{
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '8px',
+          padding: '4px 12px',
+          backgroundColor: consoleCount ? '#111218' : 'transparent',
+          color: consoleCount ? '#f3f4f6' : '#737d8a',
+          cursor: consoleCount === 0 ? 'not-allowed' : 'pointer',
+          fontSize: '0.85rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+        }}
+      >
+        Console
+        {consoleCount > 0 && (
+          <span style={{ color: '#4ade80', fontSize: '0.75rem' }}>{consoleCount}</span>
+        )}
+      </button>
+    ),
+    [consoleCount, handleConsoleToggle]
+  );
+
   return (
     <DashboardLayout
       navItems={navItems}
@@ -54,11 +92,14 @@ export const App: React.FC = () => {
       onNavChange={(value) => setActiveNav(value as NavKey)}
       workspaceName="Default workspace"
       status={statusBar}
+      statusBarActions={statusBarActions}
     >
       {activeNav === 'apiCollections' && (
         <ApiCollectionsWorkbench
+          ref={workbenchRef}
           onConnectionStateChange={setConnectionState}
           onRequestExecuted={setLastRunAt}
+          onConsoleAvailabilityChange={setConsoleCount}
         />
       )}
       {activeNav === 'environments' && <PlaceholderView label="Environments" />}

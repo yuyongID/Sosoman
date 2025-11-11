@@ -94,11 +94,11 @@
    - tab 内部再分成上下两个 panel
 4. **requestEditor (upper panel)**
    - 包含 method dropdown、URL textField、运行/保存按钮
-   - 下方是分栏 tabs：Params / Auth / Headers / Body / 前置 / 后置
+   - 下方是分栏 tabs：Params / Headers / Body / 前置 / 后置
 5. **responsePanel(lower panel)**
-   - 显示本次调用的响应：Body / Preview / Headers / Console log
+   - 显示本次调用的响应：Body / Headers / TestResult
 6. **statusBar**
-   - 底部细栏，显示远端测试服务连接状态、当前用户、最近一次执行时间
+   - 底部细栏，显示远端测试服务连接状态、当前用户、最近一次执行时间、CONSOLE
 
 额外约束：
 - 保持以上英文名称，不要自动翻译

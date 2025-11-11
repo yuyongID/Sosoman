@@ -15,6 +15,8 @@ const methodAccent: Record<HttpMethod, string> = {
   DELETE: '#f87171',
 };
 
+const SURFACE_COLOR = '#1d1f26';
+
 interface RequestEditorProps {
   request: ApiRequestDefinition;
   isRunning: boolean;
@@ -168,92 +170,75 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
     setMethodMenuOpen(false);
   };
 
+  const renderTextEditor = (
+    value: string,
+    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void,
+    placeholder: string,
+    backgroundColor: string
+  ) => (
+    <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
+      <textarea
+        className="dark-scrollbar"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        style={{
+          flex: 1,
+          minHeight: 0,
+          width: '100%',
+          height: '100%',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          borderRadius: '8px',
+          padding: '12px',
+          fontFamily: 'monospace',
+          fontSize: '0.95rem',
+          backgroundColor,
+          color: '#f3f4f6',
+          boxSizing: 'border-box',
+          resize: 'none',
+          scrollbarColor: '#4b5563 transparent',
+        }}
+      />
+    </div>
+  );
+
   const renderSection = (): React.ReactNode => {
     switch (activeSection) {
       case 'params':
         return (
-          <KeyValueEditor
-            rows={request.params}
-            emptyLabel="No query parameters configured."
-            onChange={handleParamsChange}
-          />
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <KeyValueEditor
+              rows={request.params}
+              emptyLabel=""
+              onChange={handleParamsChange}
+            />
+          </div>
         );
       case 'headers':
         return (
-          <KeyValueEditor
-            rows={request.headers}
-            emptyLabel="No headers configured."
-            onChange={handleHeadersChange}
-          />
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <KeyValueEditor
+              rows={request.headers}
+              emptyLabel="暂无 Header 配置"
+              onChange={handleHeadersChange}
+            />
+          </div>
         );
       case 'body':
-        return (
-          <textarea
-            value={request.body}
-            onChange={handleBodyChange}
-            placeholder="Raw JSON body"
-            style={{
-              width: '100%',
-              maxWidth: '100%',
-              minHeight: '220px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              padding: '12px',
-              fontFamily: 'monospace',
-              fontSize: '0.95rem',
-              backgroundColor: '#1f1f24',
-              color: '#f3f4f6',
-              boxSizing: 'border-box',
-              resize: 'none',
-              scrollbarColor: '#4b5563 transparent',
-            }}
-          />
-        );
+        return renderTextEditor(request.body, handleBodyChange, 'Raw JSON body', SURFACE_COLOR);
       case 'pre':
-        return (
-          <textarea
-            value={request.preScript ?? ''}
-            onChange={(event) => handleScriptChange('preScript', event.target.value)}
-            placeholder="// pre-script to run before request"
-            style={{
-              width: '100%',
-              maxWidth: '100%',
-              minHeight: '220px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              padding: '12px',
-              fontFamily: 'monospace',
-              fontSize: '0.95rem',
-              backgroundColor: '#0f1115',
-              color: '#f3f4f6',
-              boxSizing: 'border-box',
-              resize: 'none',
-              scrollbarColor: '#4b5563 transparent',
-            }}
-          />
+        return renderTextEditor(
+          request.preScript ?? '',
+          (event) => handleScriptChange('preScript', event.target.value),
+          '// pre-script to run before request',
+          SURFACE_COLOR
         );
       case 'post':
-        return (
-          <textarea
-            value={request.postScript ?? ''}
-            onChange={(event) => handleScriptChange('postScript', event.target.value)}
-            placeholder="// post-script to run after response"
-            style={{
-              width: '100%',
-              maxWidth: '100%',
-              minHeight: '220px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              padding: '12px',
-              fontFamily: 'monospace',
-              fontSize: '0.95rem',
-              backgroundColor: '#0f1115',
-              color: '#f3f4f6',
-              boxSizing: 'border-box',
-              resize: 'none',
-              scrollbarColor: '#4b5563 transparent',
-            }}
-          />
+        return renderTextEditor(
+          request.postScript ?? '',
+          (event) => handleScriptChange('postScript', event.target.value),
+          '// post-script to run after response',
+          SURFACE_COLOR
         );
       default:
         return null;
@@ -423,24 +408,25 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
           </button>
           {envMenuOpen && (
             <div
+              className="dark-scrollbar"
               ref={envMenuRef}
               role="menu"
               aria-label="环境切换列表"
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 8px)',
-                left: 0,
-                minWidth: '320px',
-                width: 'max-content',
-                maxWidth: '70vw',
-                maxHeight: '280px',
-                overflowY: 'auto',
-                backgroundColor: '#0f1115',
-                borderRadius: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 20px 45px rgba(0, 0, 0, 0.45)',
-                zIndex: 9999,
-              }}
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  left: 0,
+                  minWidth: '320px',
+                  width: 'max-content',
+                  maxWidth: '70vw',
+                  maxHeight: '280px',
+                  overflowY: 'auto',
+                  backgroundColor: '#1d1f26',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: '0 20px 45px rgba(0, 0, 0, 0.45)',
+                  zIndex: 9999,
+                }}
             >
               {environmentOptions.length === 0 ? (
                 <div style={{ padding: '12px', color: '#cdd0d5', fontSize: '0.85rem' }}>
@@ -503,12 +489,14 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
           style={{
             flex: 1,
             minWidth: 0,
+            maxWidth: '100%',
             padding: '10px 12px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '8px',
             backgroundColor: '#1f1f24',
             color: '#f3f4f6',
             opacity: isHydrating ? 0.5 : 1,
+            boxSizing: 'border-box',
           }}
         />
         <button
@@ -551,7 +539,7 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
         <p style={{ color: '#fbbf24', fontSize: '0.8rem', marginTop: '-2px' }}>{runReadyMessage}</p>
       )}
 
-      <div>
+      <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
         <div style={{ display: 'flex', gap: '12px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
           {(Object.keys(sectionLabels) as SectionKey[]).map((section) => (
             <button
@@ -572,7 +560,17 @@ export const RequestEditor: React.FC<RequestEditorProps> = ({
             </button>
           ))}
         </div>
-        <div style={{ paddingTop: '16px' }}>{renderSection()}</div>
+        <div
+          style={{
+            paddingTop: '16px',
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {renderSection()}
+        </div>
       </div>
       {isHydrating && (
         <div
