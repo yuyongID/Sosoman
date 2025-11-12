@@ -5,6 +5,8 @@ import {
   type ApiCollectionsWorkbenchHandle,
   type ConnectionState,
 } from '../features/apiCollections/ApiCollectionsWorkbench';
+import { LoginScreen } from '../features/auth/LoginScreen';
+import { useLoginProfile } from '../features/auth/useLoginProfile';
 import { useSession } from '../store/sessionStore';
 
 type NavKey = 'apiCollections' | 'environments' | 'testSuites';
@@ -37,12 +39,41 @@ const PlaceholderView: React.FC<{ label: string }> = ({ label }) => (
 );
 
 export const App: React.FC = () => {
-  const { token } = useSession();
+  const { setToken } = useSession();
   const [activeNav, setActiveNav] = React.useState<NavKey>('apiCollections');
   const [connectionState, setConnectionState] = React.useState<ConnectionState>('offline');
   const [lastRunAt, setLastRunAt] = React.useState<string | null>(null);
   const [consoleCount, setConsoleCount] = React.useState(0);
   const workbenchRef = React.useRef<ApiCollectionsWorkbenchHandle | null>(null);
+  const { profile, saveProfile } = useLoginProfile();
+  const [loginVisible, setLoginVisible] = React.useState(() => profile === null);
+
+  React.useEffect(() => {
+    if (!profile) {
+      setLoginVisible(true);
+      setToken(null);
+      return;
+    }
+    setToken(profile.selectedUser.account);
+  }, [profile, setToken]);
+
+  const handleAuthenticated = React.useCallback(
+    (payload: Parameters<typeof saveProfile>[0]) => {
+      saveProfile(payload);
+      setLoginVisible(false);
+    },
+    [saveProfile]
+  );
+
+  const handleCancelLogin = React.useCallback(() => {
+    if (profile) {
+      setLoginVisible(false);
+    }
+  }, [profile]);
+
+  const handleSwitchAccount = React.useCallback(() => {
+    setLoginVisible(true);
+  }, []);
 
   const handleConsoleToggle = React.useCallback(() => {
     workbenchRef.current?.toggleConsoleDrawer();
@@ -51,10 +82,12 @@ export const App: React.FC = () => {
   const statusBar = React.useMemo(
     () => ({
       connection: connectionLabels[connectionState],
-      userLabel: token ? 'Authenticated session' : 'Anonymous',
+      userLabel: profile
+        ? `${profile.selectedUser.name} (${profile.selectedUser.account})`
+        : '待登录',
       lastRunLabel: lastRunAt ? new Date(lastRunAt).toLocaleTimeString() : undefined,
     }),
-    [connectionState, token, lastRunAt]
+    [connectionState, lastRunAt, profile]
   );
 
   const statusBarActions = React.useMemo(
@@ -85,14 +118,52 @@ export const App: React.FC = () => {
     [consoleCount, handleConsoleToggle]
   );
 
+  const headerActions = React.useMemo(
+    () => (
+      <button
+        type="button"
+        onClick={handleSwitchAccount}
+        aria-label="切换账号"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '6px',
+          borderRadius: '50%',
+          border: '1px solid rgba(255, 255, 255, 0.25)',
+          backgroundColor: 'transparent',
+          color: '#f3f4f6',
+          fontSize: '0.75rem',
+          cursor: 'pointer',
+        }}
+      >
+        <span aria-hidden="true" style={{ fontSize: '0.95rem', lineHeight: 1 }}>
+          👤
+        </span>
+      </button>
+    ),
+    [handleSwitchAccount]
+  );
+
+  if (loginVisible || !profile) {
+    return (
+      <LoginScreen
+        initialKeyword={profile?.keyword}
+        initialUser={profile?.selectedUser}
+        allowCancel={Boolean(profile)}
+        onCancel={handleCancelLogin}
+        onAuthenticated={handleAuthenticated}
+      />
+    );
+  }
+
   return (
     <DashboardLayout
       navItems={navItems}
       activeNavId={activeNav}
       onNavChange={(value) => setActiveNav(value as NavKey)}
-      workspaceName="Default workspace"
       status={statusBar}
       statusBarActions={statusBarActions}
+      headerActions={headerActions}
     >
       {activeNav === 'apiCollections' && (
         <ApiCollectionsWorkbench

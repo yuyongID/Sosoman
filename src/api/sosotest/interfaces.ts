@@ -42,7 +42,6 @@ const parsePlanIdFromEnv = (): number | undefined => {
   return undefined;
 };
 
-const defaultFilter = parseFilterFromEnv();
 export const DEFAULT_SOSOTEST_PLAN_ID = parsePlanIdFromEnv() ?? 0;
 
 const truncate = (value: string, max = 400): string =>
@@ -268,8 +267,9 @@ export async function fetchSosotestInterfaceList(
   if (isSosotestMockEnabled) {
     return sosotestMockService.fetchInterfaceList(params);
   }
+  const envFilter = parseFilterFromEnv();
   const resolvedFilter =
-    params.filter ?? defaultFilter ?? ([] as SosotestInterfaceFilter[]);
+    params.filter ?? envFilter ?? ([] as SosotestInterfaceFilter[]);
   const resolvedPlanId = params.planId ?? DEFAULT_SOSOTEST_PLAN_ID;
   const payload = {
     page: params.page,

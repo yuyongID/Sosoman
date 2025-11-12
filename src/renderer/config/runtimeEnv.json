@@ -2,7 +2,7 @@
   "SOSOTEST_INTERFACE_BASE_URL": "https://at.api.ke.com",
   "SOSOTEST_TOKEN": "636960ceeb534069301a80092124fd5c",
   "SOSOTEST_AUTH_EMAIL": "xieying003",
-  "SOSOTEST_USER_EMAIL": "dengyu032",
+  "SOSOTEST_USER_EMAIL": "",
   "SOSOTEST_INTERFACE_PLAN_ID": "0",
-  "SOSOTEST_INTERFACE_FILTER": "[{\"key\":\"addBy\",\"value\":{\"id\":1000000026706279,\"name\":\"\\u9093\\u88d5\",\"account\":\"dengyu032\",\"user_code\":\"26706279\",\"org_name\":\"\\u9500\\u552e\\u5e73\\u53f0\\u8d28\\u91cf\\u7ec4\",\"position_name\":\"\\u7814\\u53d1\\u5de5\\u7a0b\\u5e08\",\"second_job_seq_name\":\"\\u6d4b\\u8bd5\",\"three_job_seq_name\":\"\\u6d4b\\u8bd5\\u5f00\\u53d1\"},\"type\":\"eq\",\"rule\":\"and\"}]"
+  "SOSOTEST_INTERFACE_FILTER": "[]"
 }

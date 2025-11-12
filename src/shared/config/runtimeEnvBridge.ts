@@ -12,6 +12,7 @@ const normalizeRuntimeEnv = (input: RuntimeEnvInput): RuntimeEnvRecord =>
 
 type EnvCarrier = typeof globalThis & {
   __SOSOMAN_ENV__?: RuntimeEnvRecord;
+  __SOSOMAN_ENV_OVERRIDES__?: RuntimeEnvRecord;
 };
 
 export const attachRuntimeEnv = (input: RuntimeEnvInput): RuntimeEnvRecord => {
@@ -24,6 +25,19 @@ export const attachRuntimeEnv = (input: RuntimeEnvInput): RuntimeEnvRecord => {
     carrier.__SOSOMAN_ENV__ = { ...payload };
     return carrier.__SOSOMAN_ENV__;
   }
-  Object.assign(carrier.__SOSOMAN_ENV__, payload);
   return carrier.__SOSOMAN_ENV__;
+};
+
+export const mergeRuntimeEnvOverrides = (input: RuntimeEnvInput): RuntimeEnvRecord => {
+  const payload = normalizeRuntimeEnv(input);
+  if (typeof globalThis === 'undefined') {
+    return payload;
+  }
+  const carrier = globalThis as EnvCarrier;
+  const nextOverrides = {
+    ...(carrier.__SOSOMAN_ENV_OVERRIDES__ ?? {}),
+    ...payload,
+  };
+  carrier.__SOSOMAN_ENV_OVERRIDES__ = nextOverrides;
+  return nextOverrides;
 };

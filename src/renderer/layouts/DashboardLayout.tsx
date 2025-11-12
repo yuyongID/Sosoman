@@ -18,9 +18,9 @@ interface DashboardLayoutProps {
   navItems: NavItem[];
   activeNavId: string;
   onNavChange: (navId: string) => void;
-  workspaceName: string;
   status: StatusBarSnapshot;
   statusBarActions?: React.ReactNode;
+  headerActions?: React.ReactNode;
 }
 
 /**
@@ -32,9 +32,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   navItems,
   activeNavId,
   onNavChange,
-  workspaceName,
   status,
   statusBarActions,
+  headerActions,
 }) => {
   return (
     <div
@@ -50,7 +50,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       <header
         data-region="appHeader"
         style={{
-          padding: '10px 20px',
+          padding: '6px 16px',
           borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
           display: 'flex',
           alignItems: 'center',
@@ -59,7 +59,18 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         }}
       >
         <div style={{ fontWeight: 700, letterSpacing: '0.03em' }}>Sosoman</div>
-        <span style={{ color: '#9ca3af', fontSize: '0.85rem' }}>{workspaceName}</span>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginLeft: 'auto',
+          }}
+        >
+          {headerActions && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{headerActions}</div>
+          )}
+        </div>
       </header>
       <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
         <nav

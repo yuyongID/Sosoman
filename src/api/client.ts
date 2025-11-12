@@ -5,13 +5,29 @@ type EnvMap = Record<string, string | undefined>;
 const processEnv: EnvMap =
   typeof process !== 'undefined' && process.env ? (process.env as EnvMap) : {};
 
-const globalEnv: EnvMap =
-  typeof globalThis !== 'undefined' && (globalThis as Record<string, unknown>).__SOSOMAN_ENV__
-    ? ((globalThis as Record<string, unknown>).__SOSOMAN_ENV__ as EnvMap)
-    : {};
+type EnvCarrier = typeof globalThis & {
+  __SOSOMAN_ENV__?: EnvMap;
+  __SOSOMAN_ENV_OVERRIDES__?: EnvMap;
+};
+
+const fromGlobalEnv = (key: string): string | undefined => {
+  if (typeof globalThis === 'undefined') {
+    return undefined;
+  }
+  const carrier = globalThis as EnvCarrier;
+  const overrides = carrier.__SOSOMAN_ENV_OVERRIDES__;
+  if (overrides && overrides[key] !== undefined) {
+    return overrides[key];
+  }
+  const env = carrier.__SOSOMAN_ENV__;
+  if (env && env[key] !== undefined) {
+    return env[key];
+  }
+  return undefined;
+};
 
 const resolveEnv = (key: string, fallback?: string): string | undefined =>
-  globalEnv[key] ?? processEnv[key] ?? fallback;
+  fromGlobalEnv(key) ?? processEnv[key] ?? fallback;
 
 /**
  * Shared helper so feature-specific clients can read from the same env priority

@@ -1,5 +1,9 @@
+import { attachRuntimeEnv, mergeRuntimeEnvOverrides } from '@shared/config/runtimeEnvBridge';
 import runtimeEnvConfig from './runtimeEnv.json';
-import { attachRuntimeEnv } from '@shared/config/runtimeEnvBridge';
+import {
+  buildEnvFromLoginProfile,
+  loadLoginProfile,
+} from './loginPersistence';
 
 type EnvCarrier = typeof globalThis & {
   __SOSOMAN_ENV__?: Record<string, string>;
@@ -7,17 +11,15 @@ type EnvCarrier = typeof globalThis & {
 
 const carrier = globalThis as EnvCarrier;
 
-const missingEntries = Object.entries(runtimeEnvConfig).reduce<Record<string, string>>(
-  (acc, [key, value]) => {
-    if (!carrier.__SOSOMAN_ENV__ || carrier.__SOSOMAN_ENV__[key] === undefined) {
-      acc[key] = value;
-    }
-    return acc;
-  },
-  {}
-);
+if (!carrier.__SOSOMAN_ENV__) {
+  attachRuntimeEnv(runtimeEnvConfig);
+}
 
-export const runtimeEnv =
-  Object.keys(missingEntries).length > 0
-    ? attachRuntimeEnv(missingEntries)
-    : carrier.__SOSOMAN_ENV__ ?? attachRuntimeEnv(runtimeEnvConfig);
+const loginProfile = loadLoginProfile();
+const persistedEntries = loginProfile ? buildEnvFromLoginProfile(loginProfile) : null;
+
+export const runtimeEnv = carrier.__SOSOMAN_ENV__ ?? attachRuntimeEnv(runtimeEnvConfig);
+
+if (persistedEntries) {
+  mergeRuntimeEnvOverrides(persistedEntries);
+}
