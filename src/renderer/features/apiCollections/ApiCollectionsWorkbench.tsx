@@ -31,6 +31,12 @@ export const ApiCollectionsWorkbench = React.forwardRef<
 >(({ onConnectionStateChange, onRequestExecuted, onConsoleAvailabilityChange }, ref) => {
   const [collectionSearch, setCollectionSearch] = React.useState('');
   const ensureDefaultTabRef = React.useRef<(collection: ApiCollection) => void>(() => {});
+  const handleCollectionHydrated = React.useCallback(
+    (collection: ApiCollection) => {
+      ensureDefaultTabRef.current(collection);
+    },
+    []
+  );
 
   const {
     collections,
@@ -42,7 +48,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     handleLoadMoreInterfaces,
   } = useSosotestInterfaces({
     onConnectionStateChange,
-    onCollectionHydrated: (collection) => ensureDefaultTabRef.current(collection),
+    onCollectionHydrated: handleCollectionHydrated,
   });
 
   const {
@@ -64,7 +70,9 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     setCollections,
   });
 
-  ensureDefaultTabRef.current = primeDefaultTab;
+  React.useEffect(() => {
+    ensureDefaultTabRef.current = primeDefaultTab;
+  }, [primeDefaultTab]);
 
   const {
     sidebarWidth,
