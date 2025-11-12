@@ -1,7 +1,8 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 import { attachRuntimeEnv } from '../../shared/config/runtimeEnvBridge';
 import runtimeEnvConfig from '../../renderer/config/runtimeEnv.json';
-import type { RendererBridge } from '../../shared/types/ipc';
+import type { RendererBridge, RunStatusEvent } from '../../shared/types/ipc';
+import { IPC_CHANNELS } from '../../shared/constants';
 
 const collectProcessEnvOverrides = (): Record<string, string> => {
   if (typeof process === 'undefined' || !process.env) {
@@ -35,16 +36,14 @@ contextBridge.exposeInMainWorld('__SOSOMAN_ENV__', runtimeEnv);
 
 const api: RendererBridge = {
   runs: {
-    start: async (payload) => {
-      // TODO: implement IPC trigger to start a run in the main process.
-      console.warn('[preload] runs.start called before implementation', payload);
-      return { runId: 'stubbed-run-id' };
-    },
+    start: async (payload) => ipcRenderer.invoke(IPC_CHANNELS.RUNS_START, payload),
     onStatus: (listener) => {
-      // TODO: forward events from scheduler module via IPC.
-      console.warn('[preload] runs.onStatus invoked without backend wiring');
+      const handler = (_event: Electron.IpcRendererEvent, status: RunStatusEvent) => {
+        listener(status);
+      };
+      ipcRenderer.on(IPC_CHANNELS.RUNS_STATUS, handler);
       return () => {
-        console.warn('[preload] runs.onStatus disposer called');
+        ipcRenderer.removeListener(IPC_CHANNELS.RUNS_STATUS, handler);
       };
     },
   },
