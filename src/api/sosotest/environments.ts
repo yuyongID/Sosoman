@@ -1,5 +1,6 @@
-import type { AxiosResponse } from 'axios';
 import { sosotestClient } from '@api/sosotest/interfaces';
+import { isSosotestMockEnabled } from './config';
+import { sosotestMockService } from './mock/service';
 
 export type SosotestEnvironmentGroupType = 'online' | 'test' | 'local';
 
@@ -48,6 +49,9 @@ export async function fetchSosotestEnvironmentList(
   if (!uriKey) {
     console.warn('[sosotest] Missing uri key for environment list');
     return [];
+  }
+  if (isSosotestMockEnabled) {
+    return sosotestMockService.fetchEnvironmentList(uriKey);
   }
   const { data } = await sosotestClient.get<SosotestEnvironmentListResponse>(ENVIRONMENT_PATH, {
     params: {

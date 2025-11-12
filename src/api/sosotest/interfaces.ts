@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { getEnvValue } from '../client';
+import { isSosotestMockEnabled } from './config';
+import { sosotestMockService } from './mock/service';
 
 const DEFAULT_BASE_URL = 'https://at.api.ke.com';
 
@@ -263,6 +265,9 @@ export interface SaveSosotestInterfacePayload {
 export async function fetchSosotestInterfaceList(
   params: SosotestInterfaceListRequest
 ): Promise<SosotestInterfaceListResult> {
+  if (isSosotestMockEnabled) {
+    return sosotestMockService.fetchInterfaceList(params);
+  }
   const resolvedFilter =
     params.filter ?? defaultFilter ?? ([] as SosotestInterfaceFilter[]);
   const resolvedPlanId = params.planId ?? DEFAULT_SOSOTEST_PLAN_ID;
@@ -285,6 +290,9 @@ export async function fetchSosotestInterfaceList(
 export async function fetchSosotestInterfaceDetail(
   id: number | string
 ): Promise<SosotestInterfaceData> {
+  if (isSosotestMockEnabled) {
+    return sosotestMockService.fetchInterfaceDetail(id);
+  }
   const { data } = await sosotestClient.get<SosotestInterfaceDetailResponse>(
     '/v2/http/interface/get',
     {
@@ -301,6 +309,9 @@ export async function fetchSosotestInterfaceDetail(
 export async function saveSosotestInterface(
   payload: SaveSosotestInterfacePayload
 ): Promise<SosotestInterfaceSaveResponse> {
+  if (isSosotestMockEnabled) {
+    return sosotestMockService.saveInterface(payload);
+  }
   const formData = new FormData();
   formData.append('interfaceData', JSON.stringify(payload.interfaceData));
   formData.append('id', String(payload.id));

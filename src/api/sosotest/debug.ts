@@ -2,6 +2,8 @@ import type { AxiosResponse } from 'axios';
 import type { ApiResponseSnapshot, KeyValuePair, SosotestDebugBody } from '@shared/models/apiCollection';
 import type { SosotestInterfaceData } from '@api/sosotest/interfaces';
 import { DEFAULT_SOSOTEST_PLAN_ID, sosotestClient } from '@api/sosotest/interfaces';
+import { isSosotestMockEnabled } from './config';
+import { sosotestMockService } from './mock/service';
 
 const RUN_PATH = '/v2/http/interface/debug';
 const RESULT_PATH = '/v2/http/interface/result';
@@ -154,6 +156,9 @@ export async function executeSosotestDebugRequest(
   payload: ExecuteSosotestDebugRequestPayload,
   options: ExecuteSosotestDebugRequestOptions = {}
 ): Promise<ApiResponseSnapshot> {
+  if (isSosotestMockEnabled) {
+    return sosotestMockService.executeDebugRequest(payload, options);
+  }
   const pollIntervalMs = options.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
   const maxAttempts = options.maxAttempts ?? DEFAULT_POLL_ATTEMPTS;
   const planId = payload.planId ?? DEFAULT_SOSOTEST_PLAN_ID;

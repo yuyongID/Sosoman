@@ -119,10 +119,11 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
   height = '100%',
   onChange,
   options,
-  autoFormat = true,
+  autoFormat,
   ariaLabel,
 }) => {
   const themeDefinedRef = React.useRef(false);
+  const shouldAutoFormat = autoFormat ?? !readOnly;
 
   const handleMount: OnMount = React.useCallback(
     (editorInstance, monaco) => {
@@ -131,7 +132,7 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
         themeDefinedRef.current = true;
       }
       monaco.editor.setTheme(THEME_ID);
-      if (autoFormat) {
+      if (shouldAutoFormat) {
         const formatPromise = editorInstance.getAction('editor.action.formatDocument')?.run();
         if (formatPromise && typeof formatPromise.catch === 'function') {
           formatPromise.catch((error) => {
@@ -142,7 +143,7 @@ export const MonacoCodeEditor: React.FC<MonacoCodeEditorProps> = ({
         }
       }
     },
-    [autoFormat]
+    [shouldAutoFormat]
   );
 
   return (

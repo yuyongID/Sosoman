@@ -20,9 +20,10 @@ export const attachRuntimeEnv = (input: RuntimeEnvInput): RuntimeEnvRecord => {
     return payload;
   }
   const carrier = globalThis as EnvCarrier;
-  carrier.__SOSOMAN_ENV__ = {
-    ...(carrier.__SOSOMAN_ENV__ ?? {}),
-    ...payload,
-  };
+  if (!carrier.__SOSOMAN_ENV__) {
+    carrier.__SOSOMAN_ENV__ = { ...payload };
+    return carrier.__SOSOMAN_ENV__;
+  }
+  Object.assign(carrier.__SOSOMAN_ENV__, payload);
   return carrier.__SOSOMAN_ENV__;
 };
