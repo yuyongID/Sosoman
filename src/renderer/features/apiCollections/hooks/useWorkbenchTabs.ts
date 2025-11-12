@@ -210,6 +210,9 @@ export function useWorkbenchTabs({
 
   const closeTab = React.useCallback(
     (tabId: string) => {
+      let closed = false;
+      let abortedRunningRequest = false;
+
       setTabs((prevTabs) => {
         const targetTab = prevTabs.find((tab) => tab.id === tabId);
         if (targetTab?.isDirty) {
@@ -222,6 +225,8 @@ export function useWorkbenchTabs({
         if (prevTabs.length === filtered.length) {
           return prevTabs;
         }
+        closed = true;
+        abortedRunningRequest = Boolean(targetTab?.isRunning);
         console.info('[apiCollections] Closed tab', { tabId });
         if (tabId === activeTabId) {
           const nextActiveId = filtered[filtered.length - 1]?.id ?? null;
@@ -229,8 +234,22 @@ export function useWorkbenchTabs({
         }
         return filtered;
       });
+
+      if (!closed) {
+        return;
+      }
+
+      const controller = runAbortControllers.current.get(tabId);
+      if (controller) {
+        controller.abort();
+      }
+      runAbortControllers.current.delete(tabId);
+
+      if (abortedRunningRequest) {
+        onConnectionStateChange('online');
+      }
     },
-    [activeTabId]
+    [activeTabId, onConnectionStateChange]
   );
 
   const updateDraft = React.useCallback((tabId: string, nextDraft: ApiRequestDefinition) => {
@@ -401,6 +420,7 @@ export function useWorkbenchTabs({
       return;
     }
     controller.abort();
+    runAbortControllers.current.delete(activeTabId);
     setTabs((prevTabs) =>
       prevTabs.map((tab) => (tab.id === activeTabId ? { ...tab, isRunning: false } : tab))
     );
