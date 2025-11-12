@@ -53,4 +53,14 @@ export interface ApiResponseSnapshot {
   consoleLog: string[];
   startedAt: string;
   finishedAt: string;
+  sosotestBody?: SosotestDebugBody;
+}
+
+export interface SosotestDebugBody {
+  respBodyText?: string;
+  header?: string | Record<string, unknown>;
+  assertResult?: string;
+  varsPre?: string;
+  varsPost?: string;
+  [key: string]: unknown;
 }

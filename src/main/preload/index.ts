@@ -1,4 +1,6 @@
 import { contextBridge } from 'electron';
+import { attachRuntimeEnv } from '../../shared/config/runtimeEnvBridge';
+import runtimeEnvConfig from '../../renderer/config/runtimeEnv.json';
 import type { RendererBridge } from '../../shared/types/ipc';
 
 /**
@@ -6,6 +8,9 @@ import type { RendererBridge } from '../../shared/types/ipc';
  * the renderer. By centralising all cross-process interactions we keep the
  * attack surface small and document what capabilities the UI can rely on.
  */
+
+attachRuntimeEnv(runtimeEnvConfig);
+
 const api: RendererBridge = {
   runs: {
     start: async (payload) => {
