@@ -23,12 +23,13 @@ interface ApiCollectionsWorkbenchProps {
   onConnectionStateChange: (state: ConnectionState) => void;
   onRequestExecuted?: (isoTimestamp: string) => void;
   onConsoleAvailabilityChange?: (count: number) => void;
+  onMockModeChange?: (usingMock: boolean) => void;
 }
 
 export const ApiCollectionsWorkbench = React.forwardRef<
   ApiCollectionsWorkbenchHandle,
   ApiCollectionsWorkbenchProps
->(({ onConnectionStateChange, onRequestExecuted, onConsoleAvailabilityChange }, ref) => {
+>(({ onConnectionStateChange, onRequestExecuted, onConsoleAvailabilityChange, onMockModeChange }, ref) => {
   const [collectionSearch, setCollectionSearch] = React.useState('');
   const ensureDefaultTabRef = React.useRef<(collection: ApiCollection) => void>(() => {});
   const handleCollectionHydrated = React.useCallback(
@@ -50,6 +51,10 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     onConnectionStateChange,
     onCollectionHydrated: handleCollectionHydrated,
   });
+
+  React.useEffect(() => {
+    onMockModeChange?.(usingMockFallback);
+  }, [usingMockFallback, onMockModeChange]);
 
   const {
     tabs,

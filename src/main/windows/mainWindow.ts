@@ -27,6 +27,12 @@ export async function createMainWindow(): Promise<BrowserWindow> {
       sandbox: false,
       preload: preloadPath,
     },
+    titleBarStyle: 'hiddenInset',
+    titleBarOverlay: {
+      height: 34,
+      color: '#1b1b1f',
+      symbolColor: '#f3f4f6',
+    },
   });
 
   if (process.env.NODE_ENV === 'development') {

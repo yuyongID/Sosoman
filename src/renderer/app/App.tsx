@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type CSSProperties } from 'react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import {
   ApiCollectionsWorkbench,
@@ -18,7 +18,7 @@ const navItems = [
 ];
 
 const connectionLabels: Record<ConnectionState, string> = {
-  online: 'Online (mock data)',
+  online: 'Online',
   degraded: 'Syncing…',
   offline: 'Offline',
 };
@@ -44,6 +44,7 @@ export const App: React.FC = () => {
   const [connectionState, setConnectionState] = React.useState<ConnectionState>('offline');
   const [lastRunAt, setLastRunAt] = React.useState<string | null>(null);
   const [consoleCount, setConsoleCount] = React.useState(0);
+  const [isMockMode, setIsMockMode] = React.useState(false);
   const workbenchRef = React.useRef<ApiCollectionsWorkbenchHandle | null>(null);
   const { profile, saveProfile } = useLoginProfile();
   const [loginVisible, setLoginVisible] = React.useState(() => profile === null);
@@ -81,13 +82,13 @@ export const App: React.FC = () => {
 
   const statusBar = React.useMemo(
     () => ({
-      connection: connectionLabels[connectionState],
+      connection: `${connectionLabels[connectionState]} (${isMockMode ? 'mock' : 'sosotest'})`,
       userLabel: profile
         ? `${profile.selectedUser.name} (${profile.selectedUser.account})`
         : '待登录',
       lastRunLabel: lastRunAt ? new Date(lastRunAt).toLocaleTimeString() : undefined,
     }),
-    [connectionState, lastRunAt, profile]
+    [connectionState, lastRunAt, profile, isMockMode]
   );
 
   const statusBarActions = React.useMemo(
@@ -98,12 +99,12 @@ export const App: React.FC = () => {
         disabled={consoleCount === 0}
         style={{
           border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: '8px',
-          padding: '4px 12px',
+          borderRadius: '6px',
+          padding: '2px 6px',
           backgroundColor: consoleCount ? '#111218' : 'transparent',
           color: consoleCount ? '#f3f4f6' : '#737d8a',
           cursor: consoleCount === 0 ? 'not-allowed' : 'pointer',
-          fontSize: '0.85rem',
+          fontSize: '0.75rem',
           display: 'flex',
           alignItems: 'center',
           gap: '4px',
@@ -111,12 +112,27 @@ export const App: React.FC = () => {
       >
         Console
         {consoleCount > 0 && (
-          <span style={{ color: '#4ade80', fontSize: '0.75rem' }}>{consoleCount}</span>
+          <span style={{ color: '#4ade80', fontSize: '0.7rem' }}>{consoleCount}</span>
         )}
       </button>
     ),
     [consoleCount, handleConsoleToggle]
   );
+
+  const accountButtonStyle: CSSProperties & { WebkitAppRegion?: string } = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '28px',
+    height: '28px',
+    borderRadius: '50%',
+    border: 'none',
+    backgroundColor: 'transparent',
+    color: '#f3f4f6',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    WebkitAppRegion: 'no-drag',
+  };
 
   const headerActions = React.useMemo(
     () => (
@@ -125,18 +141,10 @@ export const App: React.FC = () => {
         onClick={handleSwitchAccount}
         aria-label="切换账号"
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          padding: '6px',
-          borderRadius: '50%',
-          border: '1px solid rgba(255, 255, 255, 0.25)',
-          backgroundColor: 'transparent',
-          color: '#f3f4f6',
-          fontSize: '0.75rem',
-          cursor: 'pointer',
+          ...accountButtonStyle
         }}
       >
-        <span aria-hidden="true" style={{ fontSize: '0.95rem', lineHeight: 1 }}>
+        <span aria-hidden="true" style={{ fontSize: '0.85rem', lineHeight: 1 }}>
           👤
         </span>
       </button>
@@ -157,22 +165,23 @@ export const App: React.FC = () => {
   }
 
   return (
-    <DashboardLayout
-      navItems={navItems}
-      activeNavId={activeNav}
-      onNavChange={(value) => setActiveNav(value as NavKey)}
-      status={statusBar}
-      statusBarActions={statusBarActions}
-      headerActions={headerActions}
-    >
-      {activeNav === 'apiCollections' && (
-        <ApiCollectionsWorkbench
-          ref={workbenchRef}
-          onConnectionStateChange={setConnectionState}
-          onRequestExecuted={setLastRunAt}
-          onConsoleAvailabilityChange={setConsoleCount}
-        />
-      )}
+      <DashboardLayout
+        navItems={navItems}
+        activeNavId={activeNav}
+        onNavChange={(value) => setActiveNav(value as NavKey)}
+        status={statusBar}
+        statusBarActions={statusBarActions}
+        headerActions={headerActions}
+      >
+        {activeNav === 'apiCollections' && (
+          <ApiCollectionsWorkbench
+            ref={workbenchRef}
+            onConnectionStateChange={setConnectionState}
+            onRequestExecuted={setLastRunAt}
+            onConsoleAvailabilityChange={setConsoleCount}
+            onMockModeChange={setIsMockMode}
+          />
+        )}
       {activeNav === 'environments' && <PlaceholderView label="Environments" />}
       {activeNav === 'testSuites' && <PlaceholderView label="Test suites" />}
     </DashboardLayout>

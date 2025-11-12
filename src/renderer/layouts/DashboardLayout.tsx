@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type CSSProperties } from 'react';
 
 export interface NavItem {
   id: string;
@@ -36,6 +36,25 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   statusBarActions,
   headerActions,
 }) => {
+  const headerStyle: CSSProperties & { WebkitAppRegion?: string } = {
+    height: '34px',
+    padding: '0 14px',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1b1b1f',
+    WebkitAppRegion: 'drag',
+    position: 'relative',
+  };
+
+  const headerActionsWrapper: CSSProperties & { WebkitAppRegion?: string } = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    WebkitAppRegion: 'no-drag',
+  };
+
   return (
     <div
       style={{
@@ -47,18 +66,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         margin: 0,
       }}
     >
-      <header
-        data-region="appHeader"
-        style={{
-          padding: '6px 16px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          backgroundColor: '#1b1b1f',
-        }}
-      >
-        <div style={{ fontWeight: 700, letterSpacing: '0.03em' }}>Sosoman</div>
+      <header data-region="appHeader" style={headerStyle}>
+        <div
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            fontWeight: 700,
+            letterSpacing: '0.03em',
+            pointerEvents: 'none',
+          }}
+        >
+          Sosoman
+        </div>
         <div
           style={{
             display: 'flex',
@@ -68,7 +89,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           }}
         >
           {headerActions && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{headerActions}</div>
+            <div
+              style={headerActionsWrapper}
+            >
+              {headerActions}
+            </div>
           )}
         </div>
       </header>
@@ -142,23 +167,33 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         data-region="statusBar"
         style={{
           borderTop: '1px solid rgba(255, 255, 255, 0.04)',
-          padding: '8px 24px',
-          fontSize: '0.85rem',
+          height: '26px',
+          padding: '0 14px',
+          fontSize: '0.7rem',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '24px',
+          gap: '12px',
           color: '#9ca3af',
           backgroundColor: '#1b1b1f',
+          lineHeight: 1,
         }}
       >
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center', flex: 1 }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '16px',
+            alignItems: 'center',
+            flex: 1,
+            fontSize: '0.75rem',
+          }}
+        >
           <span>Connection: {status.connection}</span>
           <span>User: {status.userLabel}</span>
           <span>Last run: {status.lastRunLabel ?? '—'}</span>
         </div>
         {statusBarActions && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{statusBarActions}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>{statusBarActions}</div>
         )}
       </footer>
     </div>
