@@ -26,6 +26,44 @@ interface ApiCollectionsWorkbenchProps {
   onMockModeChange?: (usingMock: boolean) => void;
 }
 
+const parseIsoTimestamp = (value?: string): Date | null => {
+  if (!value) {
+    return null;
+  }
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const formatFriendlyConsoleTitle = (
+  startedAt?: string,
+  finishedAt?: string
+): string | undefined => {
+  const finished = parseIsoTimestamp(finishedAt);
+  if (!finished) {
+    return undefined;
+  }
+  const timeLabel = finished.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  const started = parseIsoTimestamp(startedAt);
+  if (!started) {
+    return timeLabel;
+  }
+  const durationMs = Math.max(0, finished.getTime() - started.getTime());
+  if (!Number.isFinite(durationMs)) {
+    return timeLabel;
+  }
+  const durationLabel =
+    durationMs < 1000
+      ? `${Math.round(durationMs)} ms`
+      : durationMs < 10_000
+      ? `${(durationMs / 1000).toFixed(1)} s`
+      : `${Math.round(durationMs / 1000)} s`;
+  return `${timeLabel} · ${durationLabel}`;
+};
+
 export const ApiCollectionsWorkbench = React.forwardRef<
   ApiCollectionsWorkbenchHandle,
   ApiCollectionsWorkbenchProps
@@ -110,6 +148,15 @@ export const ApiCollectionsWorkbench = React.forwardRef<
     toggleConsoleDrawer,
     closeConsoleDrawer,
   } = useWorkbenchConsole({ activeTab, onConsoleAvailabilityChange });
+
+  const consoleTitleTime = React.useMemo(
+    () =>
+      formatFriendlyConsoleTitle(
+        activeTab?.response?.startedAt,
+        activeTab?.response?.finishedAt
+      ),
+    [activeTab?.response?.startedAt, activeTab?.response?.finishedAt]
+  );
 
   const isRunReady = Boolean(activeTab?.interfaceData && selectedEnvironment);
 
@@ -332,6 +379,7 @@ export const ApiCollectionsWorkbench = React.forwardRef<
           <ConsoleDrawer
             isOpen={consoleDrawerOpen}
             lines={consoleLines}
+            titleSuffix={consoleTitleTime}
             onClose={closeConsoleDrawer}
           />
         </div>

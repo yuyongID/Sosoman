@@ -122,28 +122,12 @@ sosotestClient.interceptors.request.use((config) => {
       ? truncate(JSON.stringify(config.params), 400)
       : config.params ?? '';
 
-  console.info('[sosotest] → %s %s', (config.method ?? 'post').toUpperCase(), resolvedUrl, {
-    baseURL: resolvedBase,
-    path: config.url ?? '',
-    params: paramsSnapshot,
-    payload: payloadSummary,
-    hasToken: Boolean(token),
-    authEmail,
-    userEmail,
-  });
-
   return config;
 });
 
 sosotestClient.interceptors.response.use(
   (response) => {
     const items = response.data?.body?.data ?? [];
-    console.info('[sosotest] ← %s %s', response.config.method?.toUpperCase() ?? 'POST', response.config.url ?? '', {
-      status: response.status,
-      items: items.length,
-      code: response.data?.code,
-      message: response.data?.message,
-    });
     return response;
   },
   (error) => {

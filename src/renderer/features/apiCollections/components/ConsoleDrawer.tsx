@@ -3,17 +3,32 @@ import React from 'react';
 interface ConsoleDrawerProps {
   isOpen: boolean;
   lines: string[];
+  titleSuffix?: string;
   onClose: () => void;
 }
+
+const LINE_COLLAPSE_THRESHOLD = 110;
 
 /**
  * Console drawer display that stays presentation-focused and oblivious to the
  * surrounding request/editor state, improving cohesion for ApiCollectionsWorkbench.
  */
-export const ConsoleDrawer: React.FC<ConsoleDrawerProps> = ({ isOpen, lines, onClose }) => {
+export const ConsoleDrawer: React.FC<ConsoleDrawerProps> = ({ isOpen, lines, titleSuffix, onClose }) => {
   if (!isOpen) {
     return null;
   }
+  const logBoxStyle: React.CSSProperties = {
+    borderRadius: '8px',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#1d1f26',
+    padding: '10px',
+  };
+  const shortLineStyle: React.CSSProperties = {
+    ...logBoxStyle,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  };
   return (
     <div
       role="dialog"
@@ -36,9 +51,14 @@ export const ConsoleDrawer: React.FC<ConsoleDrawerProps> = ({ isOpen, lines, onC
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#f3f4f6' }}>
-          Console Logs ({lines.length})
-        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+          <span style={{ fontSize: '0.95rem', fontWeight: 600, color: '#f3f4f6' }}>
+            Console Logs ({lines.length})
+          </span>
+          {titleSuffix ? (
+            <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{titleSuffix}</span>
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -80,17 +100,48 @@ export const ConsoleDrawer: React.FC<ConsoleDrawerProps> = ({ isOpen, lines, onC
         ) : (
           lines.map((line, index) => {
             const summaryLine = line.split('\n')[0] ?? '';
-            const truncated = summaryLine.length > 110 ? `${summaryLine.slice(0, 110)}…` : summaryLine;
+            const trimmedSummaryLine = summaryLine.trimEnd();
+            const hasLineBreak = line.includes('\n');
+            const shouldCollapse =
+              hasLineBreak || trimmedSummaryLine.length > LINE_COLLAPSE_THRESHOLD;
+            const truncated =
+              trimmedSummaryLine.length > LINE_COLLAPSE_THRESHOLD
+                ? `${trimmedSummaryLine.slice(0, LINE_COLLAPSE_THRESHOLD)}…`
+                : trimmedSummaryLine;
+            const labelText = truncated || '空日志';
+            if (!shouldCollapse) {
+              return (
+                <div
+                  key={`console-${index}`}
+                  style={{
+                    ...shortLineStyle,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      fontSize: '0.85rem',
+                      color: '#f3f4f6',
+                    }}
+                  >
+                    Log {index + 1}
+                  </span>
+                  <span
+                    style={{
+                      color: '#cdd0d5',
+                      fontSize: '0.85rem',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere',
+                    }}
+                  >
+                    {line || '空日志'}
+                  </span>
+                </div>
+              );
+            }
             return (
-              <details
-                key={`console-${index}`}
-                style={{
-                  borderRadius: '8px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  backgroundColor: '#1d1f26',
-                  padding: '10px',
-                }}
-              >
+              <details key={`console-${index}`} style={logBoxStyle}>
                 <summary
                   style={{
                     display: 'flex',
@@ -104,7 +155,7 @@ export const ConsoleDrawer: React.FC<ConsoleDrawerProps> = ({ isOpen, lines, onC
                 >
                   <span style={{ fontWeight: 600 }}>Log {index + 1}</span>
                   <span style={{ color: '#9ca3af', flex: 1, textAlign: 'right' }}>
-                    {truncated || '空日志'}
+                    {labelText}
                   </span>
                 </summary>
                 <pre
