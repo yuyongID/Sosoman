@@ -1,5 +1,8 @@
-import { ipcMain } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 import { IPC_CHANNELS } from '../../shared/constants';
+import type { RunStatusEvent, StartRunPayload } from '../../shared/types/ipc';
+import { runEvents } from '../scheduler/pollingService';
+import { startRun } from '../services/runService';
 
 /**
  * IPC handler registration.
@@ -8,8 +11,17 @@ import { IPC_CHANNELS } from '../../shared/constants';
  * initialisation during app boot.
  */
 export function registerIpcHandlers() {
-  ipcMain.handle(IPC_CHANNELS.RUNS_START, async (_event, payload) => {
-    console.warn('[ipc] RUNS_START invoked without concrete implementation', payload);
-    return { runId: 'stubbed-run-id' };
+  ipcMain.handle(IPC_CHANNELS.RUNS_START, async (_event, payload: StartRunPayload) => {
+    return startRun(payload);
   });
+
+  const forwardRunStatus = (event: RunStatusEvent) => {
+    BrowserWindow.getAllWindows().forEach((window) => {
+      if (!window.isDestroyed()) {
+        window.webContents.send(IPC_CHANNELS.RUNS_STATUS, event);
+      }
+    });
+  };
+
+  runEvents.on('status', forwardRunStatus);
 }
